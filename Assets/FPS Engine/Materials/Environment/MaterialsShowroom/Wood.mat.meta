@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 439f12d8a0cbea74988fbd534e28466b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20000680
+  packageName: FPS Engine
+  packageVersion: 1.4.17
+  assetPath: Assets/Cowsins/Materials/Environment/MaterialsShowroom/Wood.mat
+  uploadId: 0
