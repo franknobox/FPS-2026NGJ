@@ -6,7 +6,7 @@ namespace NGJ.Combat.Editor
 {
     public static class CombatAssetBuilder
     {
-        const string Root = "Assets/NGJCombat/Generated";
+        const string Root = "Assets/Game/NGJCombat/Generated";
 
         [MenuItem("NGJ/Combat/生成缺少的配置和预制体")]
         public static void Build()

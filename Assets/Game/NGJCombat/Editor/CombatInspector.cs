@@ -211,7 +211,7 @@ namespace NGJ.Combat.Editor
 
         static void ShowFolder(string folder)
         {
-            Selection.activeObject = AssetDatabase.LoadAssetAtPath<Object>("Assets/NGJCombat/Generated/" + folder);
+            Selection.activeObject = AssetDatabase.LoadAssetAtPath<Object>("Assets/Game/NGJCombat/Generated/" + folder);
             EditorGUIUtility.PingObject(Selection.activeObject);
         }
         void OnInspectorUpdate() { if (Application.isPlaying) Repaint(); }

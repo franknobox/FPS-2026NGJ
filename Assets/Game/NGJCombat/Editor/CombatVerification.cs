@@ -159,7 +159,7 @@ namespace NGJ.Combat.Editor
                 Require(enemy.Noise == 40 && enemy.IsVulnerable, "黏附到期爆炸并施加易伤");
                 enemy.transform.position = Vector3.forward * 3;
 
-                var weapon = AssetDatabase.LoadAssetAtPath<WeaponDefinition>("Assets/NGJCombat/Generated/Weapons/JianXiao.asset");
+                var weapon = AssetDatabase.LoadAssetAtPath<WeaponDefinition>("Assets/Game/NGJCombat/Generated/Weapons/JianXiao.asset");
                 Require(weapon && weapon.skill && weapon.skill.hitboxPrefab, "生成资源引用完整");
                 var weapons = player.gameObject.AddComponent<CombatWeaponController>();
                 weapons.owner = player;
@@ -193,7 +193,7 @@ namespace NGJ.Combat.Editor
         // 强制推进私有计时器，验证真实物理射线和状态切换，不依赖帧率。
         static void VerifyEnemies(List<Object> transient)
         {
-            const string folder = "Assets/NGJCombat/Generated/";
+            const string folder = "Assets/Game/NGJCombat/Generated/";
             var fly = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(folder + "Enemies/ChanYin.asset");
             var normal = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(folder + "Enemies/MiYin.asset");
             var heavy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(folder + "Enemies/ZhenYin.asset");

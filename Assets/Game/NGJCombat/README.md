@@ -4,7 +4,7 @@
 
 ## 直接试玩
 
-- 场景：`Assets/SlugWhitebox/Scenes/SlugWhitebox.unity`，Unity 打开后点击 Play。
+- 场景：`Assets/Game/SlugWhitebox/Scenes/SlugWhitebox.unity`，Unity 打开后点击 Play。
 - Windows 程序：`Builds/SlugWhitebox/SlugWhitebox.exe`。
 - WASD 移动，鼠标瞄准，左键普攻，右键释放当前武器技能。
 - 1/2/3/4 或滚轮切换步枪/狙击/霰弹/榴弹；Z/X/C 选择嘶鸣/撼地/共鸣，Q 释放。

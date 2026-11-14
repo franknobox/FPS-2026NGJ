@@ -13,7 +13,7 @@ namespace SlugWhitebox.Editor
 {
     public static class SlugWhiteboxBuilder
     {
-        public const string Root="Assets/SlugWhitebox";
+        public const string Root="Assets/Game/SlugWhitebox";
         public const string ScenePath=Root+"/Scenes/SlugWhitebox.unity";
         static Transform geometry;
         static Material wall,floor,cover,ink,white;

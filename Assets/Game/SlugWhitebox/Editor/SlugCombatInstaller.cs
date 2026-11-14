@@ -19,13 +19,13 @@ namespace SlugWhitebox.Editor
             try{Install();if(action=="build")SlugWhiteboxBuilder.Build();if(action=="play")EditorApplication.isPlaying=true;File.WriteAllText("Temp/NGJCombat.done","OK "+DateTime.Now);}
             catch(Exception error){Debug.LogException(error);File.WriteAllText("Temp/NGJCombat.done",error.ToString());}
         }
-        static T Load<T>(string sub) where T:UnityEngine.Object => AssetDatabase.LoadAssetAtPath<T>("Assets/NGJCombat/Generated/"+sub);
+        static T Load<T>(string sub) where T:UnityEngine.Object => AssetDatabase.LoadAssetAtPath<T>("Assets/Game/NGJCombat/Generated/"+sub);
         [MenuItem("循声虫族/接入新战斗模块（保留当前白盒）")]
         public static void Install()
         {
             if(EditorApplication.isPlaying)throw new Exception("请先停止运行再接线");
             var scene=EditorSceneManager.GetActiveScene();
-            if(scene.path!="Assets/SlugWhitebox/Scenes/SlugWhitebox.unity")throw new Exception("当前场景不是 SlugWhitebox，未修改");
+            if(scene.path!="Assets/Game/SlugWhitebox/Scenes/SlugWhitebox.unity")throw new Exception("当前场景不是 SlugWhitebox，未修改");
             var g=UnityEngine.Object.FindFirstObjectByType<SlugGame>();if(!g)throw new Exception("场景缺少 SlugGame");
             Directory.CreateDirectory("../Verification/SceneBackups");
             EditorSceneManager.SaveScene(scene,Path.GetFullPath("../Verification/SceneBackups/SlugWhitebox-"+DateTime.Now.ToString("yyyyMMdd-HHmmss")+".unity"),true);
@@ -49,7 +49,7 @@ namespace SlugWhitebox.Editor
                 Piece(launcher.transform,new Vector3(.28f,-.22f,.85f),new Vector3(.25f,.25f,.35f),g.cyanMaterial);
                 g.weaponModels[3]=launcher;launcher.SetActive(false);
             }
-            foreach(string guid in AssetDatabase.FindAssets("t:Prefab",new[]{"Assets/NGJCombat/Generated/Prefabs"}))
+            foreach(string guid in AssetDatabase.FindAssets("t:Prefab",new[]{"Assets/Game/NGJCombat/Generated/Prefabs"}))
             {
                 string path=AssetDatabase.GUIDToAssetPath(guid);var prefab=PrefabUtility.LoadPrefabContents(path);
                 if((prefab.GetComponent<CombatProjectile>() || prefab.GetComponent<CombatHitbox>()) && !prefab.GetComponent<SlugCombatEffect>())

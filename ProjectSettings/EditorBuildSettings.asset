@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/SlugWhitebox/Scenes/SlugWhitebox.unity
+    path: Assets/Game/SlugWhitebox/Scenes/SlugWhitebox.unity
     guid: 46f1ebc6c30032740abef2a4ecb1e210
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
