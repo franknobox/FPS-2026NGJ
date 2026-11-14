@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using NGJ.Combat;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine.InputSystem;
 
 namespace SlugWhitebox
 {
-    public class SlugGame : MonoBehaviour
+    public partial class SlugGame : MonoBehaviour
     {
         public SlugTuning tuning;
         public Material surfaceMaterial, cyanMaterial, orangeMaterial, lineMaterial;
@@ -29,9 +30,9 @@ namespace SlugWhitebox
         public string notice = "", resultTitle = "";
         public float noticeUntil, hitUntil, damageUntil;
         public bool criticalHit;
-        public readonly string[] WeaponNames = { "中频 · 脉冲步枪", "高频 · 重击左轮", "低频 · 震爆霰弹", "低频 · 武士刀" };
-        public readonly string[] SkillNames = { "裂甲脉冲", "迟滞共振", "震荡爆鸣" };
-        public readonly string[] SkillDescriptions = { "前方锥形 · 易伤 5 秒", "周身范围 · 减速 6 秒 + 短硬直", "周身范围 · 易伤 + 硬直 2.5 秒" };
+        public readonly string[] WeaponNames = { "嘶鸣体 · 步枪", "尖啸体 · 狙击", "撼音体 · 霰弹", "爆鸣体 · 榴弹" };
+        public readonly string[] SkillNames = { "嘶鸣", "撼地", "共鸣" };
+        public readonly string[] SkillDescriptions = { "低穿透声波 · 击晕飞虫", "高穿透震波 · 仅地面", "吸收攻击 · 声波反击" };
         public readonly string[] SectorNames = { "01 / 接驳平台", "02 / 冷却中庭", "03 / 虫巢回收站" };
         CharacterController controller;
         AudioSource sound;
@@ -61,6 +62,7 @@ namespace SlugWhitebox
             if(!pickupSound)pickupSound=MakeFeedback(4);
             if(!killSound)killSound=MakeFeedback(5);
             if(!hitSound)hitSound=MakeFeedback(6);
+            InitializeCombat();
             hud = gameObject.AddComponent<SlugHud>(); hud.game = this; hud.Build();
             BeginRun();
             if (smoke) StartCoroutine(SlugSmoke.Run(this));
@@ -74,8 +76,9 @@ namespace SlugWhitebox
             enemies.Clear();
             foreach(var drop in drops) if(drop.body) Destroy(drop.body.gameObject);
             drops.Clear();
-            maxHealth = tuning.health;
-            maxGlands = tuning.glandMax;
+            ResetNewCombat();
+            maxHealth = stats.maxNoise;
+            maxGlands = stats.maxGlands;
             health = maxHealth; glands = maxGlands;
             for(int i=0;i<4;i++) { heat[i]=0; locked[i]=false; }
             kills=runBiomass=0; sector=-1; runTime=0; settled=false;
@@ -94,8 +97,8 @@ namespace SlugWhitebox
         void Update()
         {
             var kb=Keyboard.current; var mouse=Mouse.current;
-            if(kb != null && kb.rKey.wasPressedThisFrame) BeginRun();
-            if(kb != null && kb.escapeKey.wasPressedThisFrame)
+            if(!smoke && kb != null && kb.rKey.wasPressedThisFrame) BeginRun();
+            if(!smoke && kb != null && kb.escapeKey.wasPressedThisFrame)
             {
                 if(Running) { mode=Mode.Paused; Time.timeScale=0; SetCursor(false); }
                 else if(mode==Mode.Paused) Resume();
@@ -114,7 +117,8 @@ namespace SlugWhitebox
                 Vector2 move=new Vector2((kb.dKey.isPressed?1:0)-(kb.aKey.isPressed?1:0),(kb.wKey.isPressed?1:0)-(kb.sKey.isPressed?1:0));
                 Vector3 direction=(player.right*move.x+player.forward*move.y).normalized;
                 controller.Move((direction*tuning.moveSpeed + Vector3.down*4)*Time.deltaTime);
-                if(mouse.rightButton.wasPressedThisFrame) CastSkill();
+                if(mouse.rightButton.wasPressedThisFrame) CastWeaponSkill();
+                if(kb.qKey.wasPressedThisFrame) CastSkill();
                 if(mouse.leftButton.isPressed) Fire();
                 if(kb.digit1Key.wasPressedThisFrame) SelectWeapon(0);
                 if(kb.digit2Key.wasPressedThisFrame) SelectWeapon(1);
@@ -136,90 +140,48 @@ namespace SlugWhitebox
 
         public void TickResources(float dt)
         {
-            glands=Mathf.Min(maxGlands,glands+tuning.glandRegen*dt);
-            for(int i=0;i<4;i++)
-            {
-                // A brief delay after a shot makes sustained fire reach overheat.
-                if(i!=weapon || Time.time > shotAt+.15f) heat[i]=Mathf.Max(0,heat[i]-tuning.heatCoolRate*dt);
-                if(locked[i] && heat[i]<=tuning.overheatRecovery) locked[i]=false;
-            }
+            glands=stats.Glands; maxGlands=stats.maxGlands;
+            maxHealth=stats.maxNoise; health=maxHealth-stats.Noise;
         }
 
+        // Q 释放选中的声腺技能；实际扣费、冷却和命中由 NGJ 模块负责。
         public bool CastSkill()
         {
             if(!Running) return false;
-            int cost=tuning.skillCosts[skill];
-            if(glands+.001f < cost) { Message("声腺不足 · 需要 "+cost+"，击杀拾取或等待回复",2); hud.GlandFlash(false); return false; }
-            glands-=cost; hud.GlandFlash(false);
-            int tagged=0;
-            foreach(var enemy in enemies)
-            {
-                if(!enemy || enemy.dead) continue;
-                Vector3 vector=enemy.AimPoint-view.transform.position;
-                float range=skill==0?tuning.skillRange:skill==1?12:10;
-                if(vector.magnitude>range || (skill==0 && Vector3.Angle(view.transform.forward,vector)>48)) continue;
-                if(!ClearLine(view.transform.position,enemy.AimPoint)) continue;
-                enemy.ApplySkill(skill); tagged++;
-            }
-            Pulse(player.position+Vector3.up*.8f,skill==0?tuning.skillRange:skill==1?12:10,Color.white,.5f);
-            Play(skillSounds[skill],.65f);
-            Message(SkillNames[skill]+"  −"+cost+" 声腺 · 影响 "+tagged+" 只",2.2f);
-            return true;
+            bool ok=runner.TryCast(glandSkills[skill]);
+            if(!ok) Message("声腺不足、技能冷却或共鸣尚未结束",2);
+            return ok;
         }
 
         public void SelectWeapon(int index)
         {
             weapon=index;
+            weapons.Equip(weaponDefinitions[index]);
             for(int i=0;i<weaponModels.Length;i++) if(weaponModels[i]) weaponModels[i].SetActive(i==index);
         }
 
         public bool Fire(bool bypassInterval=false)
         {
-            if(!Running || locked[weapon] || (!bypassInterval && Time.time<shotAt)) return false;
-            shotAt=Time.time+tuning.fireIntervals[weapon];
-            heat[weapon]=Mathf.Min(100,heat[weapon]+tuning.heatPerShot[weapon]);
-            if(heat[weapon]>=100) { locked[weapon]=true; Message("武器过热 · 切换武器继续输出",2); }
+            if(!Running || !weapons.TryFire()) return false;
             recoil=weapon==1?1.5f:weapon==2?1.8f:1;
             var weaponView=weaponModels[weapon].GetComponent<SlugWeaponView>();
             if(weaponView)weaponView.Fire();
-            Play(fireSounds.Length>weapon?fireSounds[weapon]:null,weapon==0?.28f:.42f);
-            if(weapon==3)
+            Play(fireSounds[weapon],.3f);
+            Vector3 start=view.transform.TransformPoint(.17f,-.14f,.88f);
+            if(!weaponDefinitions[weapon].projectilePrefab)
             {
-                SlugEnemy nearest=null; float distance=3.2f;
-                foreach(var e in enemies)
-                {
-                    if(!e || e.dead) continue;
-                    Vector3 diff=e.AimPoint-view.transform.position;
-                    if(diff.magnitude<distance && Vector3.Angle(view.transform.forward,diff)<65 && ClearLine(view.transform.position,e.AimPoint)) {nearest=e;distance=diff.magnitude;}
-                }
-                if(nearest) nearest.Hit(tuning.weaponDamage[weapon]);
-                return true;
+                Vector3 end=view.transform.position+view.transform.forward*weaponDefinitions[weapon].range;
+                if(Physics.Raycast(view.transform.position,view.transform.forward,out var hit,weaponDefinitions[weapon].range,(1<<0)|(1<<8),QueryTriggerInteraction.Ignore)) end=hit.point;
+                Trail(start,end,Color.cyan,.08f);
             }
-            int pellets=weapon==2?8:1;
-            for(int i=0;i<pellets;i++)
-            {
-                Vector3 dir=view.transform.forward;
-                if(weapon==2) dir=(dir+view.transform.right*UnityEngine.Random.Range(-.065f,.065f)+view.transform.up*UnityEngine.Random.Range(-.05f,.05f)).normalized;
-                Vector3 end=view.transform.position+dir*100;
-                if(Physics.Raycast(view.transform.position,dir,out RaycastHit hit,100,(1<<0)|(1<<8),QueryTriggerInteraction.Ignore))
-                {
-                    end=hit.point;
-                    var enemy=hit.collider.GetComponentInParent<SlugEnemy>();
-                    if(enemy) enemy.Hit(tuning.weaponDamage[weapon]);
-                    Spark(hit.point,enemy?cyanMaterial:orangeMaterial);
-                }
-                Trail(weaponView&&weaponView.muzzle?weaponView.muzzle.position:view.transform.TransformPoint(.17f,-.14f,.88f),end,Color.white,.075f);
-            }
-            Vector3 muzzlePoint=weaponView&&weaponView.muzzle?view.transform.InverseTransformPoint(weaponView.muzzle.position):new Vector3(.17f,-.14f,.88f);
-            var muzzle=Visual(PrimitiveType.Sphere,view.transform,muzzlePoint,Vector3.one*(weapon==2?.17f:.1f),orangeMaterial);
-            Destroy(muzzle,.045f);
+            var flash=Visual(PrimitiveType.Sphere,null,start,Vector3.one*.12f,orangeMaterial);Destroy(flash,.05f);
             return true;
         }
 
         void UpdateFlow()
         {
             int next=sector+1;
-            if(Remaining==0 && next<3 && player.position.z >= (next==0?3:next*30+1)) ActivateSector(next);
+            if(!smoke && Remaining==0 && next<3 && player.position.z >= (next==0?3:next*30+1)) ActivateSector(next);
             if(sector==2 && Remaining==0 && Vector3.Distance(player.position,exit.position)<3.5f) EndRun("回收完成 / 任务成功");
         }
 
@@ -233,7 +195,7 @@ namespace SlugWhitebox
                 var marker=available[i%available.Length];
                 Vector3 pos=marker.transform.position;
                 if(UnityEngine.AI.NavMesh.SamplePosition(pos,out var hit,3,UnityEngine.AI.NavMesh.AllAreas)) pos=hit.position;
-                var go=new GameObject("虫族_"+(i+1)); go.transform.position=pos;
+                var go=Instantiate(enemyPrefabs[Mathf.Clamp(marker.kind,0,2)],pos,Quaternion.identity).gameObject;
                 var e=go.AddComponent<SlugEnemy>(); e.Initialize(this,marker.kind); enemies.Add(e);
             }
             Message(SectorNames[index]+" · 清除虫族 "+count+" 只",4);
@@ -257,7 +219,7 @@ namespace SlugWhitebox
         {
             var item=new GameObject("声腺 + 生物质"); item.layer=10; item.transform.position=position;
             Visual(PrimitiveType.Cube,item.transform,Vector3.zero,Vector3.one*.4f,cyanMaterial);
-            var d=new Drop{body=item.transform,origin=position,gland=tuning.glandDrop,bio=tuning.biomassDrop};
+            var d=new Drop{body=item.transform,origin=position,gland=1,bio=tuning.biomassDrop};
             drops.Add(d); return d;
         }
         void UpdateDrops(float dt)
@@ -275,23 +237,16 @@ namespace SlugWhitebox
         }
         public void Collect(int gland,int bio)
         {
-            float actual=Mathf.Min(gland,maxGlands-glands);
-            glands=Mathf.Min(maxGlands,glands+gland); runBiomass+=bio;
+            float before=stats.Glands; stats.AddGland(gland); runBiomass+=bio;
             hud.GlandFlash(true); Play(pickupSound,.35f);
-            Message("摄入 +"+actual.ToString("0")+" 声腺 / +"+bio+" 生物质"+(actual<gland?" · 溢出丢弃":""),1.7f);
+            Message("摄入 +"+(stats.Glands-before).ToString("0")+" 声腺 / +"+bio+" 生物质",1.7f);
         }
 
         public void Hurt(float amount)
         {
-            if(!Running) return;
-            health=Mathf.Max(0,health-amount); damageUntil=Time.time+.3f;
-            if(health<=0)
-            {
-                EndRun("死亡");
-                view.transform.localPosition=Vector3.up*.5f;
-                if(!smoke)StartCoroutine(RestartAfterDeath(runGeneration));
-            }
+            if(Running) stats.AddNoise(amount);
         }
+
         public void SpawnSpit(Vector3 from,Vector3 target) { StartCoroutine(Spit(from,target)); }
         IEnumerator Spit(Vector3 from,Vector3 target)
         {
@@ -317,7 +272,9 @@ namespace SlugWhitebox
         {
             if(settled) return;
             Time.timeScale=1;settled=true;resultTitle=title;mode=Mode.Result;SetCursor(false);
-            foreach(var e in enemies) if(e && e.agent.isOnNavMesh) e.agent.isStopped=true;
+            foreach(var e in enemies) if(e && e.agent && e.agent.isOnNavMesh) e.agent.isStopped=true;
+            foreach(var e in enemies) if(e && e.combat) e.combat.enabled=false;
+            runner.Cancel(); stats.enabled=false; ClearEffects();
         }
         IEnumerator RestartAfterDeath(int generation)
         {
@@ -336,7 +293,7 @@ namespace SlugWhitebox
             var go=GameObject.CreatePrimitive(type); go.layer=2;
             if(parent) go.transform.SetParent(parent,false);
             go.transform.localPosition=position; go.transform.localScale=scale;
-            Destroy(go.GetComponent<Collider>()); go.GetComponent<Renderer>().sharedMaterial=material;
+            go.GetComponent<Collider>().enabled=false; Destroy(go.GetComponent<Collider>()); go.GetComponent<Renderer>().sharedMaterial=material;
             return go;
         }
         void Spark(Vector3 point,Material mat) { var go=Visual(PrimitiveType.Sphere,null,point,Vector3.one*.14f,mat);Destroy(go,.15f); }

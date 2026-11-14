@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bee4550a6c7c043449cbfb6cf4c80d7b, type: 3}
+  m_Name: BaoMing
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.WeaponDefinition
+  type: 3
+  displayName: "\u7206\u9E23\u4F53"
+  fireInterval: 1.2
+  selfNoise: 25
+  targetNoise: 85
+  penetration: 2
+  range: 35
+  pelletCount: 1
+  spreadAngle: 0
+  maxTargetsPerPellet: 1
+  projectilePrefab: {fileID: 332814560266958788, guid: 1b0874b0b719eea42b3c8f01bb66ec50, type: 3}
+  projectileSpeed: 15
+  skill: {fileID: 11400000, guid: 6943069367cd5df40a5624c3ac27afcd, type: 2}
