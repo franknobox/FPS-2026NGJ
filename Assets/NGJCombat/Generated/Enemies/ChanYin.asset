@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2fe48e2f8ba79408fe9a7a66c2e70b, type: 3}
+  m_Name: ChanYin
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyDefinition
+  kind: 0
+  displayName: "\u98A4\u97F3\u866B"
+  description: "\u5927\u91CF\u4F4E\u8D28\u654C\u4EBA\uFF0C\u9A9A\u6270\uFF1B\u98DE\u884C\u3001\u8F83\u5FEB\u3001\u96BE\u4EE5\u547D\u4E2D\uFF1B\u88AB\u51FB\u6655\u65F6\u5760\u843D\u5730\u9762\u3002\u9AD8\u9891\u3001\u4F4E\u4F24\u5BB3\u95F4\u9699\u653B\u51FB\u3002"
+  quantity: 0
+  maxNoise: 35
+  armor: 0
+  weakPointArmor: 0
+  flying: 1
+  moveSpeed: 5
+  flightHeight: 3
+  fallsWhenStunned: 1
+  exposeDuringAttack: 0
+  exposeDuringStun: 1
+  attackMode: 0
+  attackNoise: 3
+  attackPenetration: 1
+  attackRange: 12
+  detectionRange: 30
+  windup: 0.4
+  attackInterval: 0.6
+  attackDuration: 0.3
+  beamDuration: 2
+  beamTickInterval: 0.3

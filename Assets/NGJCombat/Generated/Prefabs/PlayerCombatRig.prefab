@@ -1,0 +1,129 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4601358586434643038
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8897561332188490007}
+  m_Layer: 0
+  m_Name: CastOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8897561332188490007
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4601358586434643038}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6675041414654079646}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7177673872247564346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6675041414654079646}
+  - component: {fileID: 9198201512999374524}
+  - component: {fileID: 8229641999871360465}
+  - component: {fileID: 1551031877569011556}
+  m_Layer: 2
+  m_Name: PlayerCombatRig
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6675041414654079646
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7177673872247564346}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8897561332188490007}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9198201512999374524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7177673872247564346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 001f049fca941ef478c4a0a138d3dfa6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.PlayerCombatStats
+  team: 0
+  maxNoise: 100
+  currentNoise: 0
+  armor: 0
+  weakPointArmor: 0
+  airborne: 0
+  underPenetrationMultiplier: 0.25
+  armorBlocksEffects: 1
+  deathAtNoiseLimit: 1
+  exposeWeakPointWhenStunned: 1
+  weakPointOpen: 0
+  maxGlands: 2
+  glands: 2
+  glandRegenPerSecond: 0
+  noiseDecayPerSecond: 0
+  noiseDecayDelay: 1
+--- !u!114 &8229641999871360465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7177673872247564346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b833a411ea3d13b4cb57ed060aef6bc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.SkillRunner
+  owner: {fileID: 9198201512999374524}
+  castOrigin: {fileID: 8897561332188490007}
+--- !u!114 &1551031877569011556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7177673872247564346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d7ae6c3acd7b5a4c83eeec5d18abce8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.CombatWeaponController
+  owner: {fileID: 9198201512999374524}
+  skills: {fileID: 8229641999871360465}
+  fireOrigin: {fileID: 8897561332188490007}
+  equipped: {fileID: 11400000, guid: a35ce0624c62a80478b67e6ea636209d, type: 2}
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
