@@ -1,0 +1,26 @@
+[
+  {
+    "path": "Assets/FPS Engine/Models/Weapons/RifleRig.fbx",
+    "bytes": 4513564,
+    "sha256": "3b77f71ddd2d29267ee7710f0514abbd5fb9e12c77d85859a2c320b86bcaee50",
+    "source": "https://media.githubusercontent.com/media/franknobox/FPS-2026NGJ/HEAD/Assets/FPS%20Engine/Models/Weapons/RifleRig.fbx"
+  },
+  {
+    "path": "Assets/FPS Engine/Models/Weapons/Revolver.fbx",
+    "bytes": 4445612,
+    "sha256": "bf8785deb536d922791367a7af96d393baa00de4c41fd433cb53b85a7c47ce70",
+    "source": "https://media.githubusercontent.com/media/franknobox/FPS-2026NGJ/HEAD/Assets/FPS%20Engine/Models/Weapons/Revolver.fbx"
+  },
+  {
+    "path": "Assets/FPS Engine/Models/Weapons/Shotgun.fbx",
+    "bytes": 5160812,
+    "sha256": "729d13633c5f8c2bd5caa996baaacea8c3ed45ab9152e362ba930a636b4775fb",
+    "source": "https://media.githubusercontent.com/media/franknobox/FPS-2026NGJ/HEAD/Assets/FPS%20Engine/Models/Weapons/Shotgun.fbx"
+  },
+  {
+    "path": "Assets/FPS Engine/Models/Weapons/KatanaRig.fbx",
+    "bytes": 4866284,
+    "sha256": "d3f891bb3407974780a6cfeddadd25d7301e4431a39ebb72469823451722dbca",
+    "source": "https://media.githubusercontent.com/media/franknobox/FPS-2026NGJ/HEAD/Assets/FPS%20Engine/Models/Weapons/KatanaRig.fbx"
+  }
+]
