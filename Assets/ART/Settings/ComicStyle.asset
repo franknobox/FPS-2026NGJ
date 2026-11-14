@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66a90d03f6838da4889fd0b31a9634ce, type: 3}
+  m_Name: ComicStyle
+  m_EditorClassIdentifier: Assembly-CSharp::ArtTools.ComicStyleSettings
+  shadowColor: {r: 0.28, g: 0.32, b: 0.4, a: 1}
+  midColor: {r: 0.68, g: 0.7, b: 0.75, a: 1}
+  shadowThreshold: 0.22
+  lightThreshold: 0.65
+  bandSoftness: 0.035
+  ambientStrength: 0.65
+  ambientFloor: 0.12
+  saturation: 1.12
+  contrast: 1.1
+  colorLevels: 0
+  specularStrength: 0.2
+  specularThreshold: 0.45
+  normalStrength: 0.6
+  hatchStrength: 0.05
+  hatchScale: 70
+  enableInk: 1
+  inkColor: {r: 0.015, g: 0.012, b: 0.018, a: 1}
+  inkWidth: 1.2
+  depthThreshold: 0.015
+  normalThreshold: 0.32
+  normalStrengthInk: 0.65
+  normalFadeDistance: 30
+  autoStyleNewArtMaterials: 1
+  rendererBindings:
+  - pipeline: {fileID: 11400000, guid: 4b83569d67af61e458304325a23e5dfd, type: 2}
+    originalRenderers:
+    - {fileID: 11400000, guid: f288ae1f4751b564a96ac7587541f7a2, type: 2}
+  - pipeline: {fileID: 11400000, guid: 5e6cbd92db86f4b18aec3ed561671858, type: 2}
+    originalRenderers:
+    - {fileID: 11400000, guid: 65bc7dbf4170f435aa868c779acfb082, type: 2}
+  autoStyleExclusions: []

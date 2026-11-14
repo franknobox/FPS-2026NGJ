@@ -14,6 +14,8 @@
 # See: https://github.com/github/gitignore/tree/main/Global
 #
 .utmp/
+__pycache__/
+*.py[cod]
 /Assets/_Recovery/
 /Assets/_Recovery.meta
 /[Ll]ibrary/
@@ -68,6 +70,9 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+
+# Keep raw GLB inputs outside the game project; use exported FBX assets.
+/Assets/ART/**/*.[gG][lL][bB]
 
 # Unity3D generated meta files
 *.pidb.meta
