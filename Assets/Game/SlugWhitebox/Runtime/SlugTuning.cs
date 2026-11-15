@@ -1,0 +1,39 @@
+using UnityEngine;
+
+namespace SlugWhitebox
+{
+    [CreateAssetMenu(menuName = "循声虫族/白盒参数")]
+    public class SlugTuning : ScriptableObject
+    {
+        [Header("移动与视角（战斗数值在 NGJ 配置与 PlayerCombatStats 调整）")]
+        public float moveSpeed = 4f;
+        public float mouseSensitivity = .095f;
+        [HideInInspector] public float health = 120;
+        [Header("声腺：数量、回复、每只敌人掉落")]
+        [HideInInspector] public float glandMax = 100;
+        [HideInInspector] public float glandRegen = 2.5f;
+        [HideInInspector] public int glandDrop = 18;
+        [Header("拾取与生物质")]
+        public int biomassDrop = 10;
+        public float pickupRadius = 4;
+        [Header("技能：裂甲脉冲 / 迟滞共振 / 震荡爆鸣")]
+        [HideInInspector] public int[] skillCosts = { 25, 35, 45 };
+        [HideInInspector] public float vulnerabilityMultiplier = 2;
+        [HideInInspector] public float vulnerabilityDuration = 5;
+        [HideInInspector] public float slowDuration = 6;
+        [HideInInspector] public float staggerDuration = 2.5f;
+        [HideInInspector] public float skillRange = 16;
+        [Header("武器：中频步枪 / 高频穿刺 / 低频霰弹 / 骨刃")]
+        [HideInInspector] public float[] weaponDamage = { 18, 75, 12, 48 };
+        [HideInInspector] public float[] fireIntervals = { .115f, .8f, .7f, .45f };
+        [HideInInspector] public float[] heatPerShot = { 10, 38, 34, 0 };
+        [HideInInspector] public float heatCoolRate = 23;
+        [HideInInspector] public float overheatRecovery = 30;
+        [Header("敌人：疾行虫 / 甲壳虫 / 吐蚀虫")]
+        [HideInInspector] public float[] enemyHealth = { 78, 185, 100 };
+        [HideInInspector] public float[] enemySpeed = { 3.6f, 2.25f, 2.7f };
+        [Header("分区敌人数量")]
+        public int[] sectorCounts = { 8, 11, 14 };
+        [HideInInspector] public float enemyDamage = 12;
+    }
+}

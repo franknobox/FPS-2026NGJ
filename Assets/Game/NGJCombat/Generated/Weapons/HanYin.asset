@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bee4550a6c7c043449cbfb6cf4c80d7b, type: 3}
+  m_Name: HanYin
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.WeaponDefinition
+  type: 2
+  knockback: 5.5
+  muzzleEffect: {fileID: 120045276232232140, guid: ab122c2cece46f1429601d153073c452, type: 3}
+  impactEffect: {fileID: 1164739214932481323, guid: 522c5b34040ee49499afad7f28231372, type: 3}
+  bulletTrail: {fileID: 1016550942791438151, guid: 9c30f0bf3c1dbc247b22805762d432f7, type: 3}
+  displayName: "\u64BC\u97F3\u4F53"
+  fireInterval: 0.7
+  selfNoise: 15
+  targetNoise: 14
+  penetration: 0
+  range: 12
+  pelletCount: 8
+  spreadAngle: 3
+  maxTargetsPerPellet: 1
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 15
+  skill: {fileID: 11400000, guid: 9b716428be0942944abad18ece89bc57, type: 2}

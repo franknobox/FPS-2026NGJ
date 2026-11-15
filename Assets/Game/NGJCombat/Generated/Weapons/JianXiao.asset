@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bee4550a6c7c043449cbfb6cf4c80d7b, type: 3}
+  m_Name: JianXiao
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.WeaponDefinition
+  type: 0
+  knockback: 5
+  muzzleEffect: {fileID: 8408237813082060323, guid: 52a08a0a34eb87f4dbfab3b5ae7af6ed, type: 3}
+  impactEffect: {fileID: 7058462416532053759, guid: 3fd07682daddd254ba1266d13124f289, type: 3}
+  bulletTrail: {fileID: 5544225469153981361, guid: 7184ec57d36213547b86fd5ee22fd798, type: 3}
+  displayName: "\u5C16\u5578\u4F53"
+  fireInterval: 0.9
+  selfNoise: 20
+  targetNoise: 60
+  penetration: 2
+  range: 100
+  pelletCount: 1
+  spreadAngle: 0
+  maxTargetsPerPellet: 32
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 15
+  skill: {fileID: 11400000, guid: 32eee1b5d567da94b96b8c59cfe02930, type: 2}

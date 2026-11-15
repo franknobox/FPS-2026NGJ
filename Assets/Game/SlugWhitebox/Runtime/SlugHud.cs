@@ -1,0 +1,144 @@
+using NGJ.Combat;
+using UnityEngine;
+using UnityEngine.UI;
+namespace SlugWhitebox
+{
+    // 数据直接读取统一战斗组件；HUD 不维护自己的资源和技能计时。
+    public sealed class SlugHud : MonoBehaviour
+    {
+        static readonly Color Ink=ClientFlow.ClientUI.Ink, Gold=ClientFlow.ClientUI.Gold, Cream=ClientFlow.ClientUI.Cream, Muted=ClientFlow.ClientUI.Muted;
+        static readonly Color Panel=new Color(.13f,.12f,.095f,.94f), Red=new Color(.55f,.065f,.035f);
+        public SlugGame game; public Text counter;
+        Font font;Text crosshair,notice,noiseValue,glandValue,resourceHint,hitConfirmation;
+        [Range(5,60), Tooltip("资源与技能 HUD 刷新频率；命中反馈仍逐帧显示。") ] public float refreshRate=20;
+        float nextRefresh;
+        Image noiseFill;RectTransform noiseCost,selectionArrow;
+        readonly HudShape[] weaponShapes=new HudShape[4],skillShapes=new HudShape[3];
+        readonly Text[] weaponValues=new Text[4],weaponNames=new Text[4],weaponKeys=new Text[4],skillValues=new Text[3],skillNames=new Text[3];
+        readonly Vector2[] skillPositions={new Vector2(-27,47),new Vector2(35,0),new Vector2(-27,-47)};
+        public void Build()
+        {
+            font=Font.CreateDynamicFontFromOSFont(new[]{"Microsoft YaHei","SimHei","Arial"},24);
+            var canvas=new GameObject("战斗HUD",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));canvas.transform.SetParent(transform,false);
+            canvas.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;
+            // 保证窄屏、超宽屏下参考区域完整可见，不因按宽高折中缩放裁掉边缘。
+            var scaler=canvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
+            var map=Node(canvas.transform,"小地图",new Vector2(0,1),new Vector2(114,-110),new Vector2(180,180));
+            // 独立批次，雷达刷新不触发整张 HUD 的 Canvas 重建。
+            map.gameObject.AddComponent<Canvas>();
+            map.gameObject.AddComponent<UIMinimap>().Bind(game.player,game.view,game);
+            counter=Label(canvas.transform,"区域与敌情",new Vector2(0,1),new Vector2(529,-42),new Vector2(610,44),20,Cream,TextAnchor.MiddleLeft);
+            notice=Label(canvas.transform,"关卡提示",new Vector2(.5f,1),new Vector2(0,-110),new Vector2(740,58),19,Cream);
+            crosshair=Label(canvas.transform,"准星",new Vector2(.5f,.5f),Vector2.zero,new Vector2(650,100),26,Cream);
+            hitConfirmation=Label(canvas.transform,"真实命中反馈",new Vector2(.5f,.5f),new Vector2(0,-48),new Vector2(480,32),19,Gold);
+            // 底部为两行操作提示预留空间，并保留屏幕边缘留白。
+            var dock=Node(canvas.transform,"底部战斗信息",new Vector2(.5f,0),new Vector2(0,158),new Vector2(690,180));
+            var meter=Frame(dock,"噪值槽",new Vector2(-285,0),new Vector2(38,138),new Color(.08f,.07f,.05f,.65f));
+            noiseFill=Box(meter,"噪值填充",Vector2.zero,new Vector2(26,126),Gold);
+            var fr=(RectTransform)noiseFill.transform;fr.pivot=new Vector2(.5f,0);fr.anchoredPosition=new Vector2(0,-63);
+            for(int i=1;i<10;i++)Box(meter,"计量刻度",new Vector2(0,-63+i*12.6f),new Vector2(26,2),Ink);
+            noiseCost=(RectTransform)Box(meter,"当前技能消耗线",Vector2.zero,new Vector2(46,3),Cream).transform;
+            Label(dock,"噪值标题",new Vector2(.5f,.5f),new Vector2(-285,84),new Vector2(82,26),17,Gold).text="噪值";
+            noiseValue=Label(dock,"噪值数值",new Vector2(.5f,.5f),new Vector2(-285,-85),new Vector2(94,26),16,Cream);
+            Label(dock,"武器技能标题",new Vector2(.5f,.5f),new Vector2(-38,84),new Vector2(415,26),16,Muted).text="武器技能  /  右键释放";
+            for(int i=0;i<4;i++)
+            {
+                var pos=new Vector2(-188+i*100,19);
+                weaponShapes[i]=Shape(dock,"武器技能槽 "+(i+1),pos,new Vector2(94,82),6,Panel);
+                weaponValues[i]=Label(weaponShapes[i].transform,"冷却与状态",new Vector2(.5f,.5f),Vector2.zero,new Vector2(80,36),22,Cream);
+                weaponKeys[i]=Label(dock,"武器切换键",new Vector2(.5f,.5f),pos+new Vector2(0,48),new Vector2(70,22),14,Muted);weaponKeys[i].text=(i+1).ToString();
+                weaponNames[i]=Label(dock,"武器名",new Vector2(.5f,.5f),pos+new Vector2(0,-51),new Vector2(98,28),16,Cream);
+            }
+            var glands=Frame(dock,"声腺底框",new Vector2(-38,-65),new Vector2(410,45),Panel);
+            glandValue=Label(glands,"声腺数量",new Vector2(.5f,.5f),new Vector2(-110,0),new Vector2(164,35),23,Gold,TextAnchor.MiddleLeft);
+            resourceHint=Label(glands,"技能消耗",new Vector2(.5f,.5f),new Vector2(88,0),new Vector2(206,35),15,Cream,TextAnchor.MiddleRight);
+            var wheel=Shape(dock,"声腺技能轮盘",new Vector2(260,0),new Vector2(178,178),48,Panel);
+            for(int i=0;i<3;i++)
+            {
+                skillShapes[i]=Shape(wheel.transform,"声腺技能 "+i,skillPositions[i],new Vector2(58,58),40,Panel);
+                skillValues[i]=Label(skillShapes[i].transform,"状态",new Vector2(.5f,.5f),new Vector2(0,10),new Vector2(52,24),17,Cream);
+                skillNames[i]=Label(skillShapes[i].transform,"技能名称",new Vector2(.5f,.5f),new Vector2(0,-12),new Vector2(56,22),14,Cream);
+            }
+            selectionArrow=(RectTransform)Shape(wheel.transform,"当前技能箭头",new Vector2(-54,0),new Vector2(22,22),3,Gold).transform;
+            Label(dock,"轮盘按键提示",new Vector2(.5f,.5f),new Vector2(260,-114),new Vector2(220,44),14,Muted).text="Z / X / C 选择\nQ 释放";
+            Refresh();
+        }
+        static RectTransform Node(Transform parent,string name,Vector2 anchor,Vector2 pos,Vector2 size)
+        {
+            var rt=(RectTransform)new GameObject(name,typeof(RectTransform)).transform;rt.SetParent(parent,false);rt.anchorMin=rt.anchorMax=anchor;rt.pivot=new Vector2(.5f,.5f);rt.anchoredPosition=pos;rt.sizeDelta=size;return rt;
+        }
+        static Image Box(Transform parent,string name,Vector2 pos,Vector2 size,Color tint)
+        {
+            var rt=Node(parent,name,new Vector2(.5f,.5f),pos,size);var image=rt.gameObject.AddComponent<Image>();image.color=tint;image.raycastTarget=false;return image;
+        }
+        static RectTransform Frame(Transform parent,string name,Vector2 pos,Vector2 size,Color tint)
+        {
+            var rt=(RectTransform)Box(parent,name,pos,size,Ink).transform;Box(rt,"内底",Vector2.zero,size-Vector2.one*10,tint);return rt;
+        }
+        static HudShape Shape(Transform parent,string name,Vector2 pos,Vector2 size,int sides,Color tint)
+        {
+            var rt=Node(parent,name,new Vector2(.5f,.5f),pos,size);var shape=rt.gameObject.AddComponent<HudShape>();shape.sides=sides;shape.border=4;shape.color=tint;shape.raycastTarget=false;shape.SetVerticesDirty();return shape;
+        }
+        Text Label(Transform parent,string name,Vector2 anchor,Vector2 pos,Vector2 size,int fontSize,Color tint,TextAnchor align=TextAnchor.MiddleCenter)
+        {
+            var rt=Node(parent,name,anchor,pos,size);var label=rt.gameObject.AddComponent<Text>();label.font=font;label.fontSize=fontSize;label.color=tint;label.alignment=align;label.raycastTarget=false;label.horizontalOverflow=HorizontalWrapMode.Wrap;label.verticalOverflow=VerticalWrapMode.Overflow;
+            var outline=rt.gameObject.AddComponent<Outline>();outline.effectColor=Ink;outline.effectDistance=new Vector2(1,-1);return label;
+        }
+        public void Refresh()
+        {
+            if(!counter || !game || !game.stats)return;
+            var g=game;var stats=g.stats;
+            counter.text=$"区域 {Mathf.Max(0,g.sector+1):00} / {(g.levelFlow?g.levelFlow.AreaCount:3):00}    剩余 {g.Remaining}    击杀 {g.kills}";
+            notice.text=stats.IsAbsorbing?$"共鸣吸收中 · {stats.AbsorbedNoise:0}":Time.time<g.noticeUntil?g.notice:g.levelFlow?g.levelFlow.ProgressText:"清场后推进至 EXIT";
+            crosshair.text=g.Running?(Time.time<g.hitUntil?"×":"+"):g.levelFlow?"":g.mode==SlugGame.Mode.Result?g.resultTitle:g.mode==SlugGame.Mode.Paused?"已暂停 / Esc 继续":"";
+            crosshair.color=Time.time<g.damageUntil?Red:Time.time<g.hitUntil?g.criticalHit?new Color(1,.3f,.15f):Gold:Cream;
+            crosshair.fontSize=Time.time<g.hitUntil?38:26;
+            hitConfirmation.text=g.Running && Time.time<g.hitLabelUntil?g.hitLabel:"";
+            float noise=stats.maxNoise>0?Mathf.Clamp01(stats.Noise/stats.maxNoise):0;
+            ((RectTransform)noiseFill.transform).sizeDelta=new Vector2(26,126*noise);noiseFill.enabled=noise>0;noiseFill.color=Color.Lerp(new Color(.78f,.65f,.43f),Red,noise);
+            noiseValue.text=$"{stats.Noise:0}/{stats.maxNoise:0}";glandValue.text=$"声腺 {stats.Glands:0.0} / {stats.maxGlands:0}";
+            var equipped=g.weapons?g.weapons.equipped:null;var weaponSkill=equipped?equipped.skill:null;
+            noiseCost.gameObject.SetActive(weaponSkill && weaponSkill.resource==ResourceType.Noise && weaponSkill.cost<=stats.maxNoise);
+            if(weaponSkill && stats.maxNoise>0)noiseCost.anchoredPosition=new Vector2(0,-63+126*Mathf.Clamp01(weaponSkill.cost/stats.maxNoise));
+            resourceHint.text=weaponSkill?$"右键消耗 {weaponSkill.cost:0.#} {(weaponSkill.resource==ResourceType.Noise?"噪值":"声腺")}":"当前武器无技能";
+            for(int i=0;i<4;i++)
+            {
+                int index=g.weaponLoadout!=null && i<g.weaponLoadout.Length?g.weaponLoadout[i]:-1;
+                var definition=index>=0 && g.weaponDefinitions!=null && index<g.weaponDefinitions.Length?g.weaponDefinitions[index]:null;
+                weaponShapes[i].gameObject.SetActive(definition);weaponNames[i].gameObject.SetActive(definition);weaponKeys[i].gameObject.SetActive(definition);if(!definition)continue;
+                bool active=index==g.weapon;weaponShapes[i].color=active?Gold:Panel;weaponValues[i].color=active?Ink:Cream;
+                weaponValues[i].GetComponent<Outline>().enabled=!active;
+                weaponNames[i].text=definition.displayName;weaponNames[i].color=active?Gold:Muted;weaponKeys[i].color=active?Gold:Muted;weaponValues[i].text=SkillStatus(definition.skill);
+            }
+            for(int i=0;i<3;i++)
+            {
+                var ability=g.glandSkills!=null && i<g.glandSkills.Length?g.glandSkills[i]:null;
+                bool selected=i==g.skill,ready=ability && g.runner && g.runner.CanCast(ability);
+                skillShapes[i].color=selected?Gold:Panel;skillNames[i].color=selected?Ink:Muted;skillValues[i].color=selected?Ink:ready?Cream:Muted;
+                skillNames[i].GetComponent<Outline>().enabled=!selected;skillValues[i].GetComponent<Outline>().enabled=!selected;
+                skillNames[i].text=ability?ability.displayName:"未配置";skillValues[i].text=SkillStatus(ability);
+            }
+            var point=skillPositions[Mathf.Clamp(g.skill,0,2)];selectionArrow.anchoredPosition=point*.46f;selectionArrow.localRotation=Quaternion.Euler(0,0,Mathf.Atan2(point.y,point.x)*Mathf.Rad2Deg);
+        }
+        string SkillStatus(SkillDefinition ability)
+        {
+            if(!ability)return "无技能";if(!game.runner)return "未就绪";
+            float remaining=game.runner.CooldownRemaining(ability);if(remaining>0)return Mathf.CeilToInt(remaining).ToString();
+            if(game.stats.IsAbsorbing)return "共鸣中";return game.runner.CanCast(ability)?"就绪":"不足";
+        }
+        void LateUpdate()
+        {
+            if(Time.unscaledTime>=nextRefresh) { nextRefresh=Time.unscaledTime+1/Mathf.Max(5,refreshRate); Refresh(); }
+            else if(game && crosshair)
+            {
+                // 命中准星每帧更新，避免 HUD 降频增加操作反馈延迟。
+                crosshair.text=game.Running?(Time.time<game.hitUntil?"×":"+"):"";
+                crosshair.fontSize=Time.time<game.hitUntil?38:26;
+                crosshair.color=Time.time<game.damageUntil?Red:Time.time<game.hitUntil?game.criticalHit?new Color(1,.3f,.15f):Gold:Cream;
+                hitConfirmation.text=game.Running && Time.time<game.hitLabelUntil?game.hitLabel:"";
+            }
+        }
+        public void GlandFlash(bool gain){Refresh();}
+        void OnDestroy(){if(font)Destroy(font);}
+    }
+}

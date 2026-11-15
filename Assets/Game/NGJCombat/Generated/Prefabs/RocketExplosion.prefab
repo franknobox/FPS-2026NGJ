@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2553012432154727960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2996455300408680587}
+  - component: {fileID: 1582341462350447197}
+  m_Layer: 0
+  m_Name: RocketExplosion
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2996455300408680587
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2553012432154727960}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1582341462350447197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2553012432154727960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f287041a7b3650642b9e60c14abbbe77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.CombatHitbox
+  shape: 0
+  radius: 3
+  halfExtents: {x: 3, y: 2, z: 3}
+  halfAngle: 180
+  lifetime: 0.15
+  speed: 0
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 1049600
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 2226433
+  visualEffect: {fileID: 4883874931472037742, guid: c135897341f21874e8fe3d2c0cbfb96b, type: 3}
+  impactEffect: {fileID: 4810550892884834954, guid: 611b1294c51e1e649811d80af72b9ea5, type: 3}
+  maxTargets: 64

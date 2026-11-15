@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be136850a5972a6459841938bef7229a, type: 3}
+  m_Name: GrenadeSkill
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.SkillDefinition
+  displayName: "\u7206\u9E23\u4F53\xB7\u9ECF\u8D28\u70B8\u5F39"
+  resource: 0
+  cost: 25
+  cooldown: 2
+  effect: 1
+  castEffect: {fileID: 2911661039982158243, guid: 50480a1e98f67274e802427e85cbe9ac, type: 3}
+  activeEffect: {fileID: 0}
+  hitboxPrefab: {fileID: 0}
+  projectilePrefab: {fileID: 2291180316987613700, guid: 49089d0fcedd7704a8a9432e1994d929, type: 3}
+  projectileSpeed: 15
+  hit:
+    knockback: 0
+    source: {fileID: 0}
+    noise: 0
+    penetration: 2
+    stunDuration: 0
+    vulnerabilityDuration: 4
+    vulnerabilityMultiplier: 1.5
+    groundOnly: 0
+    point: {x: 0, y: 0, z: 0}
+    direction: {x: 0, y: 0, z: 0}
+  duration: 2
+  damageMultiplier: 1.5
+  absorbedNoiseMultiplier: 1

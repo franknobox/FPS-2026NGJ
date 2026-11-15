@@ -1,0 +1,766 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "EnergyStation",
+      "label": "能源站",
+      "group": "EnergyStation",
+      "fbx": "Assets/ART/Models/Environment/EnergyStation/EnergyStation.fbx",
+      "materialName": "EnergyStation_Body",
+      "originalTriangles": 50976,
+      "triangles": [
+        20250,
+        10125,
+        4455
+      ],
+      "dimensions": [
+        5.037853479385376,
+        5.0419557094573975,
+        4.033854838460684
+      ],
+      "scale": 5.722370348024896,
+      "reduction": 0.6027542372881356,
+      "surfaceError": [
+        {
+          "max_relative": 0.007776342772981983,
+          "p99_relative": 0.0032274507229135057,
+          "samples": 12918
+        },
+        {
+          "max_relative": 0.018126948160936615,
+          "p99_relative": 0.007423044261004801,
+          "samples": 14298
+        },
+        {
+          "max_relative": 0.05373150768173607,
+          "p99_relative": 0.010903314581626206,
+          "samples": 12565
+        }
+      ]
+    },
+    {
+      "id": "OutpostCommand",
+      "label": "前哨指挥楼",
+      "group": "OutpostCommand",
+      "fbx": "Assets/ART/Models/Environment/OutpostCommand/OutpostCommand.fbx",
+      "materialName": "OutpostCommand_Body",
+      "originalTriangles": 13380,
+      "triangles": [
+        11000,
+        5500,
+        2420
+      ],
+      "dimensions": [
+        7.360784530639648,
+        5.608880996704102,
+        7.999999523162842
+      ],
+      "scale": 9.271490557950663,
+      "reduction": 0.17787742899850523,
+      "surfaceError": [
+        {
+          "max_relative": 8.383031945786709e-07,
+          "p99_relative": 9.745076496803222e-09,
+          "samples": 14865
+        },
+        {
+          "max_relative": 0.012255386275957614,
+          "p99_relative": 0.0028305481281612798,
+          "samples": 16036
+        },
+        {
+          "max_relative": 0.07587432265499292,
+          "p99_relative": 0.012848361463463255,
+          "samples": 13219
+        }
+      ]
+    },
+    {
+      "id": "Bridge",
+      "label": "桥",
+      "group": "Bridge",
+      "fbx": "Assets/ART/Models/Environment/Bridge/Bridge.fbx",
+      "materialName": "Bridge_Body",
+      "originalTriangles": 50258,
+      "triangles": [
+        18000,
+        9000,
+        3960
+      ],
+      "dimensions": [
+        11.99767541885376,
+        5.443492412567139,
+        4.338682209607214
+      ],
+      "scale": 11.430618172537805,
+      "reduction": 0.6418480639898125,
+      "surfaceError": [
+        {
+          "max_relative": 0.0016335823722825119,
+          "p99_relative": 0.0004596504706587224,
+          "samples": 14815
+        },
+        {
+          "max_relative": 0.006107856892485831,
+          "p99_relative": 0.0017796602293951968,
+          "samples": 12752
+        },
+        {
+          "max_relative": 0.01282976485647113,
+          "p99_relative": 0.006931979664112724,
+          "samples": 10232
+        }
+      ]
+    },
+    {
+      "id": "Tower",
+      "label": "塔",
+      "group": "Tower",
+      "fbx": "Assets/ART/Models/Environment/Tower/Tower.fbx",
+      "materialName": "Tower_Body",
+      "originalTriangles": 28925,
+      "triangles": [
+        14000,
+        7000,
+        3080
+      ],
+      "dimensions": [
+        5.512071132659912,
+        4.673579216003418,
+        12.002164778066799
+      ],
+      "scale": 11.144056565449056,
+      "reduction": 0.5159896283491789,
+      "surfaceError": [
+        {
+          "max_relative": 0.0020654070288306753,
+          "p99_relative": 0.0009454877693437012,
+          "samples": 13900
+        },
+        {
+          "max_relative": 0.029854806382816478,
+          "p99_relative": 0.008453681101641387,
+          "samples": 14715
+        },
+        {
+          "max_relative": 0.03330909523181428,
+          "p99_relative": 0.015454994817457608,
+          "samples": 18705
+        }
+      ]
+    },
+    {
+      "id": "Container",
+      "label": "集装箱",
+      "group": "Container",
+      "fbx": "Assets/ART/Models/Environment/Container/Container.fbx",
+      "materialName": "Container_Body",
+      "originalTriangles": 23592,
+      "triangles": [
+        9999,
+        4999,
+        2199
+      ],
+      "dimensions": [
+        2.506566047668457,
+        5.998589515686035,
+        2.8077306747436523
+      ],
+      "scale": 5.603145317764083,
+      "reduction": 0.5761698880976602,
+      "surfaceError": [
+        {
+          "max_relative": 0.0027297926973503645,
+          "p99_relative": 0.0009486509579281813,
+          "samples": 14299
+        },
+        {
+          "max_relative": 0.006379555258094896,
+          "p99_relative": 0.0028692064504019094,
+          "samples": 14994
+        },
+        {
+          "max_relative": 0.026797833272163382,
+          "p99_relative": 0.007828797836380134,
+          "samples": 12390
+        }
+      ]
+    },
+    {
+      "id": "Wall01",
+      "label": "墙体01",
+      "group": "Wall01",
+      "fbx": "Assets/ART/Models/Environment/Wall01/Wall01.fbx",
+      "materialName": "Wall01_Body",
+      "originalTriangles": 49896,
+      "triangles": [
+        10000,
+        5000,
+        2200
+      ],
+      "dimensions": [
+        3.9988330602645874,
+        0.8185561895370483,
+        1.7645083898096345
+      ],
+      "scale": 3.6966321849305843,
+      "reduction": 0.7995831329164662,
+      "surfaceError": [
+        {
+          "max_relative": 0.004354913457785816,
+          "p99_relative": 0.0008868643019466237,
+          "samples": 10970
+        },
+        {
+          "max_relative": 0.006488447157981501,
+          "p99_relative": 0.003047454706279365,
+          "samples": 7072
+        },
+        {
+          "max_relative": 0.01388568454703469,
+          "p99_relative": 0.008099841073881937,
+          "samples": 5672
+        }
+      ]
+    },
+    {
+      "id": "Wall02",
+      "label": "墙体02_转角",
+      "group": "Wall02",
+      "fbx": "Assets/ART/Models/Environment/Wall02/Wall02.fbx",
+      "materialName": "Wall02_Body",
+      "originalTriangles": 49990,
+      "triangles": [
+        12000,
+        6000,
+        2640
+      ],
+      "dimensions": [
+        3.998487710952759,
+        3.414156198501587,
+        2.2213148679293226
+      ],
+      "scale": 4.727204745458503,
+      "reduction": 0.7599519903980796,
+      "surfaceError": [
+        {
+          "max_relative": 0.002125174844762545,
+          "p99_relative": 0.0005678043746107894,
+          "samples": 12139
+        },
+        {
+          "max_relative": 0.004334202551024292,
+          "p99_relative": 0.002310590089015833,
+          "samples": 8824
+        },
+        {
+          "max_relative": 0.012833221753788428,
+          "p99_relative": 0.006538732407571283,
+          "samples": 7144
+        }
+      ]
+    },
+    {
+      "id": "Wall03",
+      "label": "墙体03",
+      "group": "Wall03",
+      "fbx": "Assets/ART/Models/Environment/Wall03/Wall03.fbx",
+      "materialName": "Wall03_Body",
+      "originalTriangles": 49934,
+      "triangles": [
+        10000,
+        5000,
+        2200
+      ],
+      "dimensions": [
+        3.999763607978821,
+        1.365114450454712,
+        1.8539197723730467
+      ],
+      "scale": 3.8211072060491924,
+      "reduction": 0.7997356510593984,
+      "surfaceError": [
+        {
+          "max_relative": 0.00212422001014168,
+          "p99_relative": 0.00046797263953023995,
+          "samples": 11152
+        },
+        {
+          "max_relative": 0.011732463894509982,
+          "p99_relative": 0.0018545916592459194,
+          "samples": 7356
+        },
+        {
+          "max_relative": 0.015117026710424994,
+          "p99_relative": 0.006760874743896716,
+          "samples": 5956
+        }
+      ]
+    },
+    {
+      "id": "Roadblock01",
+      "label": "路障01",
+      "group": "Roadblocks",
+      "fbx": "Assets/ART/Models/Environment/Roadblock01/Roadblock01.fbx",
+      "materialName": "Roadblocks_Body",
+      "originalTriangles": 4380,
+      "triangles": [
+        3500,
+        1750,
+        770
+      ],
+      "dimensions": [
+        3.3067800998687744,
+        0.5584113299846649,
+        0.6561955809593201
+      ],
+      "scale": 6.0,
+      "reduction": 0.2009132420091324,
+      "surfaceError": [
+        {
+          "max_relative": 0.0003341167518507116,
+          "p99_relative": 0.0001564359339285538,
+          "samples": 9500
+        },
+        {
+          "max_relative": 0.001953855027163294,
+          "p99_relative": 0.0011234337688636013,
+          "samples": 7454
+        },
+        {
+          "max_relative": 0.008468598681618074,
+          "p99_relative": 0.002546028402659272,
+          "samples": 6515
+        }
+      ]
+    },
+    {
+      "id": "Roadblock02",
+      "label": "路障02",
+      "group": "Roadblocks",
+      "fbx": "Assets/ART/Models/Environment/Roadblock02/Roadblock02.fbx",
+      "materialName": "Roadblocks_Body",
+      "originalTriangles": 5724,
+      "triangles": [
+        3499,
+        1749,
+        769
+      ],
+      "dimensions": [
+        3.563082456588745,
+        0.6757020950317383,
+        1.2909436697227648
+      ],
+      "scale": 6.0,
+      "reduction": 0.3887141858839972,
+      "surfaceError": [
+        {
+          "max_relative": 0.0011468525145613738,
+          "p99_relative": 0.0005182579011085428,
+          "samples": 8681
+        },
+        {
+          "max_relative": 0.0026382553794390595,
+          "p99_relative": 0.0018580644079807952,
+          "samples": 6006
+        },
+        {
+          "max_relative": 0.014899620651280946,
+          "p99_relative": 0.006065820574857597,
+          "samples": 5100
+        }
+      ]
+    },
+    {
+      "id": "Roadblock03",
+      "label": "路障03",
+      "group": "Roadblocks",
+      "fbx": "Assets/ART/Models/Environment/Roadblock03/Roadblock03.fbx",
+      "materialName": "Roadblocks_Body",
+      "originalTriangles": 3572,
+      "triangles": [
+        3500,
+        1750,
+        770
+      ],
+      "dimensions": [
+        1.474776029586792,
+        2.7888842821121216,
+        0.6240546703338623
+      ],
+      "scale": 6.0,
+      "reduction": 0.02015677491601342,
+      "surfaceError": [
+        {
+          "max_relative": 3.7068231597983267e-08,
+          "p99_relative": 0.0,
+          "samples": 6468
+        },
+        {
+          "max_relative": 0.0019962735580622486,
+          "p99_relative": 0.001034640530964806,
+          "samples": 5345
+        },
+        {
+          "max_relative": 0.008648448770810705,
+          "p99_relative": 0.0033165528897789944,
+          "samples": 4430
+        }
+      ]
+    },
+    {
+      "id": "Roadblock04",
+      "label": "路障04",
+      "group": "Roadblocks",
+      "fbx": "Assets/ART/Models/Environment/Roadblock04/Roadblock04.fbx",
+      "materialName": "Roadblocks_Body",
+      "originalTriangles": 7978,
+      "triangles": [
+        3500,
+        1750,
+        770
+      ],
+      "dimensions": [
+        1.896502435207367,
+        2.8448283672332764,
+        0.826797324293004
+      ],
+      "scale": 6.0,
+      "reduction": 0.561293557282527,
+      "surfaceError": [
+        {
+          "max_relative": 0.0017676785353972337,
+          "p99_relative": 0.0007913211192750572,
+          "samples": 13469
+        },
+        {
+          "max_relative": 0.0042019586571301094,
+          "p99_relative": 0.0021471867924074857,
+          "samples": 8424
+        },
+        {
+          "max_relative": 0.012265128934964844,
+          "p99_relative": 0.0047224024475319365,
+          "samples": 7556
+        }
+      ]
+    },
+    {
+      "id": "Roadblock05",
+      "label": "路障05",
+      "group": "Roadblocks",
+      "fbx": "Assets/ART/Models/Environment/Roadblock05/Roadblock05.fbx",
+      "materialName": "Roadblocks_Body",
+      "originalTriangles": 11159,
+      "triangles": [
+        3499,
+        1749,
+        769
+      ],
+      "dimensions": [
+        3.830411911010742,
+        1.5608521103858948,
+        0.7447658181190491
+      ],
+      "scale": 6.0,
+      "reduction": 0.6864414374047854,
+      "surfaceError": [
+        {
+          "max_relative": 0.002875089207475973,
+          "p99_relative": 0.0013096680378494362,
+          "samples": 13163
+        },
+        {
+          "max_relative": 0.005098271735870181,
+          "p99_relative": 0.0023221357867687464,
+          "samples": 11597
+        },
+        {
+          "max_relative": 0.010591605043373593,
+          "p99_relative": 0.004606212112855801,
+          "samples": 10666
+        }
+      ]
+    },
+    {
+      "id": "Roadblock06",
+      "label": "路障06",
+      "group": "Roadblocks",
+      "fbx": "Assets/ART/Models/Environment/Roadblock06/Roadblock06.fbx",
+      "materialName": "Roadblocks_Body",
+      "originalTriangles": 9753,
+      "triangles": [
+        3500,
+        1750,
+        770
+      ],
+      "dimensions": [
+        4.637525796890259,
+        0.4289460629224777,
+        0.7646517753601074
+      ],
+      "scale": 6.0,
+      "reduction": 0.641136060699272,
+      "surfaceError": [
+        {
+          "max_relative": 0.002908725796111345,
+          "p99_relative": 0.0008226186463668411,
+          "samples": 15818
+        },
+        {
+          "max_relative": 0.004842334290709237,
+          "p99_relative": 0.001748388016314895,
+          "samples": 9328
+        },
+        {
+          "max_relative": 0.006235065232743897,
+          "p99_relative": 0.003444284909632183,
+          "samples": 8429
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "EnergyStation",
+      "label": "能源站",
+      "sha256": "dfaef6abff54963351b16615074d9cffb18e7d994615371e12ff87b2e64c8166",
+      "source": "GLB/Environment/能源站_原始.glb",
+      "originalDownload": "nengliangzhan.glb",
+      "cleanup": {
+        "before": {
+          "vertices": 57246,
+          "triangles": 50976,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "after": {
+          "vertices": 57246,
+          "triangles": 50976,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "removed_zero_area_faces": 0,
+        "coincident_vertices_welded": false
+      },
+      "splitBands": []
+    },
+    {
+      "id": "OutpostCommand",
+      "label": "前哨指挥楼",
+      "sha256": "23d3b604d90720f3c98712dd13dda56b6902870310f040eff0e501ca37b4fe25",
+      "source": "GLB/Environment/前哨指挥楼_原始.glb",
+      "originalDownload": "前哨指挥楼.glb",
+      "cleanup": {
+        "before": {
+          "vertices": 15858,
+          "triangles": 13383,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "after": {
+          "vertices": 15854,
+          "triangles": 13380,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "removed_zero_area_faces": 3,
+        "coincident_vertices_welded": false
+      },
+      "splitBands": []
+    },
+    {
+      "id": "Bridge",
+      "label": "桥",
+      "sha256": "ee610adfc07fcc38378c6238fe6df33315dd488525b78a852af5f7a56fa35f87",
+      "source": "GLB/Environment/桥_原始.glb",
+      "originalDownload": "bridge.glb",
+      "cleanup": {
+        "before": {
+          "vertices": 43156,
+          "triangles": 50258,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "after": {
+          "vertices": 24755,
+          "triangles": 50258,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "removed_zero_area_faces": 0,
+        "coincident_vertices_welded": true
+      },
+      "splitBands": []
+    },
+    {
+      "id": "Tower",
+      "label": "塔",
+      "sha256": "b64a8efe6bc43df6985f76ea31a718dfd9acab12923236b6b788a00394bdcbdf",
+      "source": "GLB/Environment/塔_原始.glb",
+      "originalDownload": "tower.glb",
+      "cleanup": {
+        "before": {
+          "vertices": 33520,
+          "triangles": 28961,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "after": {
+          "vertices": 33437,
+          "triangles": 28925,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "removed_zero_area_faces": 36,
+        "coincident_vertices_welded": false
+      },
+      "splitBands": []
+    },
+    {
+      "id": "Container",
+      "label": "集装箱",
+      "sha256": "3b26e0030345c6eeb05fc3eb1e41bff584e24698d3c34055a95b954d6bcaf000",
+      "source": "GLB/Environment/集装箱_原始.glb",
+      "originalDownload": "jizhuangxiang.glb",
+      "cleanup": {
+        "before": {
+          "vertices": 23327,
+          "triangles": 23602,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "after": {
+          "vertices": 23305,
+          "triangles": 23592,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "removed_zero_area_faces": 10,
+        "coincident_vertices_welded": false
+      },
+      "splitBands": []
+    },
+    {
+      "id": "Wall01",
+      "label": "墙体01",
+      "sha256": "a339d803b87f21c3032b8bbac3b251ef66114c2eb8290c5ff5efa48fe47db896",
+      "source": "GLB/Environment/墙体01_原始.glb",
+      "originalDownload": "95803632545ac9dd9038ee6f47c4703a.glb",
+      "cleanup": {
+        "before": {
+          "vertices": 39621,
+          "triangles": 49896,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "after": {
+          "vertices": 24734,
+          "triangles": 49896,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "removed_zero_area_faces": 0,
+        "coincident_vertices_welded": true
+      },
+      "splitBands": []
+    },
+    {
+      "id": "Wall02",
+      "label": "墙体02_转角",
+      "sha256": "b84e537d3201c5d774adc524a33c1e192cdd523c797949db8777ac9a6edcd7b8",
+      "source": "GLB/Environment/墙体02_转角_原始.glb",
+      "originalDownload": "a91e7e4054dbd8500598e3ff0a264d4a.glb",
+      "cleanup": {
+        "before": {
+          "vertices": 40529,
+          "triangles": 49990,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "after": {
+          "vertices": 24907,
+          "triangles": 49990,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "removed_zero_area_faces": 0,
+        "coincident_vertices_welded": true
+      },
+      "splitBands": []
+    },
+    {
+      "id": "Wall03",
+      "label": "墙体03",
+      "sha256": "a80d634995a6e8d2f69ee54a17f04416ed094424481329d5d02ca477fbf26e0f",
+      "source": "GLB/Environment/墙体03_原始.glb",
+      "originalDownload": "1b65b574656a186fc51a2433647c77b1.glb",
+      "cleanup": {
+        "before": {
+          "vertices": 36756,
+          "triangles": 49934,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "after": {
+          "vertices": 24895,
+          "triangles": 49934,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "removed_zero_area_faces": 0,
+        "coincident_vertices_welded": true
+      },
+      "splitBands": []
+    },
+    {
+      "id": "Roadblocks",
+      "label": "路障合集",
+      "sha256": "7c72946c52a54fc373cdea5c1f7313619af20c1f4bd28c721d5951441445c3c2",
+      "source": "GLB/Environment/路障合集_原始.glb",
+      "originalDownload": "luzhang.glb",
+      "cleanup": {
+        "before": {
+          "vertices": 45340,
+          "triangles": 42652,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "after": {
+          "vertices": 45121,
+          "triangles": 42566,
+          "uv_layers": 1,
+          "materials": 1
+        },
+        "removed_zero_area_faces": 86,
+        "coincident_vertices_welded": false
+      },
+      "splitBands": [
+        [
+          -7.037313842772619e-09,
+          0.10926901549100876
+        ],
+        [
+          0.13676601648330688,
+          0.3519580364227295
+        ],
+        [
+          0.3622390031814575,
+          0.466248095035553
+        ],
+        [
+          0.4901590347290039,
+          0.6274030804634094
+        ],
+        [
+          0.6828749775886536,
+          0.806968092918396
+        ],
+        [
+          0.842116117477417,
+          0.9695581197738647
+        ]
+      ]
+    }
+  ]
+}

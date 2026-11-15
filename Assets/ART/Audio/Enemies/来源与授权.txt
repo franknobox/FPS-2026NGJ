@@ -1,0 +1,9 @@
+80 CC0 creature SFX
+作者：rubberduck
+原始资源：https://opengameart.org/content/80-cc0-creature-sfx
+下载：https://opengameart.org/sites/default/files/80-CC0-creature-SFX_0.zip
+授权：CC0 / Public Domain
+授权说明：https://creativecommons.org/publicdomain/zero/1.0/
+导入日期：2026-11-15
+本目录保留选用音效的原文件名。播放时按虫种调整音高，不使用程序合成叫声。
+bug / spit 用于虫族预警与攻击，hurt / grunt 用于受击，scream / monster / roar 用于死亡与重型虫发声。

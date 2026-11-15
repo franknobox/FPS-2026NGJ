@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be136850a5972a6459841938bef7229a, type: 3}
+  m_Name: HanDi
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.SkillDefinition
+  displayName: "\u64BC\u5730"
+  resource: 1
+  cost: 1
+  cooldown: 2
+  effect: 0
+  castEffect: {fileID: 6234607956599405367, guid: 2291eae7f8e972647bcaafd1d4d1f766, type: 3}
+  activeEffect: {fileID: 0}
+  hitboxPrefab: {fileID: 7025140589844906224, guid: 1ed8f2e6523b8fc42a15c178aedc6c80, type: 3}
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 15
+  hit:
+    knockback: 0
+    source: {fileID: 0}
+    noise: 0
+    penetration: 2
+    stunDuration: 2
+    vulnerabilityDuration: 0
+    vulnerabilityMultiplier: 0
+    groundOnly: 1
+    point: {x: 0, y: 0, z: 0}
+    direction: {x: 0, y: 0, z: 0}
+  duration: 2
+  damageMultiplier: 1.5
+  absorbedNoiseMultiplier: 1

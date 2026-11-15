@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd91a4a3340557b488a5d3ef0c915fd6, type: 3}
+  m_Name: EnvironmentSizes
+  m_EditorClassIdentifier: Assembly-CSharp-Editor::ArtTools.EnvironmentSizeProfile
+  entries:
+  - prefabGuid: 975cafd1fd351df42bd0652daf0d36c0
+    label: "\u524D\u54E8\u6307\u6325\u697C"
+    size: {x: 8.832942, y: 9.613802, z: 8.443239}
+  - prefabGuid: d987296e0f9f81844a4401adecacfa4e
+    label: "\u5854"
+    size: {x: 5.512071, y: 14.453652, z: 4.6862984}
+  - prefabGuid: 9e7b6af31924d944b83effe770159b3f
+    label: "\u5899\u4F5301"
+    size: {x: 4.598658, y: 2.0384142, z: 0.8645006}
+  - prefabGuid: 7d3d838410476384ca6138d1fba85510
+    label: "\u5899\u4F5302_\u8F6C\u89D2"
+    size: {x: 3.9989648, y: 2.2220025, z: 3.4141562}
+  - prefabGuid: e587498224d2e0043bc1e92e75d5194a
+    label: "\u5899\u4F5303"
+    size: {x: 4.7997165, y: 2.2342496, z: 1.6381376}
+  - prefabGuid: f2ecba1018bb2ea478c3dfa26e6bd8ac
+    label: "\u6865"
+    size: {x: 13.197443, y: 4.373118, z: 5.7213235}
+  - prefabGuid: f1979e94fe1a0584da6cabaf74dcb3a7
+    label: "\u80FD\u6E90\u7AD9"
+    size: {x: 7.5445113, y: 8.682513, z: 7.501209}
+  - prefabGuid: 196ef0537bcb7644383f0db0484da788
+    label: "\u8DEF\u969C01"
+    size: {x: 3.315637, y: 0.7947548, z: 0.56334203}
+  - prefabGuid: e7e242acc7c465f419323910647bdf9a
+    label: "\u8DEF\u969C02"
+    size: {x: 3.5630827, y: 1.291017, z: 0.67840314}
+  - prefabGuid: 23ae319248ecadf44ac6669d7f799b0f
+    label: "\u8DEF\u969C03"
+    size: {x: 1.7734859, y: 0.90466005, z: 3.3516173}
+  - prefabGuid: 164c8f8b6e855eb45a00aef581153fd0
+    label: "\u8DEF\u969C04"
+    size: {x: 2.2860403, y: 1.2041395, z: 3.4332962}
+  - prefabGuid: c678e7d8404820541b4a953e7a429fe4
+    label: "\u8DEF\u969C05"
+    size: {x: 3.8392787, y: 0.90546525, z: 1.5700343}
+  - prefabGuid: 7467ee3a76404704ba75a2e9db9d8e7e
+    label: "\u8DEF\u969C06"
+    size: {x: 4.6448193, y: 0.9306558, z: 0.43708068}
+  - prefabGuid: dbe15c7cd8f0f4f4bac3cb7ee40d974e
+    label: "\u96C6\u88C5\u7BB1"
+    size: {x: 1.846837, y: 2.0997381, z: 4.4168477}
