@@ -19,6 +19,7 @@ namespace SlugWhitebox
         public SlugSpawn[] spawns;
         public SlugHud hud;
         public SlugLevelFlow levelFlow;
+        ClientFlow.GameOverlay clientOverlay;
         public enum Mode { Briefing, Playing, Paused, Result }
         public Mode mode;
         public bool Running => mode == Mode.Playing;
@@ -68,6 +69,8 @@ namespace SlugWhitebox
             if(!hitSound)hitSound=MakeFeedback(6);
             InitializeCombat();
             hud = gameObject.AddComponent<SlugHud>(); hud.game = this; hud.Build();
+            ClientFlow.ClientSettings.Apply();
+            if(levelFlow) { clientOverlay=gameObject.AddComponent<ClientFlow.GameOverlay>(); clientOverlay.Initialize(this); }
             BeginRun();
             HasStarted = true;
             if (smoke) StartCoroutine(SlugSmoke.Run(this));
@@ -106,10 +109,14 @@ namespace SlugWhitebox
         void Update()
         {
             var kb=Keyboard.current; var mouse=Mouse.current;
-            if(!smoke && kb != null && kb.rKey.wasPressedThisFrame) BeginRun();
+            if(!smoke && kb != null && kb.rKey.wasPressedThisFrame && (Running || mode==Mode.Result && (!clientOverlay || clientOverlay.CanQuickRestart)))
+            {
+                if(Running && clientOverlay)clientOverlay.RequestRestart();else BeginRun();
+            }
             if(!smoke && kb != null && kb.escapeKey.wasPressedThisFrame)
             {
-                if(Running) { mode=Mode.Paused; Time.timeScale=0; SetCursor(false); }
+                if(clientOverlay && clientOverlay.HandleEscape()) { }
+                else if(Running) Pause();
                 else if(mode==Mode.Paused) Resume();
             }
             if(!Running) return;
@@ -119,7 +126,7 @@ namespace SlugWhitebox
             {
                 {
                     Vector2 delta=mouse.delta.ReadValue();
-                    yaw += delta.x*tuning.mouseSensitivity; pitch=Mathf.Clamp(pitch-delta.y*tuning.mouseSensitivity,-75,75);
+                    yaw += delta.x*tuning.mouseSensitivity*ClientFlow.ClientSettings.Sensitivity; pitch=Mathf.Clamp(pitch-delta.y*tuning.mouseSensitivity*ClientFlow.ClientSettings.Sensitivity,-75,75);
                     player.rotation=Quaternion.Euler(0,yaw,0);
                     view.transform.localRotation=Quaternion.Euler(pitch,0,0);
                 }
@@ -296,6 +303,7 @@ namespace SlugWhitebox
             if(projectile) Destroy(projectile);
         }
 
+        public void Pause() { if(!Running)return;mode=Mode.Paused;Time.timeScale=0;SetCursor(false); }
         public void Resume() { Time.timeScale=1;mode=Mode.Playing; SetCursor(true); }
         public void EndRun(string title)
         {

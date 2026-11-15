@@ -111,8 +111,11 @@ namespace Wasteland.Editor
             BakeNavigation();
             for(int i=0;i<3;i++) BuildSpawns(director.areas[i],i);
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
-            var buildScenes = new List<EditorBuildSettingsScene> { new EditorBuildSettingsScene(ScenePath, true) };
-            buildScenes.AddRange(EditorBuildSettings.scenes.Where(s => s.path != ScenePath).Select(s =>
+            const string menuPath="Assets/Game/Client/Scenes/客户端菜单.unity";
+            var buildScenes = new List<EditorBuildSettingsScene>();
+            if(AssetDatabase.LoadAssetAtPath<SceneAsset>(menuPath))buildScenes.Add(new EditorBuildSettingsScene(menuPath,true));
+            buildScenes.Add(new EditorBuildSettingsScene(ScenePath, true));
+            buildScenes.AddRange(EditorBuildSettings.scenes.Where(s => s.path != ScenePath && s.path != menuPath).Select(s =>
                 new EditorBuildSettingsScene(s.path, s.path == "Assets/Game/SlugWhitebox/Scenes/SlugWhitebox.unity" ? false : s.enabled)));
             EditorBuildSettings.scenes = buildScenes.ToArray();
             AssetDatabase.SaveAssets();
