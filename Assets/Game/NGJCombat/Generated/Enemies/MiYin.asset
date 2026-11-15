@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: "\u89C5\u97F3\u866B"
   description: "\u6700\u666E\u901A\u7684\u654C\u4EBA\uFF1B\u5730\u9762\u3001\u901F\u5EA6\u9002\u4E2D\uFF1B\u653B\u51FB\u548C\u7729\u6655\u65F6\u66B4\u9732\u4F4E\u4ECB\u8D28\u5F31\u70B9\u3002\u9891\u7387\u548C\u4F24\u5BB3\u9002\u4E2D\u7684\u95F4\u9699\u653B\u51FB\u3002"
   quantity: 1
-  maxNoise: 100
-  armor: 1
+  maxNoise: 14
+  armor: 0
   weakPointArmor: 0
   flying: 0
   moveSpeed: 3

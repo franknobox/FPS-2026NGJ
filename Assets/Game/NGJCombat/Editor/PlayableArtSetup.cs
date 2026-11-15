@@ -19,7 +19,7 @@ namespace NGJ.Combat.Editor
         {
             if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             CreateRocket();
-            Actor("EnemyChanYin", "ChanYin", "翼怪", 1.8f, .4f, .2f, "SoundSocket", Vector3.zero);
+            Actor("EnemyChanYin", "ChanYin", "翼怪", 2.16f, .48f, .24f, "SoundSocket", Vector3.zero);
             Actor("EnemyZhenYin", "ZhenYin", "甲壳怪", 2.2f, .65f, .24f, "SoundSocket", Vector3.zero);
             Actor("EnemyMiYin", "MiYin", "黄色眼虫", .75f, .3f, .13f, "Eye", Vector3.forward * .25f);
             Actor("EnemyMiYinPurple", "MiYin", "紫色眼虫", .75f, .3f, .13f, "Eye", Vector3.forward * .25f);
@@ -41,11 +41,13 @@ namespace NGJ.Combat.Editor
                 var combat = root.GetComponent<EnemyCombatant>();
                 combat.definition = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(Root + "/Enemies/" + definition + ".asset");
                 combat.ApplyDefinition();
+                if(id == "EnemyZhenYin")combat.underPenetrationMultiplier = 1;
                 combat.attackMask = CombatLayers.AttackMask;
                 var binding = root.GetComponent<EnemyVisualBinding>() ?? root.AddComponent<EnemyVisualBinding>();
                 if (binding.preparedVisual) UnityEngine.Object.DestroyImmediate(binding.preparedVisual.gameObject);
                 binding.preparedVisual = null;
                 binding.visualPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ART/Prefabs/Enemies/" + art + ".prefab");
+                binding.localScale = id == "EnemyChanYin" ? Vector3.one * 1.2f : Vector3.one;
                 binding.collisionHeight = height;
                 binding.collisionRadius = radius;
                 binding.weakPointRadius = weakRadius;

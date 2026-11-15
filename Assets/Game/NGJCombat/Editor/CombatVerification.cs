@@ -201,7 +201,7 @@ namespace NGJ.Combat.Editor
             var normal = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(folder + "Enemies/MiYin.asset");
             var heavy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(folder + "Enemies/ZhenYin.asset");
             Require(fly && fly.flying && fly.fallsWhenStunned && fly.quantity == EnemyQuantity.Many, "颤音虫飞行坠落配置");
-            Require(normal && normal.armor == ArmorGrade.Medium && normal.exposeDuringAttack, "觅音虫中甲和攻击弱点配置");
+            Require(normal && normal.armor == ArmorGrade.Low && normal.maxNoise == 14 && normal.exposeDuringAttack, "觅音虫无装甲减伤、霰弹单颗可击杀配置");
             Require(heavy && heavy.armor == ArmorGrade.High && heavy.attackMode == EnemyAttackMode.ContinuousBeam, "震音虫重甲持续射线配置");
             foreach (string name in new[] { "ChanYin", "MiYin", "ZhenYin" })
             {

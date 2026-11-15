@@ -77,7 +77,7 @@ namespace Wasteland.Editor
                 var size = Sizes[i]; var center = Centers[i];
                 Floor(Names[i], center, new Vector2(size.x,size.y));
                 var area = new WastelandArea { displayName = Names[i], bounds = new Bounds(center+Vector3.up*4,new Vector3(size.x,12,size.y)),
-                    firstWave = new[]{4,5,7}[i], secondWave = new[]{4,6,7}[i] };
+                    firstWave = new[]{8,8,9}[i], secondWave = new[]{10,10,10}[i] };
                 area.entrance = Gate("入口 " + (i+1), Entrances[i], false, (i+1).ToString("00"));
                 area.exit = Gate("出口 " + (i+1), Exits[i], true, i==2?"EXIT":"CLEAR");
                 director.areas[i] = area;

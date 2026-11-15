@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1863becbad4e295419363214b81d32fa, type: 3}
   m_Name: WastelandTuning
   m_EditorClassIdentifier: Assembly-CSharp::SlugWhitebox.SlugTuning
-  moveSpeed: 6.5
+  moveSpeed: 4
   mouseSensitivity: 0.095
   health: 120
   glandMax: 100

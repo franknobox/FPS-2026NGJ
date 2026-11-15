@@ -6,7 +6,7 @@ namespace SlugWhitebox
     public class SlugTuning : ScriptableObject
     {
         [Header("移动与视角（战斗数值在 NGJ 配置与 PlayerCombatStats 调整）")]
-        public float moveSpeed = 6.5f;
+        public float moveSpeed = 4f;
         public float mouseSensitivity = .095f;
         [HideInInspector] public float health = 120;
         [Header("声腺：数量、回复、每只敌人掉落")]

@@ -582,9 +582,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyCombatant
   team: 1
-  maxNoise: 100
+  maxNoise: 14
   currentNoise: 0
-  armor: 1
+  armor: 0
   weakPointArmor: 0
   airborne: 0
   underPenetrationMultiplier: 0.5
@@ -663,8 +663,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyPresentation
   soundMaterial: {fileID: 2100000, guid: 656258e04e48f434283965f067b20afb, type: 2}
   color: {r: 1, g: 0.7, b: 0.1, a: 1}
-  windupSound: {fileID: 8300000, guid: 2497c5ef734b6b9459eacffecae385b2, type: 3}
-  shotSound: {fileID: 8300000, guid: ef2ecb2a67b021c48aa7e83feac0098d, type: 3}
+  windupSound: {fileID: 8300000, guid: 85312f12e6b3b0c4a91f4098f97b1c80, type: 3}
+  shotSound: {fileID: 8300000, guid: 446861ccbc57d8040ac19a1169b362d6, type: 3}
+  hurtSounds:
+  - {fileID: 8300000, guid: bd9dab3d30cb9cd4f88d2bc4761f027c, type: 3}
+  - {fileID: 8300000, guid: faa934c1d30b99a42ab7f59f43a7e6d6, type: 3}
+  deathSounds:
+  - {fileID: 8300000, guid: d2f43598ad07ebe41a202a9fcaf43713, type: 3}
+  - {fileID: 8300000, guid: 80c231ecf77aeb64f86375c58768b1b5, type: 3}
+  voicePitch: 1.05
 --- !u!1 &5017725990251729514
 GameObject:
   m_ObjectHideFlags: 0

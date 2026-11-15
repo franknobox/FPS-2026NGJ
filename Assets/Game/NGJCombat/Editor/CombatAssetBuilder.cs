@@ -58,11 +58,11 @@ namespace NGJ.Combat.Editor
         // 定性特性来自策划表“敌人”第 2~4 行；所有具体数值仅供白盒测试。
         static void EnemyAssets()
         {
-            Enemy("ChanYin", "颤音虫", EnemyKind.ChanYin, 35, ArmorGrade.Low, 5, 3, .6f,
+            Enemy("ChanYin", "颤音虫", EnemyKind.ChanYin, 300, ArmorGrade.Low, 5, 3, .6f,
                 EnemyQuantity.Many, true, EnemyAttackMode.Intermittent, "大量低质敌人，骚扰；飞行、较快、难以命中；被击晕时坠落地面。高频、低伤害间隙攻击。");
-            Enemy("MiYin", "觅音虫", EnemyKind.MiYin, 100, ArmorGrade.Medium, 3, 10, 1.5f,
+            Enemy("MiYin", "觅音虫", EnemyKind.MiYin, 14, ArmorGrade.Low, 3, 10, 1.5f,
                 EnemyQuantity.Normal, false, EnemyAttackMode.Intermittent, "最普通的敌人；地面、速度适中；攻击和眩晕时暴露低介质弱点。频率和伤害适中的间隙攻击。");
-            Enemy("ZhenYin", "震音虫", EnemyKind.ZhenYin, 240, ArmorGrade.High, 1.5f, 12, 3,
+            Enemy("ZhenYin", "震音虫", EnemyKind.ZhenYin, 1120, ArmorGrade.High, 1.5f, 12, 3,
                 EnemyQuantity.Few, false, EnemyAttackMode.ContinuousBeam, "重型单位，少量高质；地面、较慢；攻击和眩晕时暴露低介质弱点。低频、高伤害持续射线攻击。");
         }
 
@@ -104,6 +104,7 @@ namespace NGJ.Combat.Editor
             enemy.attackMask = CombatLayers.AttackMask;
             go.AddComponent<EnemyVisualBinding>();
             enemy.ApplyDefinition();
+            if(kind == EnemyKind.ZhenYin)enemy.underPenetrationMultiplier = 1;
             var origin = new GameObject("AttackOrigin").transform;
             origin.SetParent(go.transform, false);
             origin.localPosition = Vector3.up * 1.2f;

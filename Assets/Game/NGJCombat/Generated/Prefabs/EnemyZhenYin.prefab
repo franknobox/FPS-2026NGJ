@@ -333,12 +333,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyCombatant
   team: 1
-  maxNoise: 240
+  maxNoise: 1120
   currentNoise: 0
   armor: 2
   weakPointArmor: 0
   airborne: 0
-  underPenetrationMultiplier: 0.25
+  underPenetrationMultiplier: 1
   armorBlocksEffects: 1
   deathAtNoiseLimit: 1
   exposeWeakPointWhenStunned: 1
@@ -352,6 +352,7 @@ MonoBehaviour:
     m_Bits: 3276033
   fallGravity: 20
   externalGroundMovement: 0
+  attackCoordinator: {fileID: 0}
   hasMovementBounds: 0
   movementBounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -413,8 +414,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyPresentation
   soundMaterial: {fileID: 2100000, guid: 656258e04e48f434283965f067b20afb, type: 2}
   color: {r: 1, g: 0.2, b: 0.6, a: 1}
-  windupSound: {fileID: 8300000, guid: 2497c5ef734b6b9459eacffecae385b2, type: 3}
-  shotSound: {fileID: 8300000, guid: 7ba7df0dad6c4d743be63f324992a8d7, type: 3}
+  windupSound: {fileID: 8300000, guid: 0944a875a4683d64fb3304f96b94035d, type: 3}
+  shotSound: {fileID: 8300000, guid: 962a056ad226bba488f60c3d3fc9b5b0, type: 3}
+  hurtSounds:
+  - {fileID: 8300000, guid: da48d4652d4091e4a9b56d7438dabb45, type: 3}
+  - {fileID: 8300000, guid: 3110be153e59f4b4fa234a60b08dea8d, type: 3}
+  deathSounds:
+  - {fileID: 8300000, guid: 9177e8f48729eab41b4d784b2035f95d, type: 3}
+  - {fileID: 8300000, guid: 0944a875a4683d64fb3304f96b94035d, type: 3}
+  voicePitch: 0.7
 --- !u!1 &2466668476750434687
 GameObject:
   m_ObjectHideFlags: 0

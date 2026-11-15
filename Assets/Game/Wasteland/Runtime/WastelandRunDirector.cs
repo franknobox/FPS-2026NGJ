@@ -38,7 +38,7 @@ namespace Wasteland
             CompletedAreas = Wave = variantIndex = 0;
             ActiveArea = -1; Spawning = false;
             foreach (var area in areas) { area.entrance.SetClosed(false); area.exit.SetClosed(true); }
-            game.Message("前往 01 入口 · 1/2 切换武器 · 清场后开放通路", 5);
+            game.Message("前往 01 入口 · 1–4 / 滚轮切换武器 · 清场后开放通路", 5);
         }
 
         public override void Tick(SlugGame game)
@@ -81,7 +81,7 @@ namespace Wasteland
             var used = new HashSet<Transform>();
             for (int i = 0; i < count; i++)
             {
-                int kind = ActiveArea > 0 && i == count - 1 && (ActiveArea == 2 || Wave == 1) ? 2 : i % 2;
+                int kind = KindForSpawn(ActiveArea, Wave, i, count);
                 Transform[] candidates = kind == 0 ? area.airSpawns : area.groundSpawns;
                 Transform marker = null;
                 for (int attempt = 0; attempt < candidates.Length * 3; attempt++)
@@ -121,6 +121,16 @@ namespace Wasteland
                 owner.enemies.Add(adapter);
             }
             Spawning = false;
+        }
+
+        // 先以眼虫教学，再加入少量精英；Boss 只在终区末波出现一次。
+        public static int KindForSpawn(int area, int wave, int index, int count)
+        {
+            if(area <= 0)return 1;
+            bool boss = area >= 2 && wave == 2;
+            if(boss && index == count-1)return 2;
+            int elites = area == 1 && wave == 1 ? 1 : 2;
+            return index >= count-(boss?1:0)-elites ? 0 : 1;
         }
 
         GameObject CreateCue(Vector3 point)

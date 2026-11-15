@@ -8,6 +8,9 @@ namespace NGJ.Combat
         public Material soundMaterial;
         public Color color=Color.yellow;
         public AudioClip windupSound,shotSound;
+        public AudioClip[] hurtSounds, deathSounds;
+        [Range(.5f, 1.5f)] public float voicePitch = 1;
+        float nextHurtAt;
         EnemyCombatant combat;
         LineRenderer beam,core;
         AudioSource audioSource;
@@ -17,6 +20,7 @@ namespace NGJ.Combat
             audioSource=gameObject.AddComponent<AudioSource>();audioSource.spatialBlend=1;audioSource.minDistance=3;audioSource.maxDistance=32;audioSource.volume=.55f;
             beam=Line("声波瞄准与持续射线",2);core=Line("声器官状态",24);core.loop=true;
             combat.WindupStarted+=Windup;combat.ShotFired+=Shot;
+            combat.HitReceived+=Hurt;combat.Died+=Die;
         }
         LineRenderer Line(string name,int points)
         {
@@ -24,7 +28,25 @@ namespace NGJ.Combat
             var line=go.AddComponent<LineRenderer>();line.sharedMaterial=soundMaterial;line.positionCount=points;line.enabled=false;line.numCapVertices=3;
             return line;
         }
-        void Windup(){if(windupSound)audioSource.PlayOneShot(windupSound,.55f);}
+        void Windup(){audioSource.pitch=voicePitch;if(windupSound)audioSource.PlayOneShot(windupSound,.55f);}
+        void Hurt(HitInfo hit)
+        {
+            if(!combat.IsAlive || hit.noise<=0 || Time.time<nextHurtAt)return;
+            nextHurtAt=Time.time+.18f;
+            PlayVoice(hurtSounds,.32f);
+        }
+        void Die(){audioSource.Stop();PlayVoice(deathSounds,.5f);}
+        void PlayVoice(AudioClip[] clips,float volume)
+        {
+            if(clips==null || clips.Length==0)return;
+            var clip=clips[Random.Range(0,clips.Length)];if(!clip)return;
+            // 独立音源让死亡声在敌人销毁后继续播完，霰弹受击按敌人限频。
+            var go=new GameObject("虫族受击与死亡声");go.transform.position=transform.position;
+            var source=go.AddComponent<AudioSource>();source.clip=clip;source.spatialBlend=1;
+            source.minDistance=2;source.maxDistance=28;source.rolloffMode=AudioRolloffMode.Linear;
+            source.pitch=voicePitch*Random.Range(.95f,1.05f);source.volume=volume;source.Play();
+            Destroy(go,clip.length/source.pitch+.1f);
+        }
         void Shot(Vector3 start,Vector3 end)
         {
             if(shotSound)audioSource.PlayOneShot(shotSound,combat.definition.attackMode==EnemyAttackMode.ContinuousBeam?.35f:.65f);
@@ -52,8 +74,7 @@ namespace NGJ.Combat
                 float radius=.22f+Mathf.Sin(Time.time*14)*.035f;
                 for(int i=0;i<24;i++){float a=i*Mathf.PI*2/24;core.SetPosition(i,origin.position+(origin.right*Mathf.Cos(a)+origin.up*Mathf.Sin(a))*radius);}
             }
-            if(!active&&audioSource.isPlaying)audioSource.Stop();
         }
-        void OnDestroy(){if(combat){combat.WindupStarted-=Windup;combat.ShotFired-=Shot;}}
+        void OnDestroy(){if(combat){combat.WindupStarted-=Windup;combat.ShotFired-=Shot;combat.HitReceived-=Hurt;combat.Died-=Die;}}
     }
 }

@@ -46,6 +46,8 @@ namespace SlugWhitebox
             game=owner;kind=type;combat=GetComponent<EnemyCombatant>();
             var visual=GetComponent<EnemyVisualBinding>();
             if(visual)body=visual.CreateVisual(combat);
+            var noiseBar=gameObject.AddComponent<EnemyNoiseBar>();
+            noiseBar.Bind(combat,game.view,visual?visual.collisionHeight:2f,visual?visual.collisionRadius:.5f);
             var weak=System.Array.Find(GetComponentsInChildren<CombatHurtbox>(true),h=>h.weakPoint);
             aimPoint=weak?weak.transform:null;
             CombatLayers.SetActorLayer(gameObject,CombatLayers.Enemy);
