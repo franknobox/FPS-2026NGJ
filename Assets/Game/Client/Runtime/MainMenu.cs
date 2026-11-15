@@ -1,47 +1,74 @@
+using System;
 using UnityEngine;
-using NGJ.Combat;
+using UnityEngine.UI;
+
 namespace ClientFlow
 {
     public sealed class MainMenu : MonoBehaviour
     {
-        public WeaponDefinition primary,secondary;
+        
+        public Sprite backgroundArt,titleArt;
         ClientUI ui;
+        public void Build()
+        {
+            if(!ui){ui=gameObject.AddComponent<ClientUI>();ui.Build();}
+            ShowMain();
+        }
         void Start()
         {
-            Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;ClientSettings.Apply();
-            ui=gameObject.AddComponent<ClientUI>();ui.Build();ShowMain();
+            Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;ClientSettings.Apply();Build();
         }
-        void Background(string section)
+        void Background(string section=null,bool showTitle=false)
         {
-            ui.Clear();ui.Box(ui.root,"底色",Vector2.zero,new Vector2(4000,2400),new Color(.10f,.105f,.095f));
-            var right=ui.Box(ui.root,"荒野色块",new Vector2(500,0),new Vector2(920,1100),new Color(.57f,.40f,.20f));
-            ui.Box(right,"远景山脊",new Vector2(95,-90),new Vector2(900,280),new Color(.42f,.31f,.20f)).localRotation=Quaternion.Euler(0,0,-12);
-            ui.Box(right,"深色山脊",new Vector2(95,-310),new Vector2(1100,320),new Color(.16f,.17f,.15f)).localRotation=Quaternion.Euler(0,0,9);
-            for(int i=0;i<6;i++)ui.Box(right,"信号线",new Vector2(-110+i*42,180),new Vector2(12,300+i*28),new Color(.09f,.09f,.075f,.65f));
-            ui.Label(ui.root,"荒野前哨  /  OUTPOST 01",new Vector2(520,-450),new Vector2(740,45),21,ClientUI.Cream,TextAnchor.MiddleRight,FontStyle.Bold);
-            ui.Label(ui.root,section,new Vector2(-720,475),new Vector2(440,40),18,ClientUI.Gold,style:FontStyle.Bold);
+            ui.Clear();
+            var bg=ui.Box(ui.root,"荒野前哨背景",Vector2.zero,new Vector2(1920,1080),Color.white);
+            var image=bg.GetComponent<Image>();image.sprite=backgroundArt;image.raycastTarget=false;
+            bg.anchorMin=Vector2.zero;bg.anchorMax=Vector2.one;bg.offsetMin=bg.offsetMax=Vector2.zero;
+            if(backgroundArt){var fit=bg.gameObject.AddComponent<AspectRatioFitter>();fit.aspectMode=AspectRatioFitter.AspectMode.EnvelopeParent;fit.aspectRatio=backgroundArt.rect.width/backgroundArt.rect.height;}
+            else image.color=new Color(.55f,.39f,.20f);
+            if(showTitle && titleArt)
+            {
+                var logo=ui.Box(ui.root,"荒野前哨标题",Vector2.zero,new Vector2(740,420),Color.white);
+                logo.anchorMin=logo.anchorMax=new Vector2(0,1);logo.anchoredPosition=new Vector2(410,-237);
+                var art=logo.GetComponent<Image>();art.sprite=titleArt;art.preserveAspect=true;art.raycastTarget=false;
+            }
+            if(!showTitle)
+            {
+                var shade=ui.Box(ui.root,"内容遮罩",Vector2.zero,new Vector2(4000,2400),new Color(.08f,.045f,.02f,.68f));shade.GetComponent<Image>().raycastTarget=false;
+            }
         }
         void ShowMain()
         {
-            Background("循声虫族  /  主菜单");ui.Label(ui.root,"循声虫族",new Vector2(-610,210),new Vector2(570,120),72,ClientUI.Cream,style:FontStyle.Bold);
-            ui.Label(ui.root,"FOLLOW THE SOUND",new Vector2(-610,137),new Vector2(570,50),24,ClientUI.Gold,style:FontStyle.Bold);
-            ui.Box(ui.root,"标题下划线",new Vector2(-610,96),new Vector2(570,7),ClientUI.Ink);
-            ui.Button(ui.root,"开始游戏",new Vector2(-610,10),new Vector2(570,76),ShowBriefing,true);
-            ui.Button(ui.root,"设置",new Vector2(-610,-90),new Vector2(570,70),ShowSettings);
-            ui.Button(ui.root,"退出游戏",new Vector2(-610,-180),new Vector2(570,70),()=>ui.Confirm("确定退出游戏？",Application.Quit,null));
-            ui.Label(ui.root,"寻找声源，穿过荒野。",new Vector2(-610,-345),new Vector2(570,48),22,ClientUI.Muted);
+            Background(showTitle:true);
+            var stack=ui.Box(ui.root,"主菜单选项",Vector2.zero,new Vector2(416,340),Color.clear);
+            stack.anchorMin=stack.anchorMax=new Vector2(0,1);stack.anchoredPosition=new Vector2(340,-640);stack.GetComponent<Image>().raycastTarget=false;
+            MenuButton(stack,"开始游戏",132,()=>ClientUI.Load(ClientUI.LevelScene),true);
+            MenuButton(stack,"设置",44,ShowSettings);
+            MenuButton(stack,"操作说明",-44,ShowControls);
+            MenuButton(stack,"退出游戏",-132,()=>ui.Confirm("确定退出游戏？",Application.Quit,null));
         }
-        void ShowBriefing()
+        void MenuButton(Transform parent,string label,float y,Action action,bool primary=false)
         {
-            Background("任务简报  /  荒野前哨");var frame=ui.Frame(ui.root,"任务简报",new Vector2(-330,0),new Vector2(1100,850));
-            ui.Label(frame,"荒野前哨",new Vector2(-235,325),new Vector2(620,70),46,ClientUI.Cream,style:FontStyle.Bold);
-            ui.Label(frame,"清除三个区域的敌人，抵达撤离点。",new Vector2(-185,250),new Vector2(720,54),24,ClientUI.Gold);
-            ui.Label(frame,"出战武器",new Vector2(-255,145),new Vector2(580,44),22,ClientUI.Muted);
-            ui.Label(frame,"01   "+(primary?primary.displayName:"未配置" )+"\n02   "+(secondary?secondary.displayName:"未配置"),new Vector2(-100,70),new Vector2(900,115),29,ClientUI.Cream,style:FontStyle.Bold);
-            ui.Box(frame,"分割线",new Vector2(0,-20),new Vector2(960,4),ClientUI.Ink);
-            ui.Label(frame,"WASD 移动   ·   鼠标瞄准   ·   左键攻击\n1–4 / 滚轮切换武器   ·   Q 释放声腺技能   ·   Esc 暂停",new Vector2(0,-105),new Vector2(950,110),22,ClientUI.Cream);
-            ui.Button(frame,"返回",new Vector2(-250,-315),new Vector2(280,70),ShowMain);
-            ui.Button(frame,"进入荒野",new Vector2(190,-315),new Vector2(460,76),()=>ClientUI.Load(ClientUI.LevelScene),true);
+            var button=ui.Button(parent,label,new Vector2(0,y),new Vector2(416,72),action,primary);
+            button.targetGraphic.color=primary?new Color(.96f,.69f,.27f):new Color(.20f,.12f,.065f,.96f);
+            var colors=button.colors;colors.highlightedColor=new Color(1,.89f,.68f);colors.pressedColor=new Color(.72f,.52f,.28f);button.colors=colors;
+            var text=button.GetComponentInChildren<Text>();text.fontSize=28;text.fontStyle=FontStyle.Bold;
+            ui.Box(button.transform,"左侧色标",new Vector2(-190,0),new Vector2(5,34),primary?ClientUI.Ink:ClientUI.Gold).GetComponent<Image>().raycastTarget=false;
+        }
+        void ShowControls()
+        {
+            Background("操作说明");var frame=ui.Frame(ui.root,"操作说明",Vector2.zero,new Vector2(960,820));
+            ui.Label(frame,"操作说明",new Vector2(0,310),new Vector2(800,65),42,ClientUI.Cream,TextAnchor.MiddleCenter,FontStyle.Bold);
+            string[] keys={"W / A / S / D","鼠标","左键","1–4 / 滚轮","右键","E","Z / X / C","Q","Esc"};
+            string[] actions={"移动","瞄准方向","普通攻击","切换武器","武器技能 / 狙击开镜","狙击武器技能","选择声腺技能","释放选中声腺技能","暂停"};
+            for(int i=0;i<keys.Length;i++)
+            {
+                float y=192-i*45;
+                ui.Label(frame,keys[i],new Vector2(-265,y),new Vector2(260,38),23,ClientUI.Gold);
+                ui.Label(frame,actions[i],new Vector2(140,y),new Vector2(480,38),23,ClientUI.Cream);
+            }
+            ui.Label(frame,"命中敌人才积累开火噪值，满值会过载。\n接近声腺掉落物可自动吸附拾取。",new Vector2(0,-225),new Vector2(800,72),20,ClientUI.Gold,TextAnchor.MiddleCenter);
+            ui.Button(frame,"返回",new Vector2(0,-335),new Vector2(330,68),ShowMain,true);
         }
         void ShowSettings(){Background("系统设置");ui.Settings(ui.root,ShowMain);}
     }

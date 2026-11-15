@@ -11,7 +11,7 @@ namespace ClientFlow
     {
         public const string MenuScene="客户端菜单";
         public const string LevelScene="荒野前哨";
-        public static readonly Color Ink=new Color(.035f,.032f,.025f,1), Panel=new Color(.095f,.105f,.105f,.97f), Gold=new Color(.95f,.64f,.20f), Cream=new Color(.93f,.88f,.73f), Muted=new Color(.62f,.61f,.55f);
+        public static readonly Color Ink=new Color(.035f,.032f,.025f,1), Panel=new Color(.12f,.085f,.055f,.97f), Gold=new Color(.95f,.64f,.20f), Cream=new Color(.93f,.88f,.73f), Muted=new Color(.62f,.61f,.55f);
         Font font; public RectTransform root;
         public void Build()
         {
@@ -44,7 +44,7 @@ namespace ClientFlow
         }
         public void Settings(Transform parent,Action back)
         {
-            var panel=Frame(parent,"设置",Vector2.zero,new Vector2(760,620));Label(panel,"设置 / SETTINGS",new Vector2(-280,250),new Vector2(560,60),36,Cream,style:FontStyle.Bold);
+            var panel=Frame(parent,"设置",Vector2.zero,new Vector2(760,620));Label(panel,"设置",new Vector2(0,250),new Vector2(660,60),36,Cream,TextAnchor.MiddleCenter,FontStyle.Bold);
             SliderRow(panel,"主音量",145,0,1,ClientSettings.Volume,ClientSettings.SetVolume,v=>Mathf.RoundToInt(v*100)+"%");
             SliderRow(panel,"鼠标灵敏度",45,.25f,2,ClientSettings.Sensitivity,ClientSettings.SetSensitivity,v=>v.ToString("0.00")+" 倍");
             var full=Button(panel,"",new Vector2(180,-60),new Vector2(250,58),()=>ClientSettings.SetFullscreen(!ClientSettings.Fullscreen));

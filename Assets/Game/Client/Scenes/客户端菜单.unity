@@ -240,8 +240,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c98f96858cc18a74f9487d8dd540ff48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClientFlow.MainMenu
-  primary: {fileID: 11400000, guid: 60219544d96baa245aad597291d2c2ff, type: 2}
-  secondary: {fileID: 11400000, guid: 47d613f5e09e65d4a955f28cbba0df78, type: 2}
+  backgroundArt: {fileID: 21300000, guid: 1f7f7f99ff2cbc247a679ef98748f305, type: 3}
+  titleArt: {fileID: 21300000, guid: d5559c8f6f5e19f4c8903e9afad08413, type: 3}
 --- !u!4 &1675738692
 Transform:
   m_ObjectHideFlags: 0

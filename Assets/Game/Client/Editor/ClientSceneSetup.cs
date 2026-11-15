@@ -19,9 +19,7 @@ namespace ClientFlow.Editor
             var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
             var camera=new GameObject("菜单相机",typeof(Camera),typeof(AudioListener));camera.GetComponent<Camera>().clearFlags=CameraClearFlags.SolidColor;camera.GetComponent<Camera>().backgroundColor=new Color(.1f,.1f,.09f);
             var menu=new GameObject("客户端主菜单").AddComponent<MainMenu>();
-            menu.primary=AssetDatabase.LoadAssetAtPath<WeaponDefinition>("Assets/Game/NGJCombat/Generated/Weapons/HanYin.asset");
-            menu.secondary=AssetDatabase.LoadAssetAtPath<WeaponDefinition>("Assets/Game/NGJCombat/Generated/Weapons/RocketLauncher.asset");
-            if(!menu.primary||!menu.secondary)throw new Exception("缺少武器配置");
+            if(System.IO.File.Exists("Assets/ART/UI/Menu/荒野前哨_标题.png"))MainMenuArtSetup.Bind(menu);
             EditorSceneManager.SaveScene(scene,MenuPath);
             string level=Wasteland.Editor.WastelandLevelBuilder.ScenePath;
             var rest=EditorBuildSettings.scenes.Where(s=>s.path!=MenuPath&&s.path!=level).ToArray();
