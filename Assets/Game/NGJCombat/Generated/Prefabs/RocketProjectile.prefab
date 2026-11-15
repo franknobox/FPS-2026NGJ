@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a63eb2eacc6862545a2eb164f4e0a2aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.CombatProjectile
-  radius: 0.12
+  radius: 0.025
   lifetime: 3
   gravity: 0
   sticky: 0
@@ -162,27 +162,27 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5274174485559600275, guid: 607206273babef34b80f37bb32230791, type: 3}
       propertyPath: m_LocalScale.x
-      value: 25.78431
+      value: 5.156862
       objectReference: {fileID: 0}
     - target: {fileID: 5274174485559600275, guid: 607206273babef34b80f37bb32230791, type: 3}
       propertyPath: m_LocalScale.y
-      value: 25.78431
+      value: 5.156862
       objectReference: {fileID: 0}
     - target: {fileID: 5274174485559600275, guid: 607206273babef34b80f37bb32230791, type: 3}
       propertyPath: m_LocalScale.z
-      value: 25.78431
+      value: 5.156862
       objectReference: {fileID: 0}
     - target: {fileID: 5274174485559600275, guid: 607206273babef34b80f37bb32230791, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.18329732
+      value: -0.03665946
       objectReference: {fileID: 0}
     - target: {fileID: 5274174485559600275, guid: 607206273babef34b80f37bb32230791, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.511555
+      value: -0.30231097
       objectReference: {fileID: 0}
     - target: {fileID: 5274174485559600275, guid: 607206273babef34b80f37bb32230791, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.3161008
+      value: 0.6632201
       objectReference: {fileID: 0}
     - target: {fileID: 5274174485559600275, guid: 607206273babef34b80f37bb32230791, type: 3}
       propertyPath: m_LocalRotation.w
@@ -210,6 +210,62 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5274174485559600275, guid: 607206273babef34b80f37bb32230791, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6320405242772920709, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: m_Time
+      value: 0.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6320405242772920709, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: m_Parameters.widthMultiplier
+      value: 0.018
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: scalingMode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: SizeModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: NoiseModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: ShapeModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: EmissionModule.m_BurstCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: InitialModule.maxNumParticles
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.025
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019331625894106041, guid: 607206273babef34b80f37bb32230791, type: 3}
+      propertyPath: InitialModule.startSize.minMaxState
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7318541223369914670, guid: 607206273babef34b80f37bb32230791, type: 3}

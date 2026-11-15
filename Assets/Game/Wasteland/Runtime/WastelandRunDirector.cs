@@ -45,6 +45,7 @@ namespace Wasteland
         {
             if (ActiveArea < 0)
             {
+                if(game.progression && game.progression.IntermissionPending)return;
                 if (CompletedAreas < areas.Length && areas[CompletedAreas].Contains(game.PlayerPosition, 3)) Activate(CompletedAreas);
                 else if (CompletedAreas == areas.Length && Vector3.Distance(game.PlayerPosition, game.exit.position) < 4)
                     game.EndRun("荒野前哨回收完成 / 按 R 再来一局");
@@ -59,6 +60,7 @@ namespace Wasteland
                 CompletedAreas++;
                 ActiveArea = -1;
                 game.Message("区域肃清 · 拾取声腺后进入缓冲区", 4);
+                game.progression?.AreaCleared(CompletedAreas<areas.Length);
             }
         }
 

@@ -51,6 +51,7 @@ MonoBehaviour:
   muzzle: {fileID: 833529091233894234}
   feedbackSource: {fileID: 11400000, guid: 11986c1487b69b24fa433a76cf966fb5, type: 2}
   feedbackWeapon: {fileID: 11400000, guid: 60219544d96baa245aad597291d2c2ff, type: 2}
+  shotVolume: 0.18
 --- !u!1 &5493040888661959124
 GameObject:
   m_ObjectHideFlags: 0

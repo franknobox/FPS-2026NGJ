@@ -50,15 +50,15 @@ namespace Wasteland.Editor
             EnsureFolder(Root + "/Settings"); EnsureFolder(Root + "/Navigation");
             EnsureFolder("Assets/ART/Materials/Environment/Wasteland"); EnsureFolder("Assets/ART/Textures/Environment/Wasteland");
             Sources.Clear(); Floors.Clear(); Obstacles.Clear(); random = new System.Random(seed);
-            var scene = EditorSceneManager.OpenScene("Assets/Game/SlugWhitebox/Scenes/SlugWhitebox.unity");
-            EditorSceneManager.SaveScene(scene, ScenePath);
+            var scene = EditorSceneManager.OpenScene(ScenePath);
             var game = Object.FindFirstObjectByType<SlugGame>();
             var light = Object.FindObjectsByType<Light>(FindObjectsSortMode.None).First(l=>l.type==LightType.Directional);
             var playerRoot = game.player.root.gameObject;
             foreach (var root in scene.GetRootGameObjects())
                 if (root != game.gameObject && root != playerRoot && root != light.gameObject) Object.DestroyImmediate(root);
             game.gameObject.name = "荒野前哨 · 战斗与流程";
-            game.spawns = Array.Empty<SlugSpawn>();
+            foreach(var previous in game.GetComponents<WastelandRunDirector>())Object.DestroyImmediate(previous);
+            game.levelFlow=null;
             var tuning = AssetDatabase.LoadAssetAtPath<SlugTuning>(Root + "/Settings/WastelandTuning.asset");
             if (!tuning) { tuning = Object.Instantiate(game.tuning); AssetDatabase.CreateAsset(tuning,Root + "/Settings/WastelandTuning.asset"); }
             game.tuning = tuning;
@@ -115,8 +115,7 @@ namespace Wasteland.Editor
             var buildScenes = new List<EditorBuildSettingsScene>();
             if(AssetDatabase.LoadAssetAtPath<SceneAsset>(menuPath))buildScenes.Add(new EditorBuildSettingsScene(menuPath,true));
             buildScenes.Add(new EditorBuildSettingsScene(ScenePath, true));
-            buildScenes.AddRange(EditorBuildSettings.scenes.Where(s => s.path != ScenePath && s.path != menuPath).Select(s =>
-                new EditorBuildSettingsScene(s.path, s.path == "Assets/Game/SlugWhitebox/Scenes/SlugWhitebox.unity" ? false : s.enabled)));
+            buildScenes.AddRange(EditorBuildSettings.scenes.Where(s => s.path != ScenePath && s.path != menuPath).Select(s =>new EditorBuildSettingsScene(s.path,s.enabled)));
             EditorBuildSettings.scenes = buildScenes.ToArray();
             AssetDatabase.SaveAssets();
             // Saving/reimporting a replaced NavMesh asset can invalidate its live editor instance.

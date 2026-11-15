@@ -33,9 +33,9 @@ namespace NGJ.Combat
         {
             if(!combat.IsAlive || hit.noise<=0 || Time.time<nextHurtAt)return;
             nextHurtAt=Time.time+.18f;
-            PlayVoice(hurtSounds,.32f);
+            PlayVoice(hurtSounds,.12f);
         }
-        void Die(){audioSource.Stop();PlayVoice(deathSounds,.5f);}
+        void Die(){audioSource.Stop();PlayVoice(deathSounds,.3f);}
         void PlayVoice(AudioClip[] clips,float volume)
         {
             if(clips==null || clips.Length==0)return;

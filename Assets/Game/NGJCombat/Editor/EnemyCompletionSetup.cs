@@ -53,7 +53,7 @@ namespace NGJ.EditorTools
                 finally{PrefabUtility.UnloadPrefabContents(root);}
             }
             AssetDatabase.SaveAssets();
-            foreach(var path in new[]{SlugWhitebox.Editor.SlugWhiteboxBuilder.ScenePath,Wasteland.Editor.WastelandLevelBuilder.ScenePath})
+            foreach(var path in new[]{Wasteland.Editor.WastelandLevelBuilder.ScenePath})
             {
                 EditorSceneManager.OpenScene(path);var game=Object.FindFirstObjectByType<SlugGame>();
                 var steps=game.player.GetComponent<PlayerFootsteps>();if(!steps)steps=game.player.gameObject.AddComponent<PlayerFootsteps>();

@@ -69,6 +69,8 @@ namespace NGJ.Combat
             bool penetrated = hit.penetration >= effectiveArmor;
             float amount = Mathf.Max(0, hit.noise) * (penetrated ? 1 : underPenetrationMultiplier);
             if (IsVulnerable) amount *= vulnerability;
+            if(IsStunned && hit.stunnedMultiplier>1)amount*=hit.stunnedMultiplier;
+            if(hit.directTarget==this && hit.directMultiplier>1)amount*=hit.directMultiplier;
             AddNoise(amount);
             if (IsAlive && (penetrated || !armorBlocksEffects))
             {
@@ -85,6 +87,7 @@ namespace NGJ.Combat
                 }
             }
             HitReceived?.Invoke(hit);
+            hit.resolved?.Invoke(this,amount,!IsAlive);
             return true;
         }
 

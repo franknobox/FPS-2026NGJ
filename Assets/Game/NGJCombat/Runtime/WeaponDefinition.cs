@@ -49,5 +49,7 @@ namespace NGJ.Combat
         // 武器技能：此武器释放的技能配置。
         [Tooltip("此武器释放的技能配置。")]
         public SkillDefinition skill;
+        [System.NonSerialized] public NGJ.Progression.EvolutionEffect evolution;
+        [System.NonSerialized] public float wailRadius=4;
     }
 }

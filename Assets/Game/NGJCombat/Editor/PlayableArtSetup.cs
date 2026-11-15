@@ -11,7 +11,7 @@ namespace NGJ.Combat.Editor
     public static class PlayableArtSetup
     {
         const string Root = "Assets/Game/NGJCombat/Generated";
-        const string ScenePath = "Assets/Game/SlugWhitebox/Scenes/SlugWhitebox.unity";
+        const string ScenePath = "Assets/Game/Scenes/荒野前哨.unity";
         const string Views = "Assets/Game/Prefabs/Weapons";
 
         [MenuItem("NGJ/美术/接入四只怪物与两把武器")]
@@ -134,8 +134,8 @@ namespace NGJ.Combat.Editor
             {
                 weapon = ScriptableObject.CreateInstance<WeaponDefinition>();
                 weapon.type = WeaponType.RocketLauncher;
-                weapon.displayName = "火箭筒";
-                weapon.targetNoise = 100; weapon.selfNoise = 20; weapon.fireInterval = 1.2f;
+                weapon.displayName = "爆鸣体";
+                weapon.targetNoise = 60; weapon.selfNoise = 30; weapon.fireInterval = 1.2f;
                 weapon.penetration = ArmorGrade.High; weapon.range = 75; weapon.projectileSpeed = 25;
                 weapon.projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projectilePath).GetComponent<CombatProjectile>();
                 AssetDatabase.CreateAsset(weapon, weaponPath);
@@ -146,8 +146,8 @@ namespace NGJ.Combat.Editor
         {
             var game = UnityEngine.Object.FindFirstObjectByType<SlugGame>();
             if (!game || game.gameObject.scene.path != ScenePath || !File.Exists(Views + "/ClawRocket.prefab")) return;
-            game.weaponDefinitions = new[] { "SiMing", "JianXiao", "HanYin", "BaoMing", "RocketLauncher" }
-                .Select(n => AssetDatabase.LoadAssetAtPath<WeaponDefinition>(Root + "/Weapons/" + n + ".asset")).ToArray();
+            game.weaponDefinitions = new[] { "SiMing", "JianXiao", "HanYin", null, "RocketLauncher" }
+                .Select(n => n==null?null:AssetDatabase.LoadAssetAtPath<WeaponDefinition>(Root + "/Weapons/" + n + ".asset")).ToArray();
             game.enemyPrefabs = new[] { "EnemyChanYin", "EnemyMiYin", "EnemyZhenYin" }
                 .Select(n => AssetDatabase.LoadAssetAtPath<GameObject>(Root + "/Prefabs/" + n + ".prefab").GetComponent<EnemyCombatant>()).ToArray();
             game.miYinVariants = new[] { "EnemyMiYin", "EnemyMiYinPurple" }
@@ -161,40 +161,10 @@ namespace NGJ.Combat.Editor
                 instance.transform.localRotation = Quaternion.identity;
                 game.weaponModels[pair.index] = instance;
             }
-            game.ConfigureLoadout(2, 4);
+            game.ConfigureLoadout(2, 4, 0, 1);
             EditorUtility.SetDirty(game); EditorUtility.SetDirty(game.weapons);
             EditorSceneManager.MarkSceneDirty(game.gameObject.scene);
             EditorSceneManager.SaveScene(game.gameObject.scene);
-        }
-
-        public static void BuildAndVerify()
-        {
-            Build();
-            ArtIntegrationSetup.ApplyAndVerify();
-            var game = UnityEngine.Object.FindFirstObjectByType<SlugGame>();
-            if (!game.weaponLoadout.SequenceEqual(new[] { 2, 4 }) || game.weapon != 2 || game.WeaponDisplayName != "撼音体")
-                throw new Exception("Default shotgun/loadout/player-facing name incorrect");
-            if (game.miYinVariants.Length != 2 || game.miYinVariants.Any(p => p.definition.displayName != "觅音虫"))
-                throw new Exception("Eye bug variants must share the design name");
-            foreach (var id in new[] { "EnemyChanYin", "EnemyMiYin", "EnemyMiYinPurple", "EnemyZhenYin" })
-            {
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Root + "/Prefabs/" + id + ".prefab");
-                var binding = prefab.GetComponent<EnemyVisualBinding>();
-                if (!binding.preparedVisual || !prefab.GetComponent<EnemyCombatant>().attackOrigin || prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true).Length != 1)
-                    throw new Exception("Incomplete enemy prefab: " + id);
-                if (prefab.GetComponentsInChildren<Transform>(true).Any(t => GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject) > 0))
-                    throw new Exception("Missing script: " + id);
-            }
-            var rocket = game.weaponDefinitions[4];
-            if (rocket.displayName != "火箭筒" || rocket.projectilePrefab.gravity != 0 || !rocket.projectilePrefab.explosionPrefab)
-                throw new Exception("Invalid whitebox rocket");
-            game.SelectWeaponSlot(1);
-            if (game.WeaponDisplayName != "火箭筒" || !game.weapons.muzzle || !game.weapons.muzzle.IsChildOf(game.weaponModels[4].transform))
-                throw new Exception("Rocket view/muzzle/player-facing name incorrect");
-            game.SelectWeaponSlot(0);
-            EditorSceneManager.MarkSceneDirty(game.gameObject.scene); EditorSceneManager.SaveScene(game.gameObject.scene);
-            ArtTools.ArtShowcaseSetup.UpdateAndVerify();
-            Debug.Log("PLAYABLE_ART_VERIFIED enemies=4 weapons=2 publicNames=颤音虫/觅音虫/震音虫/撼音体/火箭筒 PlayMode=" + EditorApplication.isPlaying);
         }
 
         static void EnsureFolder(string path)

@@ -32,6 +32,10 @@ namespace NGJ.Combat
         public event Action<float> AttackAbsorbed;
         float lastActivity, buffUntil, damageMultiplier = 1, absorbedNoise;
         bool absorbing;
+        WeaponDefinition buffWeapon;
+        bool sharedBuff=true;
+        [Min(0)] public float baseNoise,incomingNoiseReduction;
+        public float DamageMultiplierFor(WeaponDefinition weapon)=>Time.time<buffUntil && (sharedBuff||!buffWeapon||buffWeapon==weapon)?damageMultiplier:1;
 
         // 在编辑器首次添加组件时设置默认引用或阵营。
         void Reset() { team = 0; }
@@ -45,8 +49,10 @@ namespace NGJ.Combat
         void Update()
         {
             if (!IsAlive) return;
-            if (noiseDecayPerSecond > 0 && Time.time >= lastActivity + noiseDecayDelay)
-                SetNoise(Noise - noiseDecayPerSecond * Time.deltaTime);
+            float floor=Mathf.Min(baseNoise,Mathf.Max(0,maxNoise-1));
+            if(Noise<floor){if(Time.time>=lastActivity+1)SetNoise(Mathf.Min(floor,Noise+5*Time.deltaTime));}
+            else if (noiseDecayPerSecond > 0 && Time.time >= lastActivity + noiseDecayDelay)
+                SetNoise(Mathf.Max(floor,Noise - noiseDecayPerSecond * Time.deltaTime));
             if (glandRegenPerSecond > 0) AddGland(glandRegenPerSecond * Time.deltaTime);
         }
 
@@ -83,8 +89,9 @@ namespace NGJ.Combat
             GlandsChanged?.Invoke(glands, maxGlands);
         }
         // 设置临时输出倍率与到期时间。
-        public void ApplyDamageBuff(float multiplier, float duration)
+        public void ApplyDamageBuff(float multiplier, float duration,WeaponDefinition weapon=null,bool shared=true)
         {
+            buffWeapon=weapon;sharedBuff=shared;
             damageMultiplier = Mathf.Max(1, multiplier);
             buffUntil = Time.time + Mathf.Max(0, duration);
         }
@@ -115,6 +122,7 @@ namespace NGJ.Combat
                 AttackAbsorbed?.Invoke(hit.noise);
                 return true;
             }
+            hit.noise=Mathf.Max(0,hit.noise-incomingNoiseReduction);
             return base.ReceiveHit(hit, weakPoint);
         }
         // 重置战斗状态，供重生或测试调用。

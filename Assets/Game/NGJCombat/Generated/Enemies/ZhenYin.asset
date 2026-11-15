@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: "\u9707\u97F3\u866B"
   description: "\u91CD\u578B\u5355\u4F4D\uFF0C\u5C11\u91CF\u9AD8\u8D28\uFF1B\u5730\u9762\u3001\u8F83\u6162\uFF1B\u653B\u51FB\u548C\u7729\u6655\u65F6\u66B4\u9732\u4F4E\u4ECB\u8D28\u5F31\u70B9\u3002\u4F4E\u9891\u3001\u9AD8\u4F24\u5BB3\u6301\u7EED\u5C04\u7EBF\u653B\u51FB\u3002"
   quantity: 2
-  maxNoise: 1120
+  maxNoise: 80
   armor: 2
   weakPointArmor: 0
   flying: 0
@@ -29,12 +29,12 @@ MonoBehaviour:
   attackMode: 1
   projectilePrefab: {fileID: 0}
   projectileSpeed: 16
-  attackNoise: 12
+  attackNoise: 5
   attackPenetration: 1
   attackRange: 12
   detectionRange: 30
   windup: 1.05
   attackInterval: 5.5
   attackDuration: 0.3
-  beamDuration: 1.2
-  beamTickInterval: 0.4
+  beamDuration: 3
+  beamTickInterval: 0.3

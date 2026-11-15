@@ -19,8 +19,8 @@ MonoBehaviour:
   bulletTrail: {fileID: 8317936576033579660, guid: af0fca7ee3abd894593b1f46bdab7199, type: 3}
   displayName: "\u5C16\u5578\u4F53"
   fireInterval: 0.9
-  selfNoise: 20
-  targetNoise: 60
+  selfNoise: 15
+  targetNoise: 50
   penetration: 2
   range: 100
   pelletCount: 1

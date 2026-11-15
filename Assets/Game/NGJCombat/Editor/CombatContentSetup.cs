@@ -21,7 +21,7 @@ namespace NGJ.EditorTools
             if(EditorSceneManager.GetActiveScene().isDirty)throw new Exception("当前场景有未保存修改，请先保存");
             var original=EditorSceneManager.GetActiveScene().path;
             PrepareGun("Shotgun");PrepareGun("ClawRocket");
-            Rifle("Rifle", "SiMing");Rifle("Sniper", "JianXiao");
+            
             foreach(var name in new[]{"EnemyMiYin","EnemyMiYinPurple","EnemyChanYin","EnemyZhenYin"})
             {
                 string path=Root+"Prefabs/"+name+".prefab";
@@ -40,7 +40,7 @@ namespace NGJ.EditorTools
                 }
                 finally{PrefabUtility.UnloadPrefabContents(go);}
             }
-            foreach(string path in new[]{SlugWhitebox.Editor.SlugWhiteboxBuilder.ScenePath,Wasteland.Editor.WastelandLevelBuilder.ScenePath})
+            foreach(string path in new[]{Wasteland.Editor.WastelandLevelBuilder.ScenePath})
             {
                 var scene=EditorSceneManager.OpenScene(path);
                 var g=Object.FindFirstObjectByType<SlugGame>();if(!g)continue;
@@ -71,15 +71,7 @@ namespace NGJ.EditorTools
             try
             {
                 var view=root.GetComponent<SlugWeaponView>();
-                var binding=root.GetComponent<WeaponHandBinding>();
                 var motion=root.transform.Find("原厂开火运动/枪体运动");
-                if(binding && binding.gun)
-                {
-                    binding.gun.SetParent(motion,false);
-                    binding.gun.localPosition=new Vector3(.22f,-.23f,.5f);
-                    binding.gun.localRotation=Quaternion.identity;
-                    Object.DestroyImmediate(binding);
-                }
                 var arms=root.transform.Find("原厂手臂");if(arms)Object.DestroyImmediate(arms.gameObject);
                 view.rig=root.transform.Find("原厂开火运动").GetComponent<Animator>();
                 if(!view.rig)view.rig=root.transform.Find("原厂开火运动").gameObject.AddComponent<Animator>();
@@ -89,38 +81,6 @@ namespace NGJ.EditorTools
                 PrefabUtility.SaveAsPrefabAsset(root,path);
             }
             finally{PrefabUtility.UnloadPrefabContents(root);}
-        }
-        static void Rifle(string name,string definition)
-        {
-            var root=SlugWhitebox.Editor.SlugWeaponAssets.Create(0,null);
-            try
-            {
-                root.name=name;var view=root.GetComponent<SlugWeaponView>();
-                var source=AssetDatabase.LoadAssetAtPath<cowsins.Weapon_SO>("Assets/FPS Engine/ScriptableObjects/Weapons/Rifle.asset");
-                view.feedbackSource=source;
-                view.feedbackWeapon=AssetDatabase.LoadAssetAtPath<WeaponDefinition>(Root+"Weapons/"+definition+".asset");
-                view.feedbackWeapon.muzzleEffect=FpsWeaponFeedbackSetup.CopyEffect(source.muzzleVFX,name+"Muzzle");
-                view.feedbackWeapon.impactEffect=FpsWeaponFeedbackSetup.CopyEffect(source.bulletHoleImpact.defaultImpact,name+"Impact");
-                view.feedbackWeapon.bulletTrail=FpsWeaponFeedbackSetup.CopyEffect(source.bulletTrail.gameObject,name+"Trail").GetComponent<TrailRenderer>();
-                foreach(var renderer in root.GetComponentsInChildren<Renderer>(true))
-                {
-                    if(renderer.name=="Mesh" || renderer.name=="Arms_Mesh"){renderer.enabled=false;continue;}
-                    var authored=source.weaponObject.GetComponentsInChildren<Renderer>(true).FirstOrDefault(r=>r.name==renderer.name);
-                    if(authored)renderer.sharedMaterials=authored.sharedMaterials.Select(FpsWeaponFeedbackSetup.ConvertMaterial).ToArray();
-                }
-                foreach(var kind in new[]{"Idle","Fire"})
-                {
-                    var clip=Object.Instantiate(kind=="Idle"?view.idleClip:view.fireClip);clip.events=Array.Empty<AnimationEvent>();
-                    string clipPath="Assets/ART/Animations/FPSWeapons/"+name+kind+".anim";
-                    var existing=AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
-                    if(existing){EditorUtility.CopySerialized(clip,existing);Object.DestroyImmediate(clip);clip=existing;}else AssetDatabase.CreateAsset(clip,clipPath);
-                    if(kind=="Idle")view.idleClip=clip;else view.fireClip=clip;
-                }
-                var muzzle=new GameObject("Muzzle").transform;muzzle.SetParent(root.transform,false);muzzle.localPosition=new Vector3(.1f,-.12f,.9f);view.muzzle=muzzle;
-                EditorUtility.SetDirty(view.feedbackWeapon);
-                PrefabUtility.SaveAsPrefabAsset(root,Views+name+".prefab");
-            }
-            finally{Object.DestroyImmediate(root);}
         }
     }
 }

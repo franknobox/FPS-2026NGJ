@@ -92,6 +92,7 @@ namespace NGJ.Combat
         // 处理碰撞接触：立即爆炸，或记录黏附对象与局部位置。
         void Contact(Collider collider, Vector3 center)
         {
+            hit.directTarget=CombatUtility.Resolve(collider,out _);
             transform.position = center;
             if (!sticky) { Detonate(); return; }
             attached = true;

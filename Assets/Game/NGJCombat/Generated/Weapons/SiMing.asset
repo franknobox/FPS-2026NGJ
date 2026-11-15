@@ -20,7 +20,7 @@ MonoBehaviour:
   displayName: "\u5636\u9E23\u4F53"
   fireInterval: 0.12
   selfNoise: 2
-  targetNoise: 8
+  targetNoise: 10
   penetration: 1
   range: 40
   pelletCount: 1

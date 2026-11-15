@@ -31,7 +31,7 @@ namespace NGJ.EditorTools
             BuildView("Rifle","步枪","SiMing","Rifle",.12f,.018f);
             BuildView("Shotgun","霰弹枪","HanYin","Shotgun",.45f,.055f);
             BuildView("Sniper","狙击枪","JianXiao","Rifle",.4f,.065f);
-            foreach(var path in new[]{SlugWhitebox.Editor.SlugWhiteboxBuilder.ScenePath,Wasteland.Editor.WastelandLevelBuilder.ScenePath})
+            foreach(var path in new[]{Wasteland.Editor.WastelandLevelBuilder.ScenePath})
             {
                 var scene=EditorSceneManager.OpenScene(path);var g=Object.FindFirstObjectByType<SlugGame>();
                 foreach(var pair in new[]{(0,"Rifle"),(1,"Sniper"),(2,"Shotgun")})
@@ -97,6 +97,7 @@ namespace NGJ.EditorTools
                 visual.name="Visual";visual.transform.localPosition=new Vector3(.20f,-.24f,.36f);
                 var view=root.AddComponent<SlugWeaponView>();view.rig=motion.gameObject.AddComponent<Animator>();view.rig.cullingMode=AnimatorCullingMode.AlwaysAnimate;
                 view.feedbackSource=AssetDatabase.LoadAssetAtPath<cowsins.Weapon_SO>("Assets/FPS Engine/ScriptableObjects/Weapons/"+feedback+".asset");
+                view.shotVolume=name=="Shotgun"?.18f:.35f;
                 view.feedbackWeapon=AssetDatabase.LoadAssetAtPath<NGJ.Combat.WeaponDefinition>("Assets/Game/NGJCombat/Generated/Weapons/"+definition+".asset");
                 view.muzzle=visual.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Muzzle");
                 view.idleClip=Clip(name+"BodyIdle",1,0);view.fireClip=Clip(name+"BodyFire",duration,recoil);

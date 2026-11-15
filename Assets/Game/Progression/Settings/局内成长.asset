@@ -1,0 +1,520 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a6e65db37f242146a0e97ef3dfdd798, type: 3}
+  m_Name: "\u5C40\u5185\u6210\u957F"
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Progression.ProgressionSettings
+  firstLevelBiomass: 40
+  biomassGrowthPerLevel: 10
+  pointsPerLevel: 1
+  normalUpgradesPerSpecial: 3
+  biomassPerEnemy: 10
+  intermissionDelay: 1.2
+  wailRadius: 4
+  options:
+  - id: noise_down
+    title: "\u964D\u566A"
+    description: "\u5C04\u51FB\u547D\u4E2D\u540E\u79EF\u7D2F\u7684\u81EA\u8EAB\u566A\u503C\u964D\u4F4E
+      10%\u3002"
+    special: 0
+    families: 15
+    normalCredits: 1
+    damage: 1
+    selfNoise: 0.9
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: excite
+    title: "\u6FC0\u53D1"
+    description: "\u5C04\u51FB\u4F24\u5BB3\u4E0E\u79EF\u7D2F\u7684\u81EA\u8EAB\u566A\u503C\u5747\u589E\u52A0
+      10%\u3002"
+    special: 0
+    families: 15
+    normalCredits: 1
+    damage: 1.1
+    selfNoise: 1.1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: cadence
+    title: "\u589E\u9891"
+    description: "\u5C04\u901F\u589E\u52A0 15%\u3002"
+    special: 0
+    families: 15
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1.15
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: evolve
+    title: "\u8FDB\u5316"
+    description: "\u672C\u6B21\u8BA1\u4E3A\u4E24\u6B21\u666E\u901A\u5F3A\u5316\uFF0C\u66F4\u5FEB\u89E3\u9501\u7279\u6B8A\u5F3A\u5316\u3002"
+    special: 0
+    families: 15
+    normalCredits: 2
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: sensitive
+    title: "\u6613\u611F"
+    description: "\u6B66\u5668\u6280\u80FD\u566A\u503C\u6D88\u8017\u964D\u4F4E 20%\uFF0C\u51B7\u5374\u7F29\u77ED
+      15%\u3002"
+    special: 0
+    families: 15
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 0.8
+    cooldown: 0.85
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: dull
+    title: "\u987F\u611F"
+    description: "\u6B66\u5668\u6280\u80FD\u566A\u503C\u6D88\u8017\u589E\u52A0 15%\uFF0C\u4E00\u6B21\u91CA\u653E\u53EF\u6392\u51FA\u66F4\u591A\u566A\u503C\u3002"
+    special: 0
+    families: 15
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1.15
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: echo
+    title: "\u56DE\u54CD"
+    description: "\u6B66\u5668\u6280\u80FD\u989D\u5916\u89E6\u53D1\u4E00\u6B21\uFF1B\u6D88\u8017\u4E0E\u51B7\u5374\u5747\u589E\u52A0
+      35%\u3002"
+    special: 1
+    families: 5
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1.35
+    cooldown: 1.35
+    skillRange: 1
+    effect: 1
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: bio_amp
+    title: "\u751F\u4F53\u589E\u5E45"
+    description: "\u6BCF\u6B21\u653B\u51FB\u6BCF\u547D\u4E2D\u4E00\u540D\u4E0D\u540C\u654C\u4EBA\uFF0C\u4E3A\u4E0B\u4E00\u6B21\u5C04\u51FB\u53E0\u52A0
+      10% \u4F24\u5BB3\uFF1B\u4E0B\u4E00\u67AA\u7528\u5C3D\u3002"
+    special: 1
+    families: 9
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 2
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: stun_amp
+    title: "\u523A\u8033\u56DE\u97F3"
+    description: "\u5BF9\u5DF2\u7729\u6655\u654C\u4EBA\u9020\u6210\u7684\u566A\u503C\u589E\u52A0
+      50%\u3002"
+    special: 1
+    families: 7
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 4
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: wail
+    title: "\u54C0\u568E"
+    description: "\u51FB\u6740\u65F6\u5411\u9644\u8FD1\u654C\u4EBA\u4F20\u5BFC\u672C\u6B21\u547D\u4E2D\u4F24\u5BB3\u7684
+      40%\uFF1B\u53D7\u5899\u4F53\u906E\u6321\uFF0C\u4E0D\u8FDE\u9501\u89E6\u53D1\u54C0\u568E\u3002"
+    special: 1
+    families: 9
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 8
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: shared_buff
+    title: "\u5171\u632F\u9891\u7387"
+    description: "\u6B65\u67AA\u6280\u80FD\u7684\u4E34\u65F6\u589E\u4F24\u4E5F\u53EF\u4F5C\u7528\u4E8E\u5176\u4ED6\u51FA\u6218\u6B66\u5668\u3002"
+    special: 1
+    families: 2
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 16
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: burst
+    title: "\u9891\u632F"
+    description: "\u6539\u4E3A\u6309\u6B21\u89E6\u53D1\u7684\u4E09\u8FDE\u53D1\uFF0C\u4F24\u5BB3
+      +30%\uFF1B\u8FDE\u53D1\u5185\u5C04\u901F\u4E3A 200%\uFF0C\u7EC4\u95F4\u9694\u4E3A\u539F\u95F4\u9694\u7684
+      150%\u3002"
+    special: 1
+    families: 2
+    normalCredits: 1
+    damage: 1.3
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 32
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: sharp_noise
+    title: "\u5C16\u9510\u566A\u9E23"
+    description: "\u6BCF\u53D1\u989D\u5916\u9020\u6210\u5C04\u51FB\u65F6\u81EA\u8EAB\u5F53\u524D\u566A\u503C
+      \xD725% \u7684\u4F24\u5BB3\u3002"
+    special: 1
+    families: 2
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 64
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: double_shot
+    title: "\u53CC\u58F0\u5171\u9E23"
+    description: "8 \u679A\u5F39\u4E38\u6BCF\u9897\u4F24\u5BB3\u7FFB\u500D\uFF08\u57FA\u7840
+      8\xD710\uFF09\uFF0C\u5C04\u51FB\u79EF\u7D2F\u566A\u503C\u589E\u52A0 50%\u3002"
+    special: 1
+    families: 4
+    normalCredits: 1
+    damage: 2
+    selfNoise: 1.5
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 128
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: micro_wave
+    title: "\u5FAE\u58F0\u9707\u8361"
+    description: "\u6B66\u5668\u6280\u80FD\u51B7\u5374\u7F29\u77ED 60%\uFF0C\u566A\u503C\u6D88\u8017\u964D\u4F4E
+      40%\uFF0C\u7729\u6655\u8303\u56F4\u51CF\u534A\u3002"
+    special: 1
+    families: 4
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 0.6
+    cooldown: 0.4
+    skillRange: 0.5
+    effect: 256
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: direct_warhead
+    title: "\u94BB\u58F0\u5F39\u5934"
+    description: "\u7206\u70B8\u5F39\u4F53\u76F4\u63A5\u547D\u4E2D\u7684\u654C\u4EBA\u989D\u5916\u53D7\u5230
+      50% \u4F24\u5BB3\uFF1B\u5176\u4ED6\u7206\u70B8\u76EE\u6807\u4E0D\u53D7\u6B64\u52A0\u6210\u3002"
+    special: 1
+    families: 8
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 512
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: heavy_warhead
+    title: "\u91CD\u578B\u5F39\u5934"
+    description: "\u7206\u70B8\u5F39\u4F53\u53D8\u4E3A\u53D7\u91CD\u529B\u5F71\u54CD\u7684\u629B\u7269\u7EBF\uFF0C\u4F24\u5BB3\u589E\u52A0
+      30%\u3002"
+    special: 1
+    families: 8
+    normalCredits: 1
+    damage: 1.3
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 1024
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: inner_ear
+    title: "\u6269\u5C55\u5185\u8033"
+    description: "\u73A9\u5BB6\u566A\u503C\u4E0A\u9650\u589E\u52A0 10%\u3002"
+    special: 0
+    families: 16
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1.1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: base_noise
+    title: "\u5E95\u566A"
+    description: "\u57FA\u7840\u566A\u503C +10\uFF1B\u4F4E\u4E8E\u57FA\u7840\u566A\u503C\u65F6\uFF0C\u505C\u6B62\u6D3B\u52A8
+      1 \u79D2\u540E\u6BCF\u79D2\u56DE\u590D 5 \u566A\u503C\u3002"
+    special: 0
+    families: 16
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 10
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: incoming_down
+    title: "\u964D\u566A"
+    description: "\u6BCF\u6B21\u53D7\u5230\u7684\u653B\u51FB\u566A\u503C\u51CF\u5C11
+      1\uFF0C\u6700\u4F4E\u4E3A 0\u3002"
+    special: 0
+    families: 16
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 1
+    decayBonus: 0
+    extraGland: 0
+  - id: decay_up
+    title: "\u7F13\u51B2"
+    description: "\u6BCF\u79D2\u81EA\u7136\u8870\u51CF\u7684\u566A\u503C\u589E\u52A0
+      1\u3002"
+    special: 0
+    families: 16
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 1
+    extraGland: 0
+  - id: speed_up
+    title: "\u8FC5\u6377"
+    description: "\u79FB\u52A8\u901F\u5EA6\u589E\u52A0 15%\u3002"
+    special: 0
+    families: 16
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1.15
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: regen_up
+    title: "\u518D\u751F"
+    description: "\u58F0\u817A\u81EA\u7136\u56DE\u590D\u6240\u9700\u65F6\u95F4\u7F29\u77ED
+      20%\u3002"
+    special: 0
+    families: 16
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 0.8
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 0
+  - id: extra_gland
+    title: "\u989D\u5916\u58F0\u817A"
+    description: "\u58F0\u817A\u4E0A\u9650 +1\uFF0C\u5E76\u8865\u5145\u8FD9\u679A\u989D\u5916\u58F0\u817A\u3002"
+    special: 1
+    families: 16
+    normalCredits: 1
+    damage: 1
+    selfNoise: 1
+    fireRate: 1
+    skillCost: 1
+    cooldown: 1
+    skillRange: 1
+    effect: 0
+    noiseCapacity: 1
+    moveSpeed: 1
+    glandInterval: 1
+    baseNoise: 0
+    incomingReduction: 0
+    decayBonus: 0
+    extraGland: 1

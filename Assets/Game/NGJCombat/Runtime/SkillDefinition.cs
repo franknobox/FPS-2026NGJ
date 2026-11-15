@@ -41,5 +41,8 @@ namespace NGJ.Combat
         // 共鸣反击倍率：吸收的原始噪值乘以此倍率后加入反击伤害。
         [Tooltip("吸收的原始噪值乘以此倍率后加入反击伤害。")]
         [Min(0)] public float absorbedNoiseMultiplier = 1;
+        [System.NonSerialized] public WeaponDefinition sourceWeapon;
+        [System.NonSerialized] public int extraTriggers;
+        [System.NonSerialized] public float rangeMultiplier=1;
     }
 }

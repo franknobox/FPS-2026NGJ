@@ -2,6 +2,8 @@
 // 配置可在 Unity Inspector 修改；米、秒为默认距离和时间单位。
 using System;
 using System.Collections.Generic;
+using System.Collections;
+using NGJ.Progression;
 using UnityEngine;
 
 namespace NGJ.Combat
@@ -29,8 +31,11 @@ namespace NGJ.Combat
         public event Action<WeaponDefinition> Fired;
         public event Action<WeaponDefinition> Equipped;
         readonly Dictionary<WeaponDefinition, float> nextShots = new Dictionary<WeaponDefinition, float>();
+        readonly Dictionary<WeaponDefinition,int> nextShotStacks=new Dictionary<WeaponDefinition,int>();
+        bool bursting;
+        public bool RequiresPress=>equipped && (equipped.evolution&EvolutionEffect.Burst)!=0;
         // 重开关卡时清理各武器射击冷却。
-        public void ResetWeapons() { nextShots.Clear(); }
+        public void ResetWeapons() { StopAllCoroutines();bursting=false;nextShots.Clear();nextShotStacks.Clear(); }
         // 初始化组件引用和资源范围。
         void Awake()
         {
@@ -48,18 +53,40 @@ namespace NGJ.Combat
         // 空放不增加噪值；一次普攻首次有效命中后结算一次自身噪值。
         public bool TryFire()
         {
-            if (!isActiveAndEnabled || !equipped || !owner || !owner.CanAct ||
+            if (bursting || !isActiveAndEnabled || !equipped || !owner || !owner.CanAct ||
                 (nextShots.TryGetValue(equipped, out float next) && Time.time < next)) return false;
             if ((equipped.type == WeaponType.BaoMingGrenade || equipped.type == WeaponType.RocketLauncher) &&
                 (!equipped.projectilePrefab || !equipped.projectilePrefab.explosionPrefab)) return false;
             Transform origin = fireOrigin ? fireOrigin : transform;
-            HitInfo hit = new HitInfo { source = owner, noise = equipped.targetNoise * owner.DamageMultiplier,
-                penetration = equipped.penetration, knockback=equipped.knockback, pushedTargets=new HashSet<CombatTarget>() };
             Vector3 spawnPosition = muzzle ? muzzle.position : origin.position;
             if (equipped.projectilePrefab && Physics.Linecast(origin.position, spawnPosition, CombatLayers.WorldMask, QueryTriggerInteraction.Ignore)) return false;
+            if(RequiresPress)
+            {
+                var weapon=equipped;nextShots[weapon]=Time.time+Mathf.Max(.03f,weapon.fireInterval*1.5f);
+                bursting=true;StartCoroutine(Burst(weapon));return true;
+            }
             nextShots[equipped] = Time.time + Mathf.Max(.01f, equipped.fireInterval);
+            FireOne(equipped);return true;
+        }
+        IEnumerator Burst(WeaponDefinition weapon)
+        {
+            for(int i=0;i<3;i++)
+            {
+                if(!owner || !owner.CanAct || equipped!=weapon)break;
+                FireOne(weapon);if(i<2)yield return new WaitForSeconds(Mathf.Max(.01f,weapon.fireInterval*.5f));
+            }
+            bursting=false;
+        }
+        void FireOne(WeaponDefinition weapon)
+        {
+            Transform origin=fireOrigin?fireOrigin:transform;
+            Vector3 spawnPosition=muzzle?muzzle.position:origin.position;
+            float damage=weapon.targetNoise*owner.DamageMultiplierFor(weapon);
+            if((weapon.evolution&EvolutionEffect.SharpNoise)!=0)damage+=owner.Noise*.25f;
+            if(nextShotStacks.TryGetValue(weapon,out int stacks)){damage*=1+stacks*.1f;nextShotStacks[weapon]=0;}
+            HitInfo hit=DecorateHit(new HitInfo{source=owner,noise=damage,penetration=weapon.penetration,knockback=weapon.knockback,pushedTargets=new HashSet<CombatTarget>()},weapon);
             bool charged = false;
-            float selfNoise = equipped.selfNoise;
+            float selfNoise = weapon.selfNoise;
             var shooter = owner;
             hit.hitConfirmed = () =>
             {
@@ -68,13 +95,14 @@ namespace NGJ.Combat
                 if (shooter) shooter.RegisterShot(selfNoise);
             };
             owner.RegisterShot(0);
-            if (equipped.projectilePrefab)
+            if (weapon.projectilePrefab)
             {
-                Vector3 aim = origin.position + origin.forward * equipped.range;
-                if (Physics.Raycast(origin.position, origin.forward, out var contact, equipped.range, hitMask, QueryTriggerInteraction.Ignore)) aim = contact.point;
+                Vector3 aim = origin.position + origin.forward * weapon.range;
+                if (Physics.Raycast(origin.position, origin.forward, out var contact, weapon.range, hitMask, QueryTriggerInteraction.Ignore)) aim = contact.point;
                 Vector3 direction = (aim - spawnPosition).normalized;
-                Instantiate(equipped.projectilePrefab, spawnPosition, Quaternion.LookRotation(direction))
-                    .Initialize(hit, direction * equipped.projectileSpeed);
+                var projectile=Instantiate(weapon.projectilePrefab, spawnPosition, Quaternion.LookRotation(direction));
+                if((weapon.evolution&EvolutionEffect.HeavyWarhead)!=0)projectile.gravity=12;
+                projectile.Initialize(hit, direction * weapon.projectileSpeed);
             }
             else
                 for (int pellet = 0; pellet < Mathf.Max(1, equipped.pelletCount); pellet++)
@@ -83,8 +111,36 @@ namespace NGJ.Combat
                     Vector3 direction = (origin.forward + origin.right * spread.x + origin.up * spread.y).normalized;
                     FireRay(origin.position, direction, hit);
                 }
-            Fired?.Invoke(equipped);
-            return true;
+            Fired?.Invoke(weapon);
+        }
+        public HitInfo DecorateHit(HitInfo hit,WeaponDefinition weapon)
+        {
+            if(!weapon)return hit;
+            var effects=weapon.evolution;var seen=new HashSet<CombatTarget>();
+            if((effects&EvolutionEffect.StunAmplify)!=0)hit.stunnedMultiplier=1.5f;
+            if((effects&EvolutionEffect.DirectWarhead)!=0)hit.directMultiplier=1.5f;
+            float radius=weapon.wailRadius;
+            hit.resolved=(target,amount,killed)=>
+            {
+                if(amount<=0 || !seen.Add(target))return;
+                if((effects&EvolutionEffect.BioAmplify)!=0){nextShotStacks.TryGetValue(weapon,out int n);nextShotStacks[weapon]=n+1;}
+                if(killed && (effects&EvolutionEffect.Wail)!=0)Wail(target,amount*.4f,radius,weapon.penetration);
+            };
+            return hit;
+        }
+        void Wail(CombatTarget victim,float noise,float radius,ArmorGrade penetration)
+        {
+            if(!victim || !owner)return;
+            Vector3 center=victim.transform.position+Vector3.up*.5f;
+            var seen=new HashSet<CombatTarget>();
+            foreach(var collider in Physics.OverlapSphere(center,radius,CombatLayers.PlayerAttackMask,QueryTriggerInteraction.Collide))
+            {
+                var target=CombatUtility.Resolve(collider,out bool weak);
+                if(!CombatUtility.CanHit(owner,target)||target==victim||!seen.Add(target))continue;
+                Vector3 point=collider.ClosestPoint(center);
+                if(!CombatUtility.Visible(center,point,CombatLayers.WorldMask))continue;
+                target.ReceiveHit(new HitInfo{source=owner,noise=noise,penetration=penetration,point=point,direction=(point-center).normalized},weak);
+            }
         }
         // 按距离处理射线命中；墙体阻挡，按配置穿透多个目标。
         void FireRay(Vector3 origin, Vector3 direction, HitInfo hit)

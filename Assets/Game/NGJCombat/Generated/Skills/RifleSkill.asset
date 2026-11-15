@@ -14,13 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.SkillDefinition
   displayName: "\u5636\u9E23\u4F53\xB7\u589E\u4F24"
   resource: 0
-  cost: 15
-  cooldown: 2
+  cost: 30
+  cooldown: 15
   effect: 2
   hitboxPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
   projectileSpeed: 15
   hit:
+    knockback: 0
     source: {fileID: 0}
     noise: 0
     penetration: 0

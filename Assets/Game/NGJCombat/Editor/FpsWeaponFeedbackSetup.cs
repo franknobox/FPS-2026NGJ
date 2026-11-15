@@ -78,8 +78,9 @@ namespace NGJ.EditorTools
                         if(renderers.Length==0)throw new Exception("Rocket mesh missing");
                         var bounds=renderers[0].bounds;foreach(var r in renderers)bounds.Encapsulate(r.bounds);
                         var center=model.transform.InverseTransformPoint(bounds.center);
-                        float scale=.65f/Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z);
+                        float scale=.13f/Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z);
                         model.transform.localScale=Vector3.one*scale;model.transform.localPosition=-center*scale;
+                        WeaponFeelSetup.ConfigureRocketParticles(model);
                         var audio=rocket.GetComponent<AudioSource>();if(!audio)audio=rocket.AddComponent<AudioSource>();
                         audio.clip=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/FPS Engine/SFX/Weapons/RocketLauncher/Rocket_AirTravel_Loop_SFX.wav");
                         audio.loop=true;audio.playOnAwake=true;audio.spatialBlend=1;audio.volume=.5f;audio.minDistance=2;audio.maxDistance=35;
@@ -92,7 +93,7 @@ namespace NGJ.EditorTools
                 EditorUtility.SetDirty(weapon);
             }
             AssetDatabase.SaveAssets();
-            foreach(string scene in new[]{SlugWhitebox.Editor.SlugWhiteboxBuilder.ScenePath,Wasteland.Editor.WastelandLevelBuilder.ScenePath})
+            foreach(string scene in new[]{Wasteland.Editor.WastelandLevelBuilder.ScenePath})
             {
                 EditorSceneManager.OpenScene(scene);
                 var game=Object.FindFirstObjectByType<SlugGame>();

@@ -333,7 +333,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyCombatant
   team: 1
-  maxNoise: 1120
+  maxNoise: 80
   currentNoise: 0
   armor: 2
   weakPointArmor: 0

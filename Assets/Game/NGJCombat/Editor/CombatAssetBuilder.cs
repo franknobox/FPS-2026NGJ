@@ -21,17 +21,15 @@ namespace NGJ.Combat.Editor
             var wideWave = Hitbox("WideStunWave", 12, 0, .15f, 90);
             var groundWave = Hitbox("GroundWave", 5, 0, .15f, 180);
             var resonanceWave = Hitbox("ResonanceWave", 12, 0, .15f, 180);
-            var explosion = Hitbox("GrenadeExplosion", 4, 0, .1f, 180);
             var stickyExplosion = Hitbox("StickyExplosion", 6, 0, .1f, 180);
-            var grenade = Projectile("Grenade", explosion, false);
             var sticky = Projectile("StickyBomb", stickyExplosion, true);
 
-            var sniperSkill = Skill("SniperSkill", "尖啸体·强力声波", ResourceType.Noise, 20, SkillEffect.Hitbox,
+            var sniperSkill = Skill("SniperSkill", "尖啸体·强力声波", ResourceType.Noise, 40, SkillEffect.Hitbox,
                 new HitInfo { noise = 90, penetration = ArmorGrade.High }, sniperWave);
-            var rifleSkill = Skill("RifleSkill", "嘶鸣体·增伤", ResourceType.Noise, 15, SkillEffect.DamageBuff, default);
-            var shotgunSkill = Skill("ShotgunSkill", "撼音体·震晕声波", ResourceType.Noise, 20, SkillEffect.Hitbox,
+            var rifleSkill = Skill("RifleSkill", "嘶鸣体·增伤", ResourceType.Noise, 30, SkillEffect.DamageBuff, default);
+            var shotgunSkill = Skill("ShotgunSkill", "撼声体·震晕声波", ResourceType.Noise, 35, SkillEffect.Hitbox,
                 new HitInfo { penetration = ArmorGrade.Medium, stunDuration = 2 }, closeWave);
-            var grenadeSkill = Skill("GrenadeSkill", "爆鸣体·黏质炸弹", ResourceType.Noise, 25, SkillEffect.Projectile,
+            Skill("GrenadeSkill", "爆鸣体·黏质炸弹", ResourceType.Noise, 20, SkillEffect.Projectile,
                 new HitInfo { penetration = ArmorGrade.High, vulnerabilityDuration = 4, vulnerabilityMultiplier = 1.5f },
                 projectile: sticky);
             Skill("SiMing", "嘶鸣", ResourceType.Gland, 1, SkillEffect.Hitbox,
@@ -41,28 +39,24 @@ namespace NGJ.Combat.Editor
             Skill("GongMing", "共鸣", ResourceType.Gland, 1, SkillEffect.Resonance,
                 new HitInfo { penetration = ArmorGrade.Medium }, resonanceWave);
 
-            Weapon("JianXiao", "尖啸体", WeaponType.JianXiaoSniper, 60, 20, .9f, 100, ArmorGrade.High, sniperSkill, 1, 0, 32);
-            Weapon("SiMing", "嘶鸣体", WeaponType.SiMingRifle, 8, 2, .12f, 40, ArmorGrade.Medium, rifleSkill);
-            Weapon("HanYin", "撼音体", WeaponType.HanYinShotgun, 10, 15, .7f, 12, ArmorGrade.Low, shotgunSkill, 6, 8);
-            Weapon("BaoMing", "爆鸣体", WeaponType.BaoMingGrenade, 85, 25, 1.2f, 35, ArmorGrade.High, grenadeSkill,
-                projectile: grenade);
-            PlayerPrefab();
+            Weapon("JianXiao", "尖啸体", WeaponType.JianXiaoSniper, 50, 15, .9f, 100, ArmorGrade.High, sniperSkill, 1, 0, 32);
+            Weapon("SiMing", "嘶鸣体", WeaponType.SiMingRifle, 10, 2, .12f, 40, ArmorGrade.Medium, rifleSkill);
+            Weapon("HanYin", "撼声体", WeaponType.HanYinShotgun, 5, 10, .7f, 12, ArmorGrade.Low, shotgunSkill, 8, 3);
             EnemyAssets();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("NGJCombat：配置与预制体已生成。所有数值均为测试占位值，已有资源不会覆盖。");
+            Debug.Log("NGJCombat：已补齐缺少的配置与预制体，已有资源保持原值。");
         }
 
         static T Existing<T>(string path) where T : Object => AssetDatabase.LoadAssetAtPath<T>(path);
 
-        // 定性特性来自策划表“敌人”第 2~4 行；所有具体数值仅供白盒测试。
         static void EnemyAssets()
         {
-            Enemy("ChanYin", "颤音虫", EnemyKind.ChanYin, 300, ArmorGrade.Low, 5, 3, .6f,
+            Enemy("ChanYin", "颤音虫", EnemyKind.ChanYin, 15, ArmorGrade.Low, 5, 5, 2.2f,
                 EnemyQuantity.Many, true, EnemyAttackMode.Intermittent, "大量低质敌人，骚扰；飞行、较快、难以命中；被击晕时坠落地面。高频、低伤害间隙攻击。");
-            Enemy("MiYin", "觅音虫", EnemyKind.MiYin, 14, ArmorGrade.Low, 3, 10, 1.5f,
+            Enemy("MiYin", "觅音虫", EnemyKind.MiYin, 30, ArmorGrade.Low, 3, 15, 3.2f,
                 EnemyQuantity.Normal, false, EnemyAttackMode.Intermittent, "最普通的敌人；地面、速度适中；攻击和眩晕时暴露低介质弱点。频率和伤害适中的间隙攻击。");
-            Enemy("ZhenYin", "震音虫", EnemyKind.ZhenYin, 1120, ArmorGrade.High, 1.5f, 12, 3,
+            Enemy("ZhenYin", "震音虫", EnemyKind.ZhenYin, 80, ArmorGrade.High, 1.5f, 5, 5.5f,
                 EnemyQuantity.Few, false, EnemyAttackMode.ContinuousBeam, "重型单位，少量高质；地面、较慢；攻击和眩晕时暴露低介质弱点。低频、高伤害持续射线攻击。");
         }
 
@@ -192,29 +186,6 @@ namespace NGJ.Combat.Editor
             weapon.maxTargetsPerPellet = maxTargets;
             weapon.projectilePrefab = projectile;
             AssetDatabase.CreateAsset(weapon, path);
-        }
-        static void PlayerPrefab()
-        {
-            string path = Root + "/Prefabs/PlayerCombatRig.prefab";
-            if (Existing<GameObject>(path)) return;
-            var go = new GameObject("PlayerCombatRig");
-            go.layer = CombatLayers.Player;
-            var stats = go.AddComponent<PlayerCombatStats>();
-            stats.team = 0;
-            var origin = new GameObject("CastOrigin").transform;
-            origin.SetParent(go.transform, false);
-            origin.localPosition = Vector3.up * 1.6f;
-            var runner = go.AddComponent<SkillRunner>();
-            runner.owner = stats;
-            runner.castOrigin = origin;
-            var controller = go.AddComponent<CombatWeaponController>();
-            controller.owner = stats;
-            controller.hitMask = CombatLayers.PlayerAttackMask;
-            controller.skills = runner;
-            controller.fireOrigin = origin;
-            controller.equipped = Existing<WeaponDefinition>(Root + "/Weapons/SiMing.asset");
-            PrefabUtility.SaveAsPrefabAsset(go, path);
-            Object.DestroyImmediate(go);
         }
     }
 }

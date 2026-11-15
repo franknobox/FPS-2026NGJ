@@ -30,6 +30,9 @@ namespace NGJ.Combat
     {
         // 同一次普攻的弹丸和爆炸共享回调，由发射方保证只结算一次自身噪值。
         [NonSerialized] public Action hitConfirmed;
+        [NonSerialized] public Action<CombatTarget,float,bool> resolved;
+        [NonSerialized] public CombatTarget directTarget;
+        [NonSerialized] public float directMultiplier,stunnedMultiplier;
         [NonSerialized] public System.Collections.Generic.HashSet<CombatTarget> pushedTargets;
         public float knockback;
         // 攻击来源：运行时自动设置，用于敌我过滤。
