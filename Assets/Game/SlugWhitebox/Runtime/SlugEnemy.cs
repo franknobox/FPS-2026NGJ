@@ -84,7 +84,17 @@ namespace SlugWhitebox
             if(weakSkin)weakSkin.color=combat.WeakPointExposed?Color.yellow:Color.gray;
             if(!agent || !agent.isOnNavMesh)return;
             agent.isStopped=!game.Running || combat.IsStunned || combat.IsAttacking || combat.IsWindingUp;
-            if(!agent.isStopped && Time.time>pathAt){pathAt=Time.time+.25f;agent.SetDestination(game.PlayerPosition);}
+            if(!agent.isStopped && Time.time>pathAt)
+            {
+                pathAt=Time.time+.25f;
+                var destination=game.PlayerPosition;
+                if(combat.hasMovementBounds)
+                {
+                    destination.x=Mathf.Clamp(destination.x,combat.movementBounds.min.x+agent.radius,combat.movementBounds.max.x-agent.radius);
+                    destination.z=Mathf.Clamp(destination.z,combat.movementBounds.min.z+agent.radius,combat.movementBounds.max.z-agent.radius);
+                }
+                agent.SetDestination(destination);
+            }
         }
         // 外部交互也走真实受击接口，不直接改血量。
         public void Hit(float damage) => combat.ReceiveHit(new HitInfo{source=game.stats,noise=damage,penetration=ArmorGrade.High});

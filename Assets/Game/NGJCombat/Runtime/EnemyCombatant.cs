@@ -19,6 +19,8 @@ namespace NGJ.Combat
         public bool IsAttacking { get; private set; }
         public bool IsWindingUp { get; private set; }
         public bool CanAct => IsAlive && !IsStunned;
+        [Tooltip("正式关卡的活动范围；白盒及通用预制体保持关闭。")] public bool hasMovementBounds;
+        public Bounds movementBounds;
         // Player-facing names always come from the design definition, never mesh filenames.
         public string DisplayName => definition ? definition.displayName : "敌人";
         public event Action AttackStarted;
@@ -27,6 +29,7 @@ namespace NGJ.Combat
         public event Action<Vector3, Vector3> ShotFired; // 每次检测后的射线起终点，可用于画线和音效。
         CharacterController motor;
         float nextAttackAt, windupEndsAt, beamEndsAt, nextTickAt, nextSearchAt, verticalSpeed;
+        static readonly float[] AvoidanceAngles = { 60f, -60f, 100f, -100f };
 
         protected override void Awake()
         {
@@ -81,8 +84,22 @@ namespace NGJ.Combat
             }
             Vector3 movement = !inRange && !IsAttacking && !IsWindingUp ? horizontal.normalized * definition.moveSpeed : Vector3.zero;
             if (definition.flying)
+            {
+                if (hasMovementBounds && movement.sqrMagnitude > .01f && Physics.SphereCast(transform.position + Vector3.up * motor.height * .5f,
+                    motor.radius * .8f, movement.normalized, out _, 2, CombatLayers.WorldMask, QueryTriggerInteraction.Ignore))
+                {
+                    Vector3 avoided = Vector3.zero;
+                    foreach (float angle in AvoidanceAngles)
+                    {
+                        var direction = Quaternion.Euler(0, angle, 0) * horizontal.normalized;
+                        if (!Physics.SphereCast(transform.position + Vector3.up * motor.height * .5f, motor.radius * .8f, direction,
+                            out _, 2, CombatLayers.WorldMask, QueryTriggerInteraction.Ignore)) { avoided = direction * definition.moveSpeed; break; }
+                    }
+                    movement = avoided;
+                }
                 movement.y = Mathf.Clamp(attackTarget.transform.position.y + definition.flightHeight - transform.position.y,
                     -definition.moveSpeed, definition.moveSpeed);
+            }
             Move(movement, false);
         }
 
@@ -97,7 +114,13 @@ namespace NGJ.Combat
                 velocity.y = verticalSpeed;
             }
             else verticalSpeed = 0;
-            motor.Move(velocity * Time.deltaTime);
+            Vector3 next = transform.position + velocity * Time.deltaTime;
+            if (hasMovementBounds)
+            {
+                next.x = Mathf.Clamp(next.x, movementBounds.min.x + motor.radius, movementBounds.max.x - motor.radius);
+                next.z = Mathf.Clamp(next.z, movementBounds.min.z + motor.radius, movementBounds.max.z - motor.radius);
+            }
+            motor.Move(next - transform.position);
             if (falling) airborne = !motor.isGrounded;
         }
 

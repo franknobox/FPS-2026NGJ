@@ -34,6 +34,7 @@ Shader "ART/Comic/Toon Lit"
         [Enum(UnityEngine.Rendering.CullMode)] _Cull("背面剔除", Float) = 2
         [Toggle] _WorldSpaceUV("世界坐标贴图", Float) = 0
         _UVs("世界坐标贴图尺寸", Float) = 1
+        [Toggle] _VertexTint("顶点地表染色", Float) = 0
         [HideInInspector] _MainTex("Legacy texture", 2D) = "white" {}
         [HideInInspector] _Color("Legacy color", Color) = (1,1,1,1)
     }
@@ -53,6 +54,7 @@ Shader "ART/Comic/Toon Lit"
             half _Contrast, _ColorLevels, _HatchStrength, _HatchScale;
             half _AlphaClip, _Cutoff, _Cull, _WorldSpaceUV;
             float _UVs;
+            half _VertexTint;
         CBUFFER_END
         TEXTURE2D(_MetallicGlossMap); SAMPLER(sampler_MetallicGlossMap);
         TEXTURE2D(_OcclusionMap); SAMPLER(sampler_OcclusionMap);
@@ -105,6 +107,7 @@ Shader "ART/Comic/Toon Lit"
                 float4 tangentOS:TANGENT;
                 float2 uv:TEXCOORD0;
                 float2 lightmapUV:TEXCOORD1;
+                half4 color:COLOR;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             struct Varyings
@@ -116,6 +119,7 @@ Shader "ART/Comic/Toon Lit"
                 half4 tangentWS:TEXCOORD3;
                 half4 fogAndVertexLight:TEXCOORD4;
                 DECLARE_LIGHTMAP_OR_SH(lightmapUV,vertexSH,5);
+                half4 color:COLOR;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
                 UNITY_VERTEX_OUTPUT_STEREO
             };
@@ -132,6 +136,7 @@ Shader "ART/Comic/Toon Lit"
                 output.normalWS=normal.normalWS;
                 output.tangentWS=half4(normal.tangentWS,input.tangentOS.w*GetOddNegativeScale());
                 output.uv=TRANSFORM_TEX(input.uv,_BaseMap);
+                output.color=input.color;
                 output.fogAndVertexLight=half4(ComputeFogFactor(position.positionCS.z),VertexLighting(position.positionWS,normal.normalWS));
                 OUTPUT_LIGHTMAP_UV(input.lightmapUV,unity_LightmapST,output.lightmapUV);
                 OUTPUT_SH(normal.normalWS,output.vertexSH);
@@ -157,6 +162,7 @@ Shader "ART/Comic/Toon Lit"
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 half3 geometricNormal=NormalizeNormalPerPixel(input.normalWS);
                 half4 base=ComicBase(input.uv,input.positionWS,geometricNormal);
+                base.rgb*=lerp(half3(1,1,1),input.color.rgb,_VertexTint);
                 #if defined(_ALPHATEST_ON)
                     clip(base.a-_Cutoff);
                 #endif
@@ -285,13 +291,14 @@ Shader "ART/Comic/Toon Lit"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _EMISSION
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/MetaInput.hlsl"
-            struct MetaAttributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float2 uv1:TEXCOORD1; float2 uv2:TEXCOORD2; };
-            struct MetaVaryings { float4 positionCS:SV_POSITION; float2 uv:TEXCOORD0; float3 positionWS:TEXCOORD1; half3 normalWS:TEXCOORD2; };
+            struct MetaAttributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float2 uv1:TEXCOORD1; float2 uv2:TEXCOORD2; half4 color:COLOR; };
+            struct MetaVaryings { float4 positionCS:SV_POSITION; float2 uv:TEXCOORD0; float3 positionWS:TEXCOORD1; half3 normalWS:TEXCOORD2; half4 color:COLOR; };
             MetaVaryings ComicMetaVertex(MetaAttributes input)
             {
                 MetaVaryings output;
                 output.positionCS=MetaVertexPosition(input.positionOS,input.uv1,input.uv2,unity_LightmapST,unity_DynamicLightmapST);
                 output.uv=TRANSFORM_TEX(input.uv,_BaseMap);
+                output.color=input.color;
                 output.positionWS=TransformObjectToWorld(input.positionOS.xyz);
                 output.normalWS=TransformObjectToWorldNormal(input.normalOS);
                 return output;
@@ -299,6 +306,7 @@ Shader "ART/Comic/Toon Lit"
             half4 ComicMetaFragment(MetaVaryings input):SV_Target
             {
                 half4 base=ComicBase(input.uv,input.positionWS,normalize(input.normalWS));
+                base.rgb*=lerp(half3(1,1,1),input.color.rgb,_VertexTint);
                 #if defined(_ALPHATEST_ON)
                     clip(base.a-_Cutoff);
                 #endif

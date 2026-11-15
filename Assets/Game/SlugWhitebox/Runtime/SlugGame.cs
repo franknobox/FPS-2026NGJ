@@ -18,6 +18,7 @@ namespace SlugWhitebox
         public AudioClip pickupSound, killSound, hitSound;
         public SlugSpawn[] spawns;
         public SlugHud hud;
+        public SlugLevelFlow levelFlow;
         public enum Mode { Briefing, Playing, Paused, Result }
         public Mode mode;
         public bool Running => mode == Mode.Playing;
@@ -85,10 +86,11 @@ namespace SlugWhitebox
             for(int i=0;i<4;i++) { heat[i]=0; locked[i]=false; }
             kills=runBiomass=0; sector=-1; runTime=0; settled=false;
             weapon=skill=0; shotAt=0; yaw=pitch=0;
-            Warp(new Vector3(0,.15f,-2)); player.rotation=Quaternion.identity;
+            Warp(levelFlow ? levelFlow.StartPosition : new Vector3(0,.15f,-2)); player.rotation=Quaternion.identity;
             view.transform.localPosition=new Vector3(0,1.62f,0);view.transform.localRotation = Quaternion.identity;
             mode=Mode.Playing; SetCursor(true);
             if(weaponLoadout==null || weaponLoadout.Length!=2 || !ConfigureLoadout(weaponLoadout[0],weaponLoadout[1])) ConfigureLoadout(2,weaponDefinitions.Length>4?4:0);
+            if(levelFlow)levelFlow.ResetRun(this);
             hud.Refresh();
         }
 
@@ -186,6 +188,7 @@ namespace SlugWhitebox
 
         void UpdateFlow()
         {
+            if(levelFlow){levelFlow.Tick(this);return;}
             int next=sector+1;
             if(!smoke && Remaining==0 && next<3 && player.position.z >= (next==0?3:next*30+1)) ActivateSector(next);
             if(sector==2 && Remaining==0 && Vector3.Distance(player.position,exit.position)<3.5f) EndRun("回收完成 / 任务成功");
@@ -225,6 +228,7 @@ namespace SlugWhitebox
             kills++; Play(killSound,.25f);
             SpawnDrop(enemy.transform.position+Vector3.up*.5f);
             Pulse(enemy.AimPoint,1.8f,Color.white,.2f);
+            if(levelFlow){levelFlow.OnEnemyKilled(this,enemy);return;}
             if(Remaining==0) Message(sector<2?"区域肃清 · 推进下一区":"区域肃清 · 前往 EXIT",4);
         }
 
@@ -288,6 +292,7 @@ namespace SlugWhitebox
             foreach(var e in enemies) if(e && e.agent && e.agent.isOnNavMesh) e.agent.isStopped=true;
             foreach(var e in enemies) if(e && e.combat) e.combat.enabled=false;
             runner.Cancel(); stats.enabled=false; ClearEffects();
+            if(levelFlow)levelFlow.StopRun();
         }
         IEnumerator RestartAfterDeath(int generation)
         {
