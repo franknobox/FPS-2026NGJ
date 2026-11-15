@@ -29,7 +29,7 @@ namespace Wasteland.Editor
         static readonly List<Bounds> Floors = new List<Bounds>();
         static readonly List<Bounds> Obstacles = new List<Bounds>();
         static Transform generated, floorRoot, frameRoot, propRoot, decorationRoot, spawnRoot;
-        static Material ground, rock, metal, amber, open, closed;
+        static Material ground, metal, amber, open, closed;
         static System.Random random;
 
         [MenuItem("循声虫族/正式关卡/打开荒野前哨")]
@@ -66,7 +66,7 @@ namespace Wasteland.Editor
             floorRoot = Group("可行走地面碰撞", generated);
             frameRoot = Group("围墙与缓冲", generated);
             propRoot = Group("内部布局 · 种子 " + seed, generated);
-            decorationRoot = Group("荒野地表与碎石", generated);
+            decorationRoot = Group("荒野地表", generated);
             spawnRoot = Group("已验证出生点", generated);
             PrepareMaterials();
             var director = game.gameObject.AddComponent<WastelandRunDirector>();
@@ -82,10 +82,14 @@ namespace Wasteland.Editor
                 area.exit = Gate("出口 " + (i+1), Exits[i], true, i==2?"EXIT":"CLEAR");
                 director.areas[i] = area;
                 float x0=center.x-size.x*.5f,x1=center.x+size.x*.5f,z0=center.z-size.y*.5f,z1=center.z+size.y*.5f;
-                WallWithOpening(new Vector3(x0,0,z0),new Vector3(x1,0,z0),Entrances[i],8);
-                WallLine(new Vector3(x1,0,z0),new Vector3(x1,0,z1));
-                WallWithOpening(new Vector3(x1,0,z1),new Vector3(x0,0,z1),Exits[i],8);
-                WallLine(new Vector3(x0,0,z1),new Vector3(x0,0,z0));
+                var corners=new[]{new Vector3(x0,0,z0),new Vector3(x1,0,z0),new Vector3(x1,0,z1),new Vector3(x0,0,z1)};
+                for(int c=0;c<4;c++)Corner(corners[c],180-c*90);
+                for(int c=0;c<4;c++)
+                {
+                    var a=corners[c];var b=corners[(c+1)%4];var direction=(b-a).normalized;
+                    a+=direction*4;b-=direction*3.414f;
+                    if(c==0||c==2)WallWithOpening(a,b,c==0?Entrances[i]:Exits[i],8);else WallLine(a,b);
+                }
             }
             // The same wide floor continues through both doglegs and the starting/exit pockets.
             Floor("起点准备区",new Vector3(0,0,-28),new Vector2(10,16));
@@ -100,7 +104,7 @@ namespace Wasteland.Editor
             var end = new GameObject("撤离点 EXIT").transform; end.SetParent(generated); end.position=new Vector3(-6,0,151); game.exit=end;
             Text("EXIT",new Vector3(-6,3,153.5f),.075f,frameRoot);
             PlaceLandmarks(); PlaceInterior(seed);
-            Terrain(); EdgeRocks(seed); Lighting(light,game.view);
+            Terrain(); Lighting(light,game.view);
             game.player.position = director.StartPosition; game.player.rotation=Quaternion.identity;
             game.view.transform.localRotation=Quaternion.identity;
             Physics.SyncTransforms();
@@ -140,6 +144,19 @@ namespace Wasteland.Editor
         {
             Vector3 direction=(b-a).normalized;
             WallLine(a,door-direction*width*.5f); WallLine(door+direction*width*.5f,b);
+        }
+        static void Corner(Vector3 outer,float yaw)
+        {
+            var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(Environment+"墙体02_转角.prefab");
+            var bounds=ArtTools.EnvironmentSizeSetup.ContentBounds(prefab);
+            var rotation=Quaternion.Euler(0,yaw,0);
+            var position=outer-rotation*new Vector3(bounds.max.x,0,bounds.max.z);
+            Prop("墙体02_转角",position,yaw,frameRoot,false);
+            // Seal the two rough mesh arms without changing the art's calibrated dimensions.
+            var armA=Cube("转角墙脚",outer+rotation*new Vector3(-bounds.size.x*.5f,.7f,0),new Vector3(bounds.size.x,1.4f,.55f),metal,frameRoot,true);
+            armA.transform.rotation=rotation;armA.GetComponent<Renderer>().enabled=false;
+            var armB=Cube("转角墙脚",outer+rotation*new Vector3(0,.7f,-bounds.size.z*.5f),new Vector3(.55f,1.4f,bounds.size.z),metal,frameRoot,true);
+            armB.transform.rotation=rotation;armB.GetComponent<Renderer>().enabled=false;
         }
         static void WallLine(Vector3 a,Vector3 b)
         {
@@ -191,32 +208,70 @@ namespace Wasteland.Editor
         }
         static void PlaceLandmarks()
         {
-            Prop("塔",new Vector3(-15,0,9),0,propRoot);
-            Prop("桥",new Vector3(-15,0,-9),90,propRoot);
-            Prop("集装箱",new Vector3(8,0,5),90,propRoot);
-            Prop("集装箱",new Vector3(14,0,-7),0,propRoot);
-            Prop("墙体02_转角",new Vector3(14,0,12),180,propRoot);
+            Prop("塔",new Vector3(-15,0,10),0,propRoot);
+            var firstCommand=Prop("前哨指挥楼",new Vector3(13,0,7),180,propRoot);
+            AttachedBridge(firstCommand,false);
+            Prop("能源站",new Vector3(12,0,-14),0,propRoot);
             Prop("能源站",new Vector3(-3,0,54),0,propRoot);
-            Prop("集装箱",new Vector3(24,0,52),0,propRoot);
-            Prop("集装箱",new Vector3(20,0,67),90,propRoot);
-            Prop("墙体02_转角",new Vector3(-6,0,68),90,propRoot);
+            Prop("塔",new Vector3(27,0,64),0,propRoot);
+            var secondCommand=Prop("前哨指挥楼",new Vector3(1,0,68),90,propRoot);
+            AttachedBridge(secondCommand,true);
             Prop("前哨指挥楼",new Vector3(8,0,128),180,propRoot);
-            Prop("集装箱",new Vector3(-20,0,119),90,propRoot);
-            Prop("集装箱",new Vector3(-6,0,129),0,propRoot);
-            Prop("墙体02_转角",new Vector3(12,0,105),0,propRoot);
+            Prop("塔",new Vector3(-24,0,127),0,propRoot);
+            Prop("能源站",new Vector3(-23,0,108),90,propRoot);
+            Prop("前哨指挥楼",new Vector3(7,0,103),0,propRoot);
+            Vector2[][] containers={
+                new[]{new Vector2(-6,-8),new Vector2(-8,8),new Vector2(5,4),new Vector2(18.5f,1),new Vector2(4,15),new Vector2(-13,16)},
+                new[]{new Vector2(-6,43),new Vector2(7,43),new Vector2(12,61),new Vector2(21,71),new Vector2(29,55),new Vector2(-8,72)},
+                new[]{new Vector2(-19,119),new Vector2(3,116),new Vector2(12,137),new Vector2(-26,137),new Vector2(-10,104),new Vector2(14,120)}};
+            Vector2[][] walls={
+                new[]{new Vector2(-5,1),new Vector2(6,-3),new Vector2(-4,13),new Vector2(-13,-17)},
+                new[]{new Vector2(4,52),new Vector2(-6,63),new Vector2(18,57),new Vector2(28,74)},
+                new[]{new Vector2(-10,116),new Vector2(-3,126),new Vector2(1,110),new Vector2(-25,100)}};
+            for(int room=0;room<3;room++)
+            {
+                for(int i=0;i<containers[room].Length;i++){var p=containers[room][i];Prop("集装箱",new Vector3(p.x,0,p.y),i%2*90,propRoot);}
+                for(int i=0;i<walls[room].Length;i++){var p=walls[room][i];Prop(i==3?"墙体02_转角":"墙体03",new Vector3(p.x,0,p.y),i%2*90,propRoot);}
+            }
         }
         static void PlaceInterior(int seed)
         {
             // Slots keep the central traversal spine clear; the seed changes only internal pieces and offsets.
             Vector2[][] slots={
-                new[]{new Vector2(-7,-8),new Vector2(12,-13),new Vector2(-6,8),new Vector2(5,13),new Vector2(17,3),new Vector2(-15,16)},
-                new[]{new Vector2(4,42),new Vector2(28,42),new Vector2(12,51),new Vector2(8,66),new Vector2(27,72),new Vector2(-9,45)},
-                new[]{new Vector2(-24,102),new Vector2(4,105),new Vector2(-11,111),new Vector2(-20,131),new Vector2(10,137),new Vector2(0,116)}};
+                new[]{new Vector2(-7,-15),new Vector2(3,-12),new Vector2(-8,-3),new Vector2(5,11),new Vector2(18,6),new Vector2(-16,16),new Vector2(-4,5),new Vector2(3,17),new Vector2(18,-4),new Vector2(-18,1),new Vector2(-12,-17),new Vector2(3,-4)},
+                new[]{new Vector2(1,39),new Vector2(29,39),new Vector2(13,51),new Vector2(9,69),new Vector2(27,70),new Vector2(-9,47),new Vector2(21,54),new Vector2(-9,60),new Vector2(17,65),new Vector2(5,74),new Vector2(31,60),new Vector2(11,40)},
+                new[]{new Vector2(-26,99),new Vector2(-4,100),new Vector2(-15,111),new Vector2(-18,133),new Vector2(5,138),new Vector2(-3,116),new Vector2(-28,119),new Vector2(-5,135),new Vector2(14,111),new Vector2(-15,125),new Vector2(-1,108),new Vector2(0,122)}};
             for(int room=0;room<3;room++)for(int i=0;i<slots[room].Length;i++)
             {
                 var slot=slots[room][i];var position=new Vector3(slot.x+(float)(random.NextDouble()-.5)*1.1f,0,slot.y+(float)(random.NextDouble()-.5)*1.1f);
-                Prop("路障"+(1+(i+room+random.Next(3))%6).ToString("00"),position,random.Next(4)*90,propRoot);
+                string name="路障"+(1+(i+room+random.Next(3))%6).ToString("00");float yaw=random.Next(4)*90;
+                var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(Environment+name+".prefab");var local=ArtTools.EnvironmentSizeSetup.ContentBounds(prefab);
+                var rotation=Quaternion.Euler(0,yaw,0);
+                foreach(var offset in new[]{Vector3.zero,new Vector3(2,0,0),new Vector3(-2,0,0),new Vector3(0,0,2),new Vector3(0,0,-2),new Vector3(3,0,3),new Vector3(-3,0,-3)})
+                {
+                    var candidate=position+offset;
+                    var size=yaw%180==0?local.size:new Vector3(local.size.z,local.size.y,local.size.x);
+                    var bounds=new Bounds(candidate+rotation*local.center,size+new Vector3(.9f,0,.9f));
+                    if(Mathf.Abs(candidate.x-Centers[room].x)>Sizes[room].x*.5f-3||Mathf.Abs(candidate.z-Centers[room].z)>Sizes[room].y*.5f-3)continue;
+                    if(Vector3.Distance(candidate,Entrances[room])<6||Vector3.Distance(candidate,Exits[room])<6||Obstacles.Any(b=>b.Intersects(bounds)))continue;
+                    Prop(name,candidate,yaw,propRoot);break;
+                }
             }
+        }
+        static Bounds WorldContent(GameObject go)
+        {
+            var local=ArtTools.EnvironmentSizeSetup.ContentBounds(go);var bounds=new Bounds(go.transform.TransformPoint(local.center),Vector3.zero);
+            for(int x=-1;x<=1;x+=2)for(int y=-1;y<=1;y+=2)for(int z=-1;z<=1;z+=2)
+                bounds.Encapsulate(go.transform.TransformPoint(local.center+Vector3.Scale(local.extents,new Vector3(x,y,z))));
+            return bounds;
+        }
+        static void AttachedBridge(GameObject building,bool east)
+        {
+            var b=WorldContent(building);var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(Environment+"桥.prefab");
+            var local=ArtTools.EnvironmentSizeSetup.ContentBounds(prefab);float half=local.size.x*.5f;
+            var position=east?new Vector3(b.max.x+half-.12f,0,b.center.z):new Vector3(b.center.x,0,b.min.z-half+.12f);
+            var bridge=Prop("桥",position,east?0:90,propRoot);
+            if(!WorldContent(bridge).Intersects(b))throw new Exception("Bridge failed to connect to "+building.name);
         }
         static WastelandGate Gate(string name,Vector3 position,bool locked,string label)
         {
@@ -265,7 +320,7 @@ namespace Wasteland.Editor
         {
             ground=Mat("黄色荒野地表",Color.white);ground.SetFloat("_VertexTint",1);ground.SetFloat("_WorldSpaceUV",1);ground.SetFloat("_UVs",3);
             ground.SetColor("_ShadowColor",new Color(.52f,.46f,.35f));ground.SetColor("_MidColor",new Color(.87f,.83f,.73f));ground.SetFloat("_AmbientFloor",.35f);
-            rock=Mat("砂岩",new Color(.48f,.38f,.24f));metal=Mat("深灰金属",new Color(.15f,.18f,.19f));
+            metal=Mat("深灰金属",new Color(.15f,.18f,.19f));
             amber=Mat("琥珀导向",new Color(.95f,.59f,.16f),.15f);open=Mat("通路开放",new Color(.1f,.8f,.62f),.5f);closed=Mat("战斗封锁",new Color(1,.2f,.2f),.35f);
             string path="Assets/ART/Textures/Environment/Wasteland/SandDetail.png";
             // Rebuild the same seamless detail texture deterministically.
@@ -288,19 +343,25 @@ namespace Wasteland.Editor
 
         static void Terrain()
         {
-            const int nx=89,nz=153;var vertices=new Vector3[nx*nz];var colors=new Color[vertices.Length];var uv=new Vector2[vertices.Length];var triangles=new int[(nx-1)*(nz-1)*6];
+            const int nx=181,nz=217;var vertices=new Vector3[nx*nz];var colors=new Color[vertices.Length];var uv=new Vector2[vertices.Length];var triangles=new int[(nx-1)*(nz-1)*6];
             for(int z=0;z<nz;z++)for(int x=0;x<nx;x++)
             {
-                float px=-66+x*1.5f,pz=-48+z*1.5f;float distance=float.MaxValue;
+                float px=-135+x*1.5f,pz=-96+z*1.5f;float distance=float.MaxValue;
                 foreach(var floor in Floors)
                 {
                     float dx=Mathf.Max(floor.min.x-px,0,px-floor.max.x),dz=Mathf.Max(floor.min.z-pz,0,pz-floor.max.z);
                     distance=Mathf.Min(distance,Mathf.Sqrt(dx*dx+dz*dz));
                 }
-                float height=Mathf.SmoothStep(0,1,Mathf.Clamp01((distance-.4f)/6))*(.7f+Mathf.PerlinNoise(px*.075f+7,pz*.075f+19)*2.3f);
+                // The existing floor lattice stays level; only scenery beyond a two-metre apron rises.
+                float bank=Mathf.SmoothStep(0,1,Mathf.Clamp01((distance-2)/18));
+                float broad=Mathf.PerlinNoise(px*.025f+47,pz*.018f+10);
+                float ridge=1-Mathf.Abs(2*Mathf.PerlinNoise(px*.07f+14,pz*.05f+28)-1);
+                float rough=Mathf.SmoothStep(0,1,Mathf.Clamp01((distance-5)/14))*(Mathf.PerlinNoise(px*.18f+7,pz*.15f+19)-.5f)*3;
+                float height=Mathf.Max(0,bank*(7+14*broad+7*Mathf.Pow(ridge,1.5f))+rough);
                 vertices[z*nx+x]=new Vector3(px,height,pz);uv[z*nx+x]=new Vector2(px/3,pz/3);
                 float patch=Mathf.PerlinNoise(px*.045f+14,pz*.045f+31)*.7f+Mathf.PerlinNoise(px*.15f+3,pz*.15f+11)*.3f;
                 colors[z*nx+x]=Color.Lerp(new Color(.56f,.41f,.22f),new Color(.9f,.74f,.43f),patch);
+                if(height>0)colors[z*nx+x]=Color.Lerp(colors[z*nx+x],new Color(.63f,.48f,.28f),Mathf.Clamp01(height/25)*.35f);
                 if(x<nx-1&&z<nz-1)
                 {
                     int k=(z*(nx-1)+x)*6,i=z*nx+x;triangles[k]=i;triangles[k+1]=i+nx;triangles[k+2]=i+1;triangles[k+3]=i+1;triangles[k+4]=i+nx;triangles[k+5]=i+nx+1;
@@ -308,21 +369,9 @@ namespace Wasteland.Editor
             }
             var mesh=new Mesh{name="WastelandSurface"};mesh.vertices=vertices;mesh.triangles=triangles;mesh.colors=colors;mesh.uv=uv;mesh.RecalculateNormals();mesh.RecalculateTangents();mesh.RecalculateBounds();
             const string path="Assets/ART/Models/Environment/WastelandGround.asset";
-            var previous=AssetDatabase.LoadAssetAtPath<Mesh>(path);
-            if(previous){EditorUtility.CopySerialized(mesh,previous);Object.DestroyImmediate(mesh);mesh=previous;}else AssetDatabase.CreateAsset(mesh,path);
+            // Replace the native mesh too: copying serialized fields can leave Unity's old GPU buffers alive.
+            AssetDatabase.CreateAsset(mesh,path);
             var go=new GameObject("黄色荒野 · 连续地表");go.transform.SetParent(decorationRoot);go.AddComponent<MeshFilter>().sharedMesh=mesh;go.AddComponent<MeshRenderer>().sharedMaterial=ground;
-        }
-        static void EdgeRocks(int seed)
-        {
-            var rng=new System.Random(seed+871);
-            for(int room=0;room<3;room++)for(int i=0;i<16;i++)
-            {
-                float side=i%2==0?-1:1;
-                var pos=Centers[room]+new Vector3(side*(Sizes[room].x*.5f+2+(float)rng.NextDouble()*4),0,((float)rng.NextDouble()-.5f)*Sizes[room].y);
-                var go=GameObject.CreatePrimitive(PrimitiveType.Sphere);go.name="外围风蚀岩";go.transform.SetParent(decorationRoot);go.transform.position=pos;
-                go.transform.localScale=new Vector3(2+(float)rng.NextDouble()*3,1+(float)rng.NextDouble()*2,2+(float)rng.NextDouble()*3);
-                go.GetComponent<Renderer>().sharedMaterial=rock;Object.DestroyImmediate(go.GetComponent<Collider>());
-            }
         }
         static void Lighting(Light sun,Camera camera)
         {
@@ -354,11 +403,14 @@ namespace Wasteland.Editor
         static void BuildSpawns(WastelandArea area,int room)
         {
             var root=Group(area.displayName+" 出生点",spawnRoot);var points=new List<Transform>();var air=new List<Transform>();
-            for(int z=0;z<5;z++)for(int x=0;x<6;x++)
+            for(int z=0;z<8;z++)for(int x=0;x<9;x++)
             {
-                var position=area.bounds.center+new Vector3((x-2.5f)*6,0,(z-1.5f)*6);position.y=0;
+                var position=area.bounds.center+new Vector3((x-4f)*4.5f,0,(z-3.5f)*4.5f);position.y=0;
                 if(!area.Contains(position,4) || Vector3.Distance(position,Entrances[room])<11 || Obstacles.Any(b=>ExpandedXZ(b,1.4f).Contains(new Vector3(position.x,b.center.y,position.z))))continue;
                 if(!NavMesh.SamplePosition(position,out var hit,1,NavMesh.AllAreas)||Mathf.Abs(hit.position.y)>.2f)continue;
+                // Dense cover can leave tiny isolated navigation islands; never spawn actors there.
+                var access=new NavMeshPath();
+                if(!NavMesh.CalculatePath(hit.position,area.entrance.transform.position,NavMesh.AllAreas,access)||access.status!=NavMeshPathStatus.PathComplete)continue;
                 var marker=new GameObject("地面出生点 "+points.Count).transform;marker.SetParent(root);marker.position=hit.position;points.Add(marker);
                 var flyPosition=hit.position+Vector3.up*3;
                 if(!Physics.CheckCapsule(flyPosition+Vector3.up*.4f,flyPosition+Vector3.up*1.4f,.55f,CombatLayers.WorldMask,QueryTriggerInteraction.Ignore))
@@ -387,6 +439,16 @@ namespace Wasteland.Editor
             foreach(var transform in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
                 if(PrefabUtility.IsOutermostPrefabInstanceRoot(transform.gameObject)&&AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromSource(transform.gameObject)).StartsWith(Environment)&&Vector3.Distance(transform.localScale,Vector3.one)>.0001f)
                     throw new Exception("Prop scale changed "+transform.name);
+            var props=Object.FindObjectsByType<Transform>(FindObjectsSortMode.None).Where(t=>PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject))
+                .Select(t=>new{go=t.gameObject,path=AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromSource(t.gameObject))}).Where(p=>p.path.StartsWith(Environment)).ToArray();
+            var buildings=props.Where(p=>p.path==Environment+"前哨指挥楼.prefab"||p.path==Environment+"塔.prefab"||p.path==Environment+"能源站.prefab").ToArray();
+            foreach(var bridge in props.Where(p=>p.path==Environment+"桥.prefab"))
+            {
+                var b=ArtTools.EnvironmentSizeSetup.ContentBounds(bridge.go);
+                var a=bridge.go.transform.TransformPoint(new Vector3(b.min.x,b.center.y,b.center.z));
+                var z=bridge.go.transform.TransformPoint(new Vector3(b.max.x,b.center.y,b.center.z));
+                if(!buildings.Any(p=>{var bounds=WorldContent(p.go);bounds.Expand(.4f);return bounds.Contains(a)||bounds.Contains(z);}))throw new Exception("Detached bridge: "+bridge.go.name);
+            }
             if(UnityEditor.ShaderUtil.ShaderHasError(Shader.Find("ART/Comic/Toon Lit")))throw new Exception("Comic terrain shader error");
             Debug.Log("WASTELAND_VERIFIED connectedSegments=14 areas=3 spawns="+string.Join("/",director.areas.Select(a=>a.groundSpawns.Length+"g+"+a.airSpawns.Length+"a"))+" PlayMode="+EditorApplication.isPlaying);
         }
