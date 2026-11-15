@@ -28,16 +28,16 @@ namespace SlugWhitebox
         {
             yield return null;
             Check(g.Running && g.stats.team==0,"启动、玩家阵营和新组件接线");
-            Check(g.weaponDefinitions.Length==4 && g.glandSkills.Length==3 && g.enemyPrefabs.Length==3,"4武器、7技能、3敌人配置齐全");
-            for(int i=0;i<4;i++)
+            Check(g.weaponDefinitions.Length==5 && g.glandSkills.Length==3 && g.enemyPrefabs.Length==3,"5武器、7技能、3敌人配置齐全");
+            for(int i=0;i<g.weaponDefinitions.Length;i++)
             {
-                g.SelectWeapon(i);g.AimAt(g.PlayerPosition+Vector3.forward*15+Vector3.up*3);
-                Check(g.Fire(),"武器 "+i+" 真实普攻");g.stats.AddNoise(50);Check(g.CastWeaponSkill(),"武器 "+i+" 噪值技能");
+                g.ConfigureLoadout(i,(i+1)%g.weaponDefinitions.Length);g.SelectWeapon(i);g.AimAt(g.PlayerPosition+Vector3.forward*15+Vector3.up*3);
+                Check(g.Fire(),"武器 "+i+" 真实普攻");g.stats.AddNoise(50);if(g.weaponDefinitions[i].skill)Check(g.CastWeaponSkill(),"武器 "+i+" 噪值技能");
                 g.stats.TryConsumeNoise(g.stats.Noise);yield return new WaitForSeconds(.2f);
             }
             yield return new WaitForSeconds(1);
             for(int i=0;i<3;i++){g.runner.ResetSkills();g.stats.AddGland(2);g.skill=i;Check(g.CastSkill(),"声腺技能 "+i);yield return new WaitForSeconds(2.5f);}
-            g.BeginRun();yield return null;
+            g.ConfigureLoadout(0,1);g.BeginRun();yield return null;
             g.stats.deathAtNoiseLimit=false;
             int total=0;
             for(int sector=0;sector<3;sector++)

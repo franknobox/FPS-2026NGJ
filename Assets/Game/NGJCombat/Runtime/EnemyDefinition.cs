@@ -21,7 +21,8 @@ namespace NGJ.Combat
         [Min(0), Tooltip("移动速度，米/秒。")] public float moveSpeed = 3;
         [Min(0), Tooltip("相对目标脚底的悬浮高度，米。")] public float flightHeight = 3;
         [Tooltip("飞行敌人眩晕时受重力下落，结束后恢复飞行。")] public bool fallsWhenStunned;
-        [Tooltip("觅音虫和震音虫在攻击期间暴露弱点，蓄力和冷却不暴露。")] public bool exposeDuringAttack = true;
+        [Tooltip("蓄力预警期间暴露弱点，允许低穿透控制打断本次攻击。")] public bool exposeDuringWindup = true;
+        [Tooltip("攻击期间继续暴露弱点，冷却期间关闭。")] public bool exposeDuringAttack = true;
         [Tooltip("眩晕期间暴露弱点。")] public bool exposeDuringStun = true;
         [Tooltip("间隙攻击一次结算；持续射线按间隔多次结算。")] public EnemyAttackMode attackMode;
         [Min(0), Tooltip("每次射击或每个射线伤害跳数产生的噪值。")] public float attackNoise = 10;

@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 9198201512999374524}
   - component: {fileID: 8229641999871360465}
   - component: {fileID: 1551031877569011556}
-  m_Layer: 2
+  m_Layer: 20
   m_Name: PlayerCombatRig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ MonoBehaviour:
   weakPointOpen: 0
   maxGlands: 2
   glands: 2
-  glandRegenPerSecond: 0
+  glandRegenPerSecond: 0.1
   noiseDecayPerSecond: 0
   noiseDecayDelay: 1
 --- !u!114 &8229641999871360465
@@ -123,7 +123,8 @@ MonoBehaviour:
   owner: {fileID: 9198201512999374524}
   skills: {fileID: 8229641999871360465}
   fireOrigin: {fileID: 8897561332188490007}
+  muzzle: {fileID: 0}
   equipped: {fileID: 11400000, guid: a35ce0624c62a80478b67e6ea636209d, type: 2}
   hitMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2227457

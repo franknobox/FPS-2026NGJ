@@ -73,42 +73,16 @@ namespace ArtTools
                 AssetDatabase.DeleteAsset(AutoProbe);
                 AssetDatabase.DeleteAsset(backup);
             }
-            var scene = EditorSceneManager.OpenScene("Assets/ART/Scenes/资源展示.unity", OpenSceneMode.Single);
+            ArtShowcaseSetup.UpdateShowcase();
+            var scene = EditorSceneManager.OpenScene(ArtShowcaseSetup.ScenePath, OpenSceneMode.Single);
             var camera = UnityEngine.Object.FindObjectsByType<Camera>(FindObjectsSortMode.None).First();
-            var light = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsSortMode.None).First(l => l.type == LightType.Directional);
-            light.transform.rotation = Quaternion.Euler(45,155,0);
-            light.shadows = LightShadows.Soft;
-            light.intensity = 1.1f;
-            RenderSettings.sun = light;
-            RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(.45f,.47f,.54f);
-            RenderSettings.ambientEquatorColor = new Color(.18f,.20f,.26f);
-            RenderSettings.ambientGroundColor = new Color(.08f,.08f,.10f);
-            foreach(var root in scene.GetRootGameObjects())
-            {
-                if(root.name=="甲壳怪") root.transform.position=new Vector3(-2.4f,0,0);
-                if(root.name=="翼怪") root.transform.position=new Vector3(-.2f,0,0);
-                if(root.name=="黄色眼虫") root.transform.position=new Vector3(1.9f,0,1);
-                if(root.name=="紫色眼虫") root.transform.position=new Vector3(3.3f,0,1);
-                if(root.name=="霰弹枪") {root.transform.position=new Vector3(1.8f,1.4f,0);root.transform.rotation=Quaternion.Euler(0,-90,0);}
-                if(root.name=="爪型枪") {root.transform.position=new Vector3(3.2f,1.4f,0);root.transform.rotation=Quaternion.Euler(0,-90,0);}
-            }
-            foreach(var root in scene.GetRootGameObjects().Where(o=>o.GetComponentInChildren<SkinnedMeshRenderer>()))
-            {
-                var head=root.GetComponentsInChildren<Transform>().First(t=>t.name=="Head");
-                if(head.position.y<=root.transform.position.y) throw new Exception("Preview model upside down: "+root.name);
-            }
-            camera.transform.position = new Vector3(.5f,2.3f,9);
-            camera.transform.LookAt(new Vector3(.5f,1.1f,0));
-            camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(.23f,.26f,.31f);
-            camera.fieldOfView = 48;
-            camera.orthographic = true;
-            camera.orthographicSize = 2.2f;
-            camera.aspect = 16f/9f;
-            camera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
-            EditorSceneManager.SaveScene(scene);
-            var spatial=scene.GetRootGameObjects().Where(o=>o.GetComponentInChildren<SkinnedMeshRenderer>())
+            var actors = scene.GetRootGameObjects().SelectMany(o=>o.GetComponentsInChildren<Transform>(true))
+                .Where(t=>PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject) && t.GetComponentInChildren<SkinnedMeshRenderer>())
+                .Select(t=>t.gameObject).ToArray();
+            foreach(var actor in actors)
+                if(actor.GetComponentsInChildren<Transform>().First(t=>t.name=="Head").position.y<=actor.transform.position.y)
+                    throw new Exception("Preview model upside down: "+actor.name);
+            var spatial=actors
                 .Select(o=>new{name=o.name,rootY=o.transform.position.y,
                     headY=o.GetComponentsInChildren<Transform>().First(t=>t.name=="Head").position.y,
                     headViewportY=camera.WorldToViewportPoint(o.GetComponentsInChildren<Transform>().First(t=>t.name=="Head").position).y,

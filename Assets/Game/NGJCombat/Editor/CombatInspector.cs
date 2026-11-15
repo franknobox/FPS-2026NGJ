@@ -18,6 +18,7 @@ namespace NGJ.Combat.Editor
             { "flightHeight", "悬浮高度（米）" },
             { "fallsWhenStunned", "眩晕后坠落" },
             { "exposeDuringAttack", "攻击时暴露弱点" },
+            { "exposeDuringWindup", "前摇时暴露弱点" },
             { "exposeDuringStun", "眩晕时暴露弱点" },
             { "attackMode", "攻击模式" },
             { "attackNoise", "每次攻击噪值" },

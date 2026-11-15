@@ -28,11 +28,11 @@ namespace SlugWhitebox
         {
             if(!counter || !game.stats)return;
             var g=game;var s=g.stats;
-            counter.text=$"循声虫族 / 战斗白盒   区域 {Mathf.Max(0,g.sector+1)}/3\n噪值 {s.Noise:0}/{s.maxNoise:0}（满值过载）   声腺 {s.Glands:0.0}/{s.maxGlands:0}\n{g.WeaponNames[g.weapon]}   击杀 {g.kills} / 剩余 {g.Remaining}\n{g.SkillNames[g.skill]}  冷却 {g.runner.CooldownRemaining(g.glandSkills[g.skill]):0.0}s";
+            counter.text=$"循声虫族 / 战斗白盒   区域 {Mathf.Max(0,g.sector+1)}/3\n噪值 {s.Noise:0}/{s.maxNoise:0}（满值过载）   声腺 {s.Glands:0.0}/{s.maxGlands:0}\n{g.WeaponDisplayName}   击杀 {g.kills} / 剩余 {g.Remaining}\n{g.SkillNames[g.skill]}  冷却 {g.runner.CooldownRemaining(g.glandSkills[g.skill]):0.0}s";
             center.text=g.mode==SlugGame.Mode.Result?g.resultTitle:g.mode==SlugGame.Mode.Paused?"已暂停 / Esc 继续":Time.time<g.hitUntil?"×":"+";
             center.color=Time.time<g.damageUntil?new Color(1,.2f,.2f):Color.white;
             bottom.text=(s.IsAbsorbing?$"共鸣吸收中：{s.AbsorbedNoise:0}\n":Time.time<g.noticeUntil?g.notice+"\n":"清场后推进至 EXIT\n")+
-                "WASD 移动 · 鼠标瞄准 · 左键普攻 · 右键武器技能（噪值）\n1–4 / 滚轮切枪 · Z/X/C 选声腺技能 · Q 释放（1声腺） · R 重开 · Esc 暂停";
+                "WASD 移动 · 鼠标瞄准 · 左键普攻 · 右键武器技能（噪值）\n1/2 / 滚轮切换两把出战武器 · Z/X/C 选声腺技能 · Q 释放（1声腺） · R 重开 · Esc 暂停";
         }
         void LateUpdate(){Refresh();}
         public void GlandFlash(bool gain){Refresh();}

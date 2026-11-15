@@ -7,7 +7,7 @@
 - 场景：`Assets/Game/SlugWhitebox/Scenes/SlugWhitebox.unity`，Unity 打开后点击 Play。
 - Windows 程序：`Builds/SlugWhitebox/SlugWhitebox.exe`。
 - WASD 移动，鼠标瞄准，左键普攻，右键释放当前武器技能。
-- 1/2/3/4 或滚轮切换步枪/狙击/霰弹/榴弹；Z/X/C 选择嘶鸣/撼地/共鸣，Q 释放。
+- 1/2 或滚轮切换两把出战武器（默认霰弹/火箭筒）；Z/X/C 选择嘶鸣/撼地/共鸣，Q 释放。
 - R 重新开始，Esc 暂停/继续。向前进入各区，清场后继续推进，第三个区清场后走到 EXIT 结算。
 - 开火和受击会增加自身噪值，达到上限死亡；拾取青色掉落补充声腺与生物质。
 
@@ -48,7 +48,7 @@
 2. `fireOrigin` 和 `castOrigin` 指向相机或独立瞄准点，正 Z 为发射方向。示例预制体的 CastOrigin 需跟随你的相机俯仰。
 3. 将武器配置赋给 `equipped`。输入按住射击时每帧调用 `TryFire()`，按技能时调用 `TryWeaponSkill()`；声腺技能通过 `SkillRunner.TryCast(skill)` 调用。
 4. 直接拖入 `EnemyChanYin`、`EnemyMiYin` 或 `EnemyZhenYin` 预制体。它们已挂 `EnemyCombatant`、CharacterController 和弱点；不要再挂第二个 `CombatTarget`，也不要同时启用旧 AI 驱动移动和攻击。具体用法见下文。
-5. 目标放在角色专用层，例如新建 CombatActor 层。**生成 Hitbox 的 obstructionMask 默认只有第 0 层，必须确保角色不在第 0 层；环境墙体留在第 0 层。** 如果已有层方案，请修改所有 Hitbox 的 obstructionMask。targetMask 包含目标 Collider 层，武器 hitMask 同时包含环境和目标。
+5. 玩家及其碰撞体放在 Player 层，敌人与弱点放在 Enemy 层。CombatLayers 统一目标和环境遮挡范围，环境可使用 Default、Ground、Object 等环境层；角色不进入遮挡集合。targetMask 包含 Player/Enemy，玩家普攻检测包含环境与 Enemy，投射物和敌人攻击包含环境与双方角色。
 6. 敌人的攻击调用 `playerStats.ReceiveHit(new HitInfo { source = enemyTarget, noise = 10, penetration = ArmorGrade.Medium })`，才能触发共鸣吸收。白盒敌人已经通过此入口攻击；`SlugGame.Hurt` 已转接噪值，避免新旧系统重复扣血。FPS Engine 的 IDamageable 在其他场景仍需自行适配。
 7. UI 订阅 `NoiseChanged`、`GlandsChanged`、`Died`，或读取 `Noise/Glands` 与 `CooldownRemaining(skill)`；敌人死亡掉落由其他系统订阅 `Died`，拾取调用 `AddGland`。
 
@@ -65,7 +65,7 @@ skills.TryCast(gongMingDefinition);
 表格仅给了高/中/低，没有具体数值。生成的伤害、射速、射程、技能消耗噪值、冷却、持续时间、散布、爆炸半径全部是测试值。声腺技能消耗为表格规定的 1。不要将测试值视为设计定稿。
 
 - 玩家噪值到上限死亡：`deathAtNoiseLimit` 可关闭；敌人同样可配置。
-- 通用玩家预制体自然降噪与声腺自动回复默认关闭。当前白盒玩家测试值：上限 100，停止增加噪值 2 秒后每秒降噪 8，声腺初始值/上限 2，声腺依赖掉落。在场景 Player 的 PlayerCombatStats 修改，不需要改代码。
+- 通用玩家预制体自然降噪默认关闭，声腺每秒恢复 0.1。当前白盒玩家测试值：上限 100，停止增加噪值 2 秒后每秒降噪 8，声腺初始值/上限 2，每 10 秒恢复 1，击杀掉落额外补充 1。在场景 Player 的 PlayerCombatStats 修改，不需要改代码。
 - 穿透不低于装甲时全额结算；不足时伤害乘 `underPenetrationMultiplier`，并默认阻挡眩晕/易伤。此公式是可替换的测试规则，非表格定稿。
 - 仅标记为弱点的 Collider 且目标 `WeakPointExposed` 时使用弱点装甲。默认眩晕会暴露；攻击期间的暴露由敌人 AI 设置 `weakPointOpen`。弱点放在躯干外可被射线命中的位置。
 - 易伤影响后续伤害，重复刷新时间；不与自身叠乘。霰弹按弹丸计伤，同一弹丸/Hitbox 对同一 CombatTarget 只结算一次。
@@ -75,7 +75,7 @@ skills.TryCast(gongMingDefinition);
 - 已接受的普攻即使自身噪值触顶也会射出。技能释放不是普通开火，不额外增加自身噪值。
 - 榴弹普攻命中即爆、超时也爆；黏质炸弹命中后附着，延时爆炸施加易伤。榴弹弹道、黏附时间和易伤倍率都是暂定参数。
 
-通用模块提供基础追击；当前白盒适配器已补上地面 NavMesh 寻路、分区刷怪、三类敌人外观与弱点颜色、HUD、输入、四武器切换、掉落和测试音效。正式虫体模型、动画和对象池尚未制作。白盒允许四武器切换以便验收，不强制实现两武器背包。
+通用模块提供基础追击；当前白盒适配器已补上地面 NavMesh 寻路、分区刷怪、三类敌人外观与弱点颜色、HUD、输入、两武器切换、掉落和测试音效。正式虫体模型、动画和对象池尚未制作。白盒允许两武器切换以便验收，不强制实现两武器背包。
 
 ## 敌人配置与特性
 
@@ -90,7 +90,7 @@ skills.TryCast(gongMingDefinition);
 1. 配置在 `Generated/Enemies`，预制体在 `Generated/Prefabs`。拖入场景后，攻击目标可手动指定玩家的 `PlayerCombatStats`；默认每秒自动寻找该组件。玩家必须有 Collider，才能被物理射线命中。生成的玩家战斗预制体仅负责属性，需要接到你现有的角色碰撞体。
 2. 修改敌人 `.asset` 的中文字段即可调整类型、噪值上限、装甲、速度、悬浮高度、发现/攻击距离、前摇、冷却、伤害和持续射线跳数。类型枚举仅作标识，更换类型时请指定整套配置资源。
 3. 上限、装甲、弱点装甲和眩晕暴露开关在 Awake/ResetCombat 时从配置复制；停止 Play 后调参并重新运行即可生效。也可选中敌人组件点击“应用敌人配置到组件”，它不会重置当前噪值；仅运行时调用 `ResetCombat()` 会重置战斗状态。移动与攻击参数直接读取配置。
-4. 弱点位于子物体 `WeakPoint`，带 SphereCollider 和 CombatHurtbox，摆在躯干前侧；可自行调整位置和半径。只有命中这个碰撞体且处于暴露窗口，才使用低甲。前摇及攻击后冷却不暴露，眩晕会打断前摇/持续射线。
+4. 弱点位于子物体 `WeakPoint`，带 SphereCollider 和 CombatHurtbox，摆在躯干前侧；可自行调整位置和半径。只有命中这个碰撞体且处于暴露窗口，才使用低甲。中重甲在前摇和攻击期间暴露，攻击后冷却不暴露，眩晕会打断前摇/持续射线。
 5. 攻击会被第一个非自身碰撞体阻挡；`攻击检测层` 应包含环境及玩家。通过玩家 `ReceiveHit` 结算，支持现有共鸣吸收。`AttackStarted`、`AttackStopped`、`ShotFired` 可接动画、射线视觉和音效，`Died` 可接掉落与回收。
 
 表格没有提供具体数值，35/100/240 上限及攻击时长、速度等均为测试值；通用模块将数量倾向“较多/适中/较少”保存为元数据；白盒实际数量与种类由原场景 SlugSpawn 和 SlugTuning 决定。前两类的攻击形状未指定，目前用单次射线作为测试实现；震音虫用分跳射线，伤害字段表示每一跳的噪值。颤音虫的定性“难命中”由飞行与较快速度体现，未添加表格未明确的闪避概率。
@@ -101,6 +101,8 @@ skills.TryCast(gongMingDefinition);
 
 敌人脚本、数值调节窗口、中文 Inspector 和白盒接线已通过 Unity 6000.3.28f1 编译，并成功构建 Windows 试玩程序。
 
-菜单 **NGJ → Combat → 验证核心结算** 在临时场景中验证资源、穿透、眩晕、地面过滤、命中去重、共鸣和冷却；运行结束关闭临时场景。正式接入后还需在 Play 模式检查实际角色层级、物理层和敌人 AI 的事件响应。
+菜单 **NGJ → Combat → 验证核心结算** 在临时场景中验证资源、穿透、眩晕、地面过滤、命中去重、共鸣和冷却；运行结束关闭临时场景。菜单 NGJ → Combat → 准备美术接入配置 可设置现有场景的基线；编辑器入口 ArtIntegrationSetup.ApplyAndVerify 校验层、遮挡、前摇打断、出战组合和模型挂点，无需进入 Play Mode。
 
 已在 Unity 6000.3.28f1 的独立测试项目中通过编译与 46 项运行时断言，包括高速榴弹、黏附跟随、敌人攻击弱点窗口、持续射线、眩晕打断、墙体遮挡，以及颤音虫眩晕坠落、落地受击与恢复飞行。Generated 中的 14 个配置和 13 个预制体已生成，并检查了内部 GUID 引用。已在现有白盒接线；完整流程另通过 `--slug-smoke` 实际射击测试，报告见 `Builds/Verification/combat-smoke.txt`，以报告 PASS/FAIL 为准。
+
+正式资源接入：参见项目开发指南。四个敌人逻辑预制体共用三种策划定义，黄/紫眼虫对外均为觅音虫；霰弹显示撼音体，爪型枪视图对应火箭筒。RocketLauncher 为追加枚举项，不改变旧枚举编号；火箭筒使用独立白板弹体与遮挡爆炸，暂无武器技能。统一素材场景为 Assets/ART/Scenes/资源展示.unity。

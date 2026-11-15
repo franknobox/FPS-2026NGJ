@@ -11,7 +11,8 @@ namespace NGJ.Combat
         [InspectorName("尖啸体／狙击")] JianXiaoSniper,
         [InspectorName("嘶鸣体／步枪")] SiMingRifle,
         [InspectorName("撼音体／霰弹")] HanYinShotgun,
-        [InspectorName("爆鸣体／榴弹")] BaoMingGrenade
+        [InspectorName("爆鸣体／榴弹")] BaoMingGrenade,
+        [InspectorName("火箭筒")] RocketLauncher
     }
     public enum ArmorGrade { [InspectorName("低")] Low, [InspectorName("中")] Medium, [InspectorName("高")] High }
     public enum ResourceType { [InspectorName("噪值")] Noise, [InspectorName("声腺")] Gland }

@@ -53,7 +53,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 1260624425422053155, guid: a368b154c12606543b32fea55cbad5af, type: 3}
   collisionMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 3276033
 --- !u!114 &6557911713675719554
 MonoBehaviour:
   m_ObjectHideFlags: 0

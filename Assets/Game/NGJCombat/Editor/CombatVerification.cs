@@ -43,6 +43,7 @@ namespace NGJ.Combat.Editor
             try
             {
                 var player = new GameObject("Test Player").AddComponent<PlayerCombatStats>();
+                player.gameObject.layer = CombatLayers.Player;
                 player.team = 0;
                 player.maxNoise = 1000;
                 player.AddNoise(40);
@@ -50,6 +51,7 @@ namespace NGJ.Combat.Editor
                 Require(!player.TryConsumeNoise(21) && player.Noise == 20, "不足时不扣资源");
                 Require(!player.TryConsumeGland(-1), "拒绝负数消耗");
                 var enemy = new GameObject("Test Enemy").AddComponent<CombatTarget>();
+                enemy.gameObject.layer = CombatLayers.Enemy;
                 enemy.transform.position = Vector3.forward * 3;
                 enemy.maxNoise = 1000;
                 enemy.armor = ArmorGrade.High;
@@ -167,6 +169,7 @@ namespace NGJ.Combat.Editor
                 weapons.Equip(weapon);
                 enemy.ResetCombat();
                 var second = new GameObject("Second Enemy").AddComponent<CombatTarget>();
+                second.gameObject.layer = CombatLayers.Enemy;
                 second.maxNoise = 1000;
                 second.transform.position = Vector3.forward * 6;
                 second.gameObject.AddComponent<SphereCollider>();
@@ -208,6 +211,7 @@ namespace NGJ.Combat.Editor
                 Require(actor && actor.definition && hurtbox && hurtbox.target == actor && hurtbox.weakPoint, name + "预制体引用完整");
             }
             var victim = new GameObject("Enemy Attack Victim").AddComponent<PlayerCombatStats>();
+            victim.gameObject.layer = CombatLayers.Player;
             victim.transform.position = new Vector3(50, 0, 5);
             victim.team = 0;
             victim.maxNoise = 1000;
@@ -251,8 +255,8 @@ namespace NGJ.Combat.Editor
             enemy.ResetCombat();
             tuning.windup = 2;
             enemy.SendMessage("Update");
-            Require(enemy.IsWindingUp && !enemy.WeakPointExposed, "前摇期间不提前暴露弱点");
-            enemy.ReceiveHit(new HitInfo { source = victim, penetration = ArmorGrade.High, stunDuration = 1 });
+            Require(enemy.IsWindingUp && enemy.WeakPointExposed, "前摇期间暴露弱点");
+            enemy.ReceiveHit(new HitInfo { source = victim, penetration = ArmorGrade.Low, stunDuration = 1 }, true);
             Require(!enemy.IsWindingUp, "眩晕中断前摇");
             var flyerObject = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(folder + "Prefabs/EnemyChanYin.prefab"), new Vector3(80, 4, 0), Quaternion.identity);
             var flyer = flyerObject.GetComponent<EnemyCombatant>();

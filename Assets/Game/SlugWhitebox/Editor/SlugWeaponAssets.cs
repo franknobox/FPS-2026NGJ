@@ -32,6 +32,7 @@ namespace SlugWhitebox.Editor
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
+            SlugCombatInstaller.Install();
             Preview(game);
             Debug.Log("SLUG_WEAPONS_INSTALLED 4 real FPS Engine weapon rigs");
         }

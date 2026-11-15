@@ -77,7 +77,7 @@ namespace SlugWhitebox.Editor
             sun.color=Color.white;sun.transform.rotation=Quaternion.Euler(55,-25,0);sun.shadows=LightShadows.Soft;
             RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=new Color(.65f,.65f,.65f);RenderSettings.fog=false;
             var surface=world.AddComponent<NavMeshSurface>();surface.collectObjects=CollectObjects.Children;
-            surface.layerMask=1<<0;surface.useGeometry=NavMeshCollectGeometry.PhysicsColliders;surface.BuildNavMesh();
+            surface.layerMask=NGJ.Combat.CombatLayers.WorldMask;surface.collectObjects=CollectObjects.All;surface.useGeometry=NavMeshCollectGeometry.PhysicsColliders;surface.BuildNavMesh();
             string navPath=Root+"/Scenes/WhiteboxNavMesh.asset";var data=surface.navMeshData;
             if(AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(navPath))AssetDatabase.DeleteAsset(navPath);
             AssetDatabase.CreateAsset(data,navPath);surface.navMeshData=data;
@@ -105,6 +105,7 @@ namespace SlugWhitebox.Editor
             manager.player=player.transform;manager.view=camera;manager.weaponPivot=pivot;manager.weaponModels=models;manager.exit=endpoint.transform;
             manager.spawns=spawnRoot.GetComponentsInChildren<SlugSpawn>();
             EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene,ScenePath);AssetDatabase.SaveAssets();
+            SlugCombatInstaller.Install();
             Debug.Log("SLUG_SCENE_OK · primitive blockout · 2m grid · connected exit route");
         }
         [MenuItem("循声虫族/构建 Windows 白盒")]

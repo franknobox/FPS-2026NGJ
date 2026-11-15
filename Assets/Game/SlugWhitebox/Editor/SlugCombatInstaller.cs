@@ -35,12 +35,14 @@ namespace SlugWhitebox.Editor
             g.stats=g.player.GetComponent<PlayerCombatStats>();bool fresh=!g.stats;
             if(fresh)g.stats=g.player.gameObject.AddComponent<PlayerCombatStats>();
             g.stats.team=0;
-            // 场景测试默认允许脱战降噪，声腺依靠拾取；这些参数可在 Inspector 调整。
-            if(fresh){g.stats.maxNoise=100;g.stats.maxGlands=2;g.stats.noiseDecayPerSecond=8;g.stats.noiseDecayDelay=2;}
+            // 默认每十秒恢复一声腺；数值可在 PlayerCombatStats 调整。
+            if(fresh){g.stats.maxNoise=100;g.stats.maxGlands=2;g.stats.glandRegenPerSecond=.1f;g.stats.noiseDecayPerSecond=8;g.stats.noiseDecayDelay=2;}
+            CombatLayers.SetActorLayer(g.player.gameObject,CombatLayers.Player);
             g.runner=g.player.GetComponent<SkillRunner>();if(!g.runner)g.runner=g.player.gameObject.AddComponent<SkillRunner>();
             g.weapons=g.player.GetComponent<CombatWeaponController>();if(!g.weapons)g.weapons=g.player.gameObject.AddComponent<CombatWeaponController>();
             g.runner.owner=g.stats;g.runner.castOrigin=g.view.transform;
-            g.weapons.owner=g.stats;g.weapons.skills=g.runner;g.weapons.fireOrigin=g.view.transform;g.weapons.hitMask=(1<<0)|(1<<8)|(1<<2);g.weapons.equipped=g.weaponDefinitions[0];
+            g.weapons.owner=g.stats;g.weapons.skills=g.runner;g.weapons.fireOrigin=g.view.transform;g.weapons.hitMask=CombatLayers.PlayerAttackMask;
+            if(g.weaponLoadout==null || g.weaponLoadout.Length!=2 || !g.ConfigureLoadout(g.weaponLoadout[0],g.weaponLoadout[1]))g.ConfigureLoadout(2,0);
             if(g.weaponModels[3] && g.weaponModels[3].name!="爆鸣体 · 榴弹白盒")
             {
                 UnityEngine.Object.DestroyImmediate(g.weaponModels[3]);
@@ -56,6 +58,7 @@ namespace SlugWhitebox.Editor
                 {prefab.AddComponent<SlugCombatEffect>();PrefabUtility.SaveAsPrefabAsset(prefab,path);}
                 PrefabUtility.UnloadPrefabContents(prefab);
             }
+            NGJ.Combat.Editor.PlayableArtSetup.BindCurrentScene();
             EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(scene.path,true)};
             EditorUtility.SetDirty(g);EditorUtility.SetDirty(g.stats);EditorUtility.SetDirty(g.runner);EditorUtility.SetDirty(g.weapons);
             EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();

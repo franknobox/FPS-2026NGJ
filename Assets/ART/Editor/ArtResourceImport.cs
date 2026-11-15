@@ -123,8 +123,7 @@ namespace ArtTools
                     }
                     finally { UnityEngine.Object.DestroyImmediate(root); }
                 }
-                CreatePreview();
-                AddEyeBugsToPreview();
+                ArtShowcaseSetup.UpdateShowcase();
                 AssetDatabase.SaveAssets();
                 Directory.CreateDirectory(".utmp/art-import");
                 File.WriteAllText(".utmp/art-import/validation.json", Newtonsoft.Json.JsonConvert.SerializeObject(records, Newtonsoft.Json.Formatting.Indented));
@@ -140,50 +139,6 @@ namespace ArtTools
             finally { IsImporting = false; }
         }
 
-        static void CreatePreview()
-        {
-            const string path = "Assets/ART/Scenes/资源展示.unity";
-            // Preserve a preview scene once an artist has edited it.
-            if (File.Exists(path)) return;
-            if (!Application.isBatchMode)
-            {
-                for (int i = 0; i < SceneManager.sceneCount; i++)
-                {
-                    var open = SceneManager.GetSceneAt(i);
-                    if (string.IsNullOrEmpty(open.path) && open.isDirty) return;
-                }
-            }
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,
-                Application.isBatchMode ? NewSceneMode.Single : NewSceneMode.Additive);
-            try
-            {
-                string[] paths = { "Enemies/甲壳怪", "Enemies/翼怪", "Weapons/霰弹枪", "Weapons/爪型枪" };
-                for (int i = 0; i < paths.Length; i++)
-                {
-                    var asset = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ART/Prefabs/" + paths[i] + ".prefab");
-                    var instance = (GameObject)PrefabUtility.InstantiatePrefab(asset, scene);
-                    instance.transform.position = new Vector3(-3 + i * 2, i >= 2 ? 1 : 0, 0);
-                    if (i >= 2) instance.transform.rotation = Quaternion.Euler(0, -40, 0);
-                }
-                var lightObject = new GameObject("展示灯光");
-                SceneManager.MoveGameObjectToScene(lightObject, scene);
-                var light = lightObject.AddComponent<Light>();
-                light.type = LightType.Directional;
-                light.intensity = 1.2f;
-                light.transform.rotation = Quaternion.Euler(40, -30, 0);
-                var cameraObject = new GameObject("展示相机");
-                SceneManager.MoveGameObjectToScene(cameraObject, scene);
-                var camera = cameraObject.AddComponent<Camera>();
-                camera.transform.position = new Vector3(3, 2.8f, 9);
-                camera.transform.LookAt(new Vector3(0, 1, 0));
-                camera.nearClipPlane = .05f;
-                camera.farClipPlane = 50;
-                cameraObject.AddComponent<UniversalAdditionalCameraData>();
-                EditorSceneManager.SaveScene(scene, path);
-            }
-            finally { if (!Application.isBatchMode) EditorSceneManager.CloseScene(scene, true); }
-        }
-
         static Texture2D Texture(string path, bool normal, bool srgb)
         {
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
@@ -197,38 +152,6 @@ namespace ArtTools
             importer.alphaSource = TextureImporterAlphaSource.FromInput;
             importer.SaveAndReimport();
             return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-        }
-
-        static void AddEyeBugsToPreview()
-        {
-            const string path = "Assets/ART/Scenes/资源展示.unity";
-            if (!File.Exists(path)) return;
-            if (!Application.isBatchMode)
-            {
-                for (int i = 0; i < SceneManager.sceneCount; i++)
-                {
-                    var open = SceneManager.GetSceneAt(i);
-                    if (string.IsNullOrEmpty(open.path) && open.isDirty) return;
-                }
-            }
-            var scene = EditorSceneManager.OpenScene(path,
-                Application.isBatchMode ? OpenSceneMode.Single : OpenSceneMode.Additive);
-            try
-            {
-                string[] names = { "黄色眼虫", "紫色眼虫" };
-                for (int i = 0; i < names.Length; i++)
-                {
-                    string prefabPath = "Assets/ART/Prefabs/Enemies/" + names[i] + ".prefab";
-                    bool exists = scene.GetRootGameObjects().Any(root =>
-                        AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromSource(root)) == prefabPath);
-                    if (exists) continue;
-                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-                    var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
-                    instance.transform.position = new Vector3(i == 0 ? -1.4f : 1.4f, 0, 2.25f);
-                }
-                EditorSceneManager.SaveScene(scene, path);
-            }
-            finally { if (!Application.isBatchMode) EditorSceneManager.CloseScene(scene, true); }
         }
 
         static void EnsureFolder(string path)

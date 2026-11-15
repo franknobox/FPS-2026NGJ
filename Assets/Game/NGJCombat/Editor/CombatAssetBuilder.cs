@@ -86,6 +86,7 @@ namespace NGJ.Combat.Editor
                 definition.attackInterval = interval;
                 definition.flying = flying;
                 definition.fallsWhenStunned = flying;
+                definition.exposeDuringWindup = !flying;
                 definition.exposeDuringAttack = !flying;
                 definition.attackMode = mode;
                 AssetDatabase.CreateAsset(definition, assetPath);
@@ -93,20 +94,22 @@ namespace NGJ.Combat.Editor
             string prefabPath = Root + "/Prefabs/Enemy" + name + ".prefab";
             if (Existing<GameObject>(prefabPath)) return;
             var go = new GameObject("Enemy" + name);
-            go.layer = 2; // 非环境层，确保范围攻击不会被敌人自己的碰撞体挡住。
+            go.layer = CombatLayers.Enemy;
             var motor = go.AddComponent<CharacterController>();
             motor.height = 2;
             motor.radius = .5f;
             motor.center = Vector3.up;
             var enemy = go.AddComponent<EnemyCombatant>();
             enemy.definition = definition;
+            enemy.attackMask = CombatLayers.AttackMask;
+            go.AddComponent<EnemyVisualBinding>();
             enemy.ApplyDefinition();
             var origin = new GameObject("AttackOrigin").transform;
             origin.SetParent(go.transform, false);
             origin.localPosition = Vector3.up * 1.2f;
             enemy.attackOrigin = origin;
             var weak = new GameObject("WeakPoint");
-            weak.layer = 2;
+            weak.layer = CombatLayers.Enemy;
             weak.transform.SetParent(go.transform, false);
             weak.transform.localPosition = new Vector3(0, 1.2f, .55f);
             weak.AddComponent<SphereCollider>().radius = .22f;
@@ -127,8 +130,9 @@ namespace NGJ.Combat.Editor
             hitbox.speed = speed;
             hitbox.lifetime = lifetime;
             hitbox.halfAngle = angle;
-            // Unity 默认第 0 层为环境。受击目标需放在非第 0 层。
-            hitbox.obstructionMask = 1;
+            // 环境遮挡与角色目标分开，支持 ART 场景的 Ground 层。
+            hitbox.obstructionMask = CombatLayers.WorldMask;
+            hitbox.targetMask = CombatLayers.ActorMask;
             var prefab = PrefabUtility.SaveAsPrefabAsset(go, path);
             Object.DestroyImmediate(go);
             return prefab.GetComponent<CombatHitbox>();
@@ -140,6 +144,7 @@ namespace NGJ.Combat.Editor
             if (existing) return existing;
             var go = new GameObject(name);
             var projectile = go.AddComponent<CombatProjectile>();
+            projectile.collisionMask = CombatLayers.AttackMask;
             projectile.explosionPrefab = explosion;
             projectile.sticky = sticky;
             projectile.detonationDelay = .6f;
@@ -192,7 +197,7 @@ namespace NGJ.Combat.Editor
             string path = Root + "/Prefabs/PlayerCombatRig.prefab";
             if (Existing<GameObject>(path)) return;
             var go = new GameObject("PlayerCombatRig");
-            go.layer = 2; // Ignore Raycast，不影响其他层的自定义设置。
+            go.layer = CombatLayers.Player;
             var stats = go.AddComponent<PlayerCombatStats>();
             stats.team = 0;
             var origin = new GameObject("CastOrigin").transform;
@@ -203,6 +208,7 @@ namespace NGJ.Combat.Editor
             runner.castOrigin = origin;
             var controller = go.AddComponent<CombatWeaponController>();
             controller.owner = stats;
+            controller.hitMask = CombatLayers.PlayerAttackMask;
             controller.skills = runner;
             controller.fireOrigin = origin;
             controller.equipped = Existing<WeaponDefinition>(Root + "/Weapons/SiMing.asset");

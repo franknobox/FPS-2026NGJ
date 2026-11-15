@@ -18,6 +18,8 @@ namespace NGJ.Combat
         // 普攻瞄准／发射点：正 Z 方向为开火方向。
         [Tooltip("正 Z 方向为开火方向。")]
         public Transform fireOrigin;
+        [Tooltip("实际弹体出生点；瞄准仍由 fireOrigin 决定。")]
+        public Transform muzzle;
         // 当前装备武器：可直接拖入武器配置测试。
         [Tooltip("可直接拖入武器配置测试。")]
         public WeaponDefinition equipped;
@@ -48,16 +50,23 @@ namespace NGJ.Combat
         {
             if (!isActiveAndEnabled || !equipped || !owner || !owner.CanAct ||
                 (nextShots.TryGetValue(equipped, out float next) && Time.time < next)) return false;
-            if (equipped.type == WeaponType.BaoMingGrenade &&
+            if ((equipped.type == WeaponType.BaoMingGrenade || equipped.type == WeaponType.RocketLauncher) &&
                 (!equipped.projectilePrefab || !equipped.projectilePrefab.explosionPrefab)) return false;
             Transform origin = fireOrigin ? fireOrigin : transform;
             HitInfo hit = new HitInfo { source = owner, noise = equipped.targetNoise * owner.DamageMultiplier,
                 penetration = equipped.penetration };
+            Vector3 spawnPosition = muzzle ? muzzle.position : origin.position;
+            if (equipped.projectilePrefab && Physics.Linecast(origin.position, spawnPosition, CombatLayers.WorldMask, QueryTriggerInteraction.Ignore)) return false;
             nextShots[equipped] = Time.time + Mathf.Max(.01f, equipped.fireInterval);
             // 本次已被接受的攻击会发出，即使开火产生的自身噪值随后导致死亡。
             if (equipped.projectilePrefab)
-                Instantiate(equipped.projectilePrefab, origin.position, origin.rotation)
-                    .Initialize(hit, origin.forward * equipped.projectileSpeed);
+            {
+                Vector3 aim = origin.position + origin.forward * equipped.range;
+                if (Physics.Raycast(origin.position, origin.forward, out var contact, equipped.range, hitMask, QueryTriggerInteraction.Ignore)) aim = contact.point;
+                Vector3 direction = (aim - spawnPosition).normalized;
+                Instantiate(equipped.projectilePrefab, spawnPosition, Quaternion.LookRotation(direction))
+                    .Initialize(hit, direction * equipped.projectileSpeed);
+            }
             else
                 for (int pellet = 0; pellet < Mathf.Max(1, equipped.pelletCount); pellet++)
                 {

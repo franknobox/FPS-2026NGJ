@@ -22,15 +22,15 @@ namespace SlugWhitebox
         public Mode mode;
         public bool Running => mode == Mode.Playing;
         public Vector3 PlayerPosition => player.position;
-        public float glands, health, maxHealth, maxGlands;
+        [HideInInspector] public float glands, health, maxHealth, maxGlands;
         public int weapon, skill, sector = -1, kills, runBiomass;
-        public float[] heat = new float[4];
-        public bool[] locked = new bool[4];
+        [HideInInspector] public float[] heat = new float[4];
+        [HideInInspector] public bool[] locked = new bool[4];
         public readonly List<SlugEnemy> enemies = new List<SlugEnemy>();
         public string notice = "", resultTitle = "";
         public float noticeUntil, hitUntil, damageUntil;
         public bool criticalHit;
-        public readonly string[] WeaponNames = { "嘶鸣体 · 步枪", "尖啸体 · 狙击", "撼音体 · 霰弹", "爆鸣体 · 榴弹" };
+        public string WeaponDisplayName => weapons && weapons.equipped ? weapons.equipped.displayName : "未装备";
         public readonly string[] SkillNames = { "嘶鸣", "撼地", "共鸣" };
         public readonly string[] SkillDescriptions = { "低穿透声波 · 击晕飞虫", "高穿透震波 · 仅地面", "吸收攻击 · 声波反击" };
         public readonly string[] SectorNames = { "01 / 接驳平台", "02 / 冷却中庭", "03 / 虫巢回收站" };
@@ -44,6 +44,7 @@ namespace SlugWhitebox
         public int Remaining => enemies.FindAll(e => e && !e.dead).Count;
         public float RunTime => runTime;
         public bool IsSmoke => smoke;
+        public bool HasStarted { get; private set; }
         public class Drop { public Transform body; public Vector3 origin; public int gland, bio; }
         public readonly List<Drop> drops = new List<Drop>();
 
@@ -57,14 +58,15 @@ namespace SlugWhitebox
             sound = view.gameObject.AddComponent<AudioSource>(); sound.spatialBlend = 0;
             skillSounds = new AudioClip[3];
             for(int i=0;i<3;i++) skillSounds[i] = MakePulse(i);
-            if(fireSounds==null || fireSounds.Length!=4)Array.Resize(ref fireSounds,4);
-            for(int i=0;i<4;i++)if(!fireSounds[i])fireSounds[i]=MakeFeedback(i);
+            if(fireSounds==null || fireSounds.Length!=weaponDefinitions.Length)Array.Resize(ref fireSounds,weaponDefinitions.Length);
+            for(int i=0;i<fireSounds.Length;i++)if(!fireSounds[i])fireSounds[i]=MakeFeedback(Mathf.Min(i,3));
             if(!pickupSound)pickupSound=MakeFeedback(4);
             if(!killSound)killSound=MakeFeedback(5);
             if(!hitSound)hitSound=MakeFeedback(6);
             InitializeCombat();
             hud = gameObject.AddComponent<SlugHud>(); hud.game = this; hud.Build();
             BeginRun();
+            HasStarted = true;
             if (smoke) StartCoroutine(SlugSmoke.Run(this));
         }
 
@@ -85,7 +87,8 @@ namespace SlugWhitebox
             weapon=skill=0; shotAt=0; yaw=pitch=0;
             Warp(new Vector3(0,.15f,-2)); player.rotation=Quaternion.identity;
             view.transform.localPosition=new Vector3(0,1.62f,0);view.transform.localRotation = Quaternion.identity;
-            mode=Mode.Playing; SetCursor(true); SelectWeapon(0);
+            mode=Mode.Playing; SetCursor(true);
+            if(weaponLoadout==null || weaponLoadout.Length!=2 || !ConfigureLoadout(weaponLoadout[0],weaponLoadout[1])) ConfigureLoadout(2,weaponDefinitions.Length>4?4:0);
             hud.Refresh();
         }
 
@@ -120,15 +123,13 @@ namespace SlugWhitebox
                 if(mouse.rightButton.wasPressedThisFrame) CastWeaponSkill();
                 if(kb.qKey.wasPressedThisFrame) CastSkill();
                 if(mouse.leftButton.isPressed) Fire();
-                if(kb.digit1Key.wasPressedThisFrame) SelectWeapon(0);
-                if(kb.digit2Key.wasPressedThisFrame) SelectWeapon(1);
-                if(kb.digit3Key.wasPressedThisFrame) SelectWeapon(2);
-                if(kb.digit4Key.wasPressedThisFrame) SelectWeapon(3);
+                if(kb.digit1Key.wasPressedThisFrame) SelectWeaponSlot(0);
+                if(kb.digit2Key.wasPressedThisFrame) SelectWeaponSlot(1);
                 if(kb.zKey.wasPressedThisFrame) skill=0;
                 if(kb.xKey.wasPressedThisFrame) skill=1;
                 if(kb.cKey.wasPressedThisFrame) skill=2;
                 float scroll=mouse.scroll.ReadValue().y;
-                if(scroll!=0) SelectWeapon((weapon+(scroll>0?3:1))%4);
+                if(scroll!=0) SelectWeaponSlot(weapon==weaponLoadout[0]?1:0);
             }
             else controller.Move(Vector3.down*4*Time.deltaTime);
             recoil=Mathf.Lerp(recoil,0,Time.deltaTime*12);
@@ -153,11 +154,16 @@ namespace SlugWhitebox
             return ok;
         }
 
-        public void SelectWeapon(int index)
+        public bool SelectWeapon(int index)
         {
+            if(weaponLoadout==null || weaponLoadout.Length!=2 || Array.IndexOf(weaponLoadout,index)<0 ||
+                weaponDefinitions==null || index<0 || index>=weaponDefinitions.Length || !weaponDefinitions[index])return false;
             weapon=index;
             weapons.Equip(weaponDefinitions[index]);
-            for(int i=0;i<weaponModels.Length;i++) if(weaponModels[i]) weaponModels[i].SetActive(i==index);
+            if(weaponModels!=null)for(int i=0;i<weaponModels.Length;i++) if(weaponModels[i]) weaponModels[i].SetActive(i==index);
+            var selectedView=weaponModels!=null && index<weaponModels.Length && weaponModels[index] ? weaponModels[index].GetComponent<SlugWeaponView>() : null;
+            weapons.muzzle=selectedView?selectedView.muzzle:null;
+            return true;
         }
 
         public bool Fire(bool bypassInterval=false)
@@ -167,11 +173,11 @@ namespace SlugWhitebox
             var weaponView=weaponModels[weapon].GetComponent<SlugWeaponView>();
             if(weaponView)weaponView.Fire();
             Play(fireSounds[weapon],.3f);
-            Vector3 start=view.transform.TransformPoint(.17f,-.14f,.88f);
+            Vector3 start=weaponView && weaponView.muzzle ? weaponView.muzzle.position : view.transform.TransformPoint(.17f,-.14f,.88f);
             if(!weaponDefinitions[weapon].projectilePrefab)
             {
                 Vector3 end=view.transform.position+view.transform.forward*weaponDefinitions[weapon].range;
-                if(Physics.Raycast(view.transform.position,view.transform.forward,out var hit,weaponDefinitions[weapon].range,(1<<0)|(1<<8),QueryTriggerInteraction.Ignore)) end=hit.point;
+                if(Physics.Raycast(view.transform.position,view.transform.forward,out var hit,weaponDefinitions[weapon].range,CombatLayers.PlayerAttackMask,QueryTriggerInteraction.Ignore)) end=hit.point;
                 Trail(start,end,Color.cyan,.08f);
             }
             var flash=Visual(PrimitiveType.Sphere,null,start,Vector3.one*.12f,orangeMaterial);Destroy(flash,.05f);
@@ -190,18 +196,25 @@ namespace SlugWhitebox
             sector=index;
             int count=tuning.sectorCounts[index];
             var available=Array.FindAll(spawns,s=>s && s.sector==index);
+            int miVariantIndex=0;
             for(int i=0;i<count && available.Length>0;i++)
             {
                 var marker=available[i%available.Length];
                 Vector3 pos=marker.transform.position;
                 if(UnityEngine.AI.NavMesh.SamplePosition(pos,out var hit,3,UnityEngine.AI.NavMesh.AllAreas)) pos=hit.position;
-                var go=Instantiate(enemyPrefabs[Mathf.Clamp(marker.kind,0,2)],pos,Quaternion.identity).gameObject;
-                var e=go.AddComponent<SlugEnemy>(); e.Initialize(this,marker.kind); enemies.Add(e);
+                var prefab=enemyPrefabs[Mathf.Clamp(marker.kind,0,2)];
+                if(marker.kind==1 && miYinVariants!=null && miYinVariants.Length>0)
+                {
+                    var variant=miYinVariants[miVariantIndex++%miYinVariants.Length];
+                    if(variant)prefab=variant;
+                }
+                var go=Instantiate(prefab,pos,Quaternion.identity).gameObject;
+                var e=go.GetComponent<SlugEnemy>() ?? go.AddComponent<SlugEnemy>(); e.Initialize(this,marker.kind); enemies.Add(e);
             }
             Message(SectorNames[index]+" · 清除虫族 "+count+" 只",4);
         }
 
-        public bool ClearLine(Vector3 from, Vector3 to) => !Physics.Linecast(from,to,1<<0,QueryTriggerInteraction.Ignore);
+        public bool ClearLine(Vector3 from, Vector3 to) => !Physics.Linecast(from,to,CombatLayers.WorldMask,QueryTriggerInteraction.Ignore);
         public void HitFeedback(bool critical)
         {
             hitUntil=Time.time+.13f; criticalHit=critical;
@@ -217,7 +230,7 @@ namespace SlugWhitebox
 
         public Drop SpawnDrop(Vector3 position)
         {
-            var item=new GameObject("声腺 + 生物质"); item.layer=10; item.transform.position=position;
+            var item=new GameObject("声腺 + 生物质"); item.layer=LayerMask.NameToLayer("Interactable"); item.transform.position=position;
             Visual(PrimitiveType.Cube,item.transform,Vector3.zero,Vector3.one*.4f,cyanMaterial);
             var d=new Drop{body=item.transform,origin=position,gland=1,bio=tuning.biomassDrop};
             drops.Add(d); return d;
@@ -259,7 +272,7 @@ namespace SlugWhitebox
                 if(generation!=runGeneration || mode==Mode.Result || mode==Mode.Briefing)break;
                 if(!Running) {yield return null; t-=Time.deltaTime; continue;}
                 Vector3 next=projectile.transform.position+dir*11*Time.deltaTime;
-                if(Physics.Linecast(projectile.transform.position,next,1<<0)) break;
+                if(Physics.Linecast(projectile.transform.position,next,CombatLayers.WorldMask)) break;
                 projectile.transform.position=next;
                 if(Vector3.Distance(next,player.position+Vector3.up)<.7f) {Hurt(tuning.enemyDamage);break;}
                 yield return null;

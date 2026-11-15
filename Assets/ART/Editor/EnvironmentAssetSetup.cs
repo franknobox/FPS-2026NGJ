@@ -18,7 +18,7 @@ namespace ArtTools
         const string ManifestPath = Root + "/Models/Environment/EnvironmentManifest.json";
         const string MaterialFolder = Root + "/Materials/Environment";
         const string PrefabFolder = Root + "/Prefabs/Environment";
-        public const string PreviewPath = Root + "/Scenes/场景素材展示.unity";
+        public const string PreviewPath = ArtShowcaseSetup.ScenePath;
 
         [Serializable] class Manifest { public int version; public Entry[] assets; }
         [Serializable] class Entry
@@ -114,6 +114,8 @@ namespace ArtTools
                         "FBX scale or axis changed: " + entry.id + " " + bounds.size + " != " + expected);
                     Require(Mathf.Abs(bounds.min.y) < .04f, "Ground origin changed: " + entry.id);
                     string path = PrefabFolder + "/" + entry.label + ".prefab";
+                    EnvironmentSizeSetup.ApplyToPrefab(prefab, path);
+                    bounds = renderers[0].bounds;
                     var saved = PrefabUtility.SaveAsPrefabAsset(prefab, path);
                     Require(saved && saved.GetComponent<LODGroup>().lodCount == 3, "Invalid prefab: " + entry.id);
                     Require(saved.GetComponentsInChildren<MonoBehaviour>(true).Length == 0, "Unexpected gameplay scripts");
@@ -133,47 +135,8 @@ namespace ArtTools
             Debug.Log("ART_ENVIRONMENT_READY prefabs=" + results.Count + " materials=" + materials.Count + " playMode=" + EditorApplication.isPlaying);
         }
 
-        [MenuItem("美术工具/场景素材/生成素材展示场景")]
-        public static void CreatePreview()
-        {
-            if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            var manifest = JsonUtility.FromJson<Manifest>(File.ReadAllText(ManifestPath));
-            for (int i = 0; i < manifest.assets.Length; i++)
-            {
-                var entry = manifest.assets[i];
-                var source = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabFolder + "/" + entry.label + ".prefab");
-                Require(source, "Prepare prefab first: " + entry.label);
-                var instance = (GameObject)PrefabUtility.InstantiatePrefab(source, scene);
-                instance.transform.position = new Vector3((i % 4 - 1.5f) * 5.5f, 0, (i / 4 - 1.5f) * 5.5f);
-                // Gallery instances use a uniform display size; actual prefabs retain working meters.
-                instance.transform.localScale = Vector3.one * (3.8f / entry.dimensions.Max());
-            }
-            var lightObject = new GameObject("Directional Light");
-            var light = lightObject.AddComponent<Light>();
-            light.type = LightType.Directional;
-            light.intensity = 1.2f;
-            light.shadows = LightShadows.Soft;
-            lightObject.transform.rotation = Quaternion.Euler(45, -35, 0);
-            RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(.48f, .54f, .62f);
-            RenderSettings.ambientEquatorColor = new Color(.3f, .34f, .4f);
-            RenderSettings.ambientGroundColor = new Color(.17f, .18f, .21f);
-            var cameraObject = new GameObject("Main Camera");
-            cameraObject.tag = "MainCamera";
-            var camera = cameraObject.AddComponent<Camera>();
-            cameraObject.transform.position = new Vector3(16, 21, -26);
-            cameraObject.transform.LookAt(new Vector3(0, .5f, 0));
-            camera.orthographic = true;
-            camera.orthographicSize = 14;
-            camera.backgroundColor = new Color(.18f, .22f, .27f);
-            camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.farClipPlane = 200;
-            camera.nearClipPlane = .1f;
-            camera.GetUniversalAdditionalCameraData().renderPostProcessing = true;
-            EnsureFolder(Root + "/Scenes");
-            EditorSceneManager.SaveScene(scene, PreviewPath);
-        }
+        [MenuItem("美术工具/场景素材/更新资源展示")]
+        public static void CreatePreview() { ArtShowcaseSetup.UpdateShowcase(); }
 
         public static void BuildAndPreview() { Build(); CreatePreview(); }
 

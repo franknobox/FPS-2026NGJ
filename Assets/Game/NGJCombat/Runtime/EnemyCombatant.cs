@@ -19,7 +19,10 @@ namespace NGJ.Combat
         public bool IsAttacking { get; private set; }
         public bool IsWindingUp { get; private set; }
         public bool CanAct => IsAlive && !IsStunned;
+        // Player-facing names always come from the design definition, never mesh filenames.
+        public string DisplayName => definition ? definition.displayName : "敌人";
         public event Action AttackStarted;
+        public event Action WindupStarted;
         public event Action AttackStopped;
         public event Action<Vector3, Vector3> ShotFired; // 每次检测后的射线起终点，可用于画线和音效。
         CharacterController motor;
@@ -68,7 +71,7 @@ namespace NGJ.Combat
             bool inRange = delta.magnitude <= definition.attackRange;
             if ((IsAttacking || IsWindingUp) && !inRange) StopAttack();
             if (!IsAttacking && !IsWindingUp && inRange && Time.time >= nextAttackAt)
-            { IsWindingUp = true; windupEndsAt = Time.time + Mathf.Max(0, definition.windup); }
+            { BeginWindup(); }
             if (IsWindingUp && Time.time >= windupEndsAt) BeginAttack();
             if (IsAttacking)
             {
@@ -96,6 +99,14 @@ namespace NGJ.Combat
             else verticalSpeed = 0;
             motor.Move(velocity * Time.deltaTime);
             if (falling) airborne = !motor.isGrounded;
+        }
+
+        void BeginWindup()
+        {
+            IsWindingUp = true;
+            windupEndsAt = Time.time + Mathf.Max(0, definition.windup);
+            weakPointOpen = definition.exposeDuringWindup;
+            WindupStarted?.Invoke();
         }
 
         void BeginAttack()

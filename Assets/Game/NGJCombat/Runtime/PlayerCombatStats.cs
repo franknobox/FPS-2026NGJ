@@ -16,7 +16,7 @@ namespace NGJ.Combat
         [SerializeField, Min(0)] float glands = 2;
         // 每秒声腺回复：设为 0 关闭自然回复。
         [Tooltip("设为 0 关闭自然回复。")]
-        [Min(0)] public float glandRegenPerSecond;
+        [Min(0)] public float glandRegenPerSecond = .1f;
         // 每秒自然降噪：设为 0 关闭自然降噪。
         [Tooltip("设为 0 关闭自然降噪。")]
         [Min(0)] public float noiseDecayPerSecond;

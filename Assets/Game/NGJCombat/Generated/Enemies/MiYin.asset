@@ -23,6 +23,7 @@ MonoBehaviour:
   moveSpeed: 3
   flightHeight: 3
   fallsWhenStunned: 0
+  exposeDuringWindup: 1
   exposeDuringAttack: 1
   exposeDuringStun: 1
   attackMode: 0
