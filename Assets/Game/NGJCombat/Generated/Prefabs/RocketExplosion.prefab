@@ -56,5 +56,6 @@ MonoBehaviour:
   obstructionMask:
     serializedVersion: 2
     m_Bits: 2226433
-  visualEffect: {fileID: 8008346420409426329, guid: ae7d2b885436b7f47889d5c66ce60a0b, type: 3}
+  visualEffect: {fileID: 4883874931472037742, guid: c135897341f21874e8fe3d2c0cbfb96b, type: 3}
+  impactEffect: {fileID: 4810550892884834954, guid: 611b1294c51e1e649811d80af72b9ea5, type: 3}
   maxTargets: 64

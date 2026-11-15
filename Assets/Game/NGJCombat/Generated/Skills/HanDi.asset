@@ -33,3 +33,7 @@ MonoBehaviour:
   duration: 2
   damageMultiplier: 1.5
   absorbedNoiseMultiplier: 1
+
+  castEffect: {fileID: 6234607956599405367, guid: 2291eae7f8e972647bcaafd1d4d1f766, type: 3}
+
+  activeEffect: {fileID: 0}

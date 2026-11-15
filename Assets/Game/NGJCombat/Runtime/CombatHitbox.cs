@@ -33,6 +33,9 @@ namespace NGJ.Combat
         [Tooltip("仅包含墙和地形，排除角色层。")]
         public LayerMask obstructionMask;
         public GameObject visualEffect;
+        [Tooltip("仅在目标接受命中后播放的接触特效。") ]
+        public GameObject impactEffect;
+        Collider[] scanBuffer = new Collider[64];
         // 最多命中目标数：每个 Hitbox 对同一目标只结算一次。
         [Tooltip("每个 Hitbox 对同一目标只结算一次。")]
         [Min(1)] public int maxTargets = 64;
@@ -48,7 +51,9 @@ namespace NGJ.Combat
             hitTargets.Clear();
             expiresAt = Time.time + Mathf.Max(.01f, lifetime);
             initialized = true;
-            CombatFx.Spawn(visualEffect, transform.position, transform.rotation);
+            var visual = CombatFx.Spawn(visualEffect, transform.position, transform.rotation);
+            // 移动波跟随真实判定，原地爆炸则独立淡出，不受短命 Hitbox 销毁影响。
+            if (visual && speed > 0 && visual.TryGetComponent<CombatVfxMotion>(out var motion)) motion.follow = transform;
             Scan(transform.position, 0, transform.position);
         }
 
@@ -75,19 +80,23 @@ namespace NGJ.Combat
         // 查询完整移动路径内的碰撞体，并过滤阵营、角度、遮挡和重复目标。
         void Scan(Vector3 start, float travel, Vector3 end)
         {
-            Collider[] colliders;
+            int count;
             if (shape == HitboxShape.Sphere)
-                colliders = Physics.OverlapCapsule(start, end, Mathf.Max(.01f, radius), targetMask, QueryTriggerInteraction.Collide);
+                count = Physics.OverlapCapsuleNonAlloc(start, end, Mathf.Max(.01f, radius), scanBuffer, targetMask, QueryTriggerInteraction.Collide);
             else
             {
                 Vector3 extents = new Vector3(Mathf.Max(.01f, halfExtents.x), Mathf.Max(.01f, halfExtents.y),
                     Mathf.Max(.01f, halfExtents.z) + travel * .5f);
-                colliders = Physics.OverlapBox((start + end) * .5f, extents, transform.rotation, targetMask, QueryTriggerInteraction.Collide);
+                count = Physics.OverlapBoxNonAlloc((start + end) * .5f, extents, scanBuffer, transform.rotation, targetMask, QueryTriggerInteraction.Collide);
             }
             // 弱点优先，避免同一目标的躯干碰撞体先被处理后吞掉弱点命中。
-            System.Array.Sort(colliders, (a, b) => IsWeak(b).CompareTo(IsWeak(a)));
-            foreach (Collider collider in colliders)
+            // 缓冲区满时扩容并重试，避免密集敌群漏判；常态不分配数组。
+            if (count == scanBuffer.Length) { System.Array.Resize(ref scanBuffer, scanBuffer.Length * 2); Scan(start, travel, end); return; }
+            for (int pass = 0; pass < 2; pass++)
+            for (int i = 0; i < count; i++)
             {
+                Collider collider = scanBuffer[i];
+                if (IsWeak(collider) != (pass == 0)) continue;
                 CombatTarget target = CombatUtility.Resolve(collider, out bool weakPoint);
                 if (!CombatUtility.CanHit(hit.source, target) || hitTargets.Contains(target)) continue;
                 Vector3 point = collider.ClosestPoint(end);
@@ -99,6 +108,7 @@ namespace NGJ.Combat
                 info.direction = transform.forward;
                 if(info.knockback>0&&speed==0&&shape==HitboxShape.Sphere)info.direction=(target.transform.position-start).normalized;
                 if (!target.ReceiveHit(info, weakPoint)) continue;
+                CombatFx.Spawn(impactEffect, point, Quaternion.LookRotation(info.direction.sqrMagnitude > .001f ? -info.direction : Vector3.up));
                 info.hitConfirmed?.Invoke();
                 hitTargets.Add(target);
                 if (hitTargets.Count >= Mathf.Max(1, maxTargets)) { Destroy(gameObject); return; }

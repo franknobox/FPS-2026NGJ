@@ -85,6 +85,7 @@ namespace NGJ.Combat
             if((weapon.evolution&EvolutionEffect.SharpNoise)!=0)damage+=owner.Noise*.25f;
             if(nextShotStacks.TryGetValue(weapon,out int stacks)){damage*=1+stacks*.1f;nextShotStacks[weapon]=0;}
             HitInfo hit=DecorateHit(new HitInfo{source=owner,noise=damage,penetration=weapon.penetration,knockback=weapon.knockback,pushedTargets=new HashSet<CombatTarget>()},weapon);
+            CombatFx.Spawn(weapon.muzzleEffect, spawnPosition, muzzle ? muzzle.rotation : origin.rotation, muzzle);
             bool charged = false;
             float selfNoise = weapon.selfNoise;
             var shooter = owner;

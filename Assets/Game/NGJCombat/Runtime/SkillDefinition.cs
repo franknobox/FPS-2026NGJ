@@ -22,6 +22,8 @@ namespace NGJ.Combat
         // 技能效果类型：选择声波、投射物、增伤或共鸣。
         [Tooltip("选择声波、投射物、增伤或共鸣。")]
         public SkillEffect effect;
+        public GameObject castEffect;
+        public GameObject activeEffect;
         // 命中区域预制体：声波或共鸣反击使用的 Hitbox。
         [Tooltip("声波或共鸣反击使用的 Hitbox。")]
         public CombatHitbox hitboxPrefab;

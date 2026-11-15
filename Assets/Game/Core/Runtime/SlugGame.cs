@@ -43,13 +43,14 @@ namespace SlugWhitebox
         float yaw, pitch, recoil, footstepAt;
         bool settled;
         float runTime;
+        public OutpostCameraShake cameraFeedback;
         float cameraShake;
         bool sniperAiming;
         bool ignoreHeldFire;
         public bool IsSniperEquipped => weapons && weapons.equipped && weapons.equipped.type==NGJ.Combat.WeaponType.JianXiaoSniper;
         public bool IsSniperAiming => Running && sniperAiming && IsSniperEquipped;
         float AimFov => IsSniperAiming?30f:80f;
-        public int Remaining => enemies.FindAll(e => e && !e.dead).Count;
+        public int Remaining { get { int count=0; foreach(var enemy in enemies) if(enemy && !enemy.dead) count++; return count; } }
         public float RunTime => runTime;
         public bool HasStarted { get; private set; }
         public class Drop { public Transform body; public Vector3 origin; public int gland, bio; }
@@ -64,6 +65,9 @@ namespace SlugWhitebox
             sound = view.gameObject.AddComponent<AudioSource>(); sound.spatialBlend = 0;
             if(fireSounds==null || fireSounds.Length!=weaponDefinitions.Length)Array.Resize(ref fireSounds,weaponDefinitions.Length);
             InitializeCombat();
+            cameraFeedback=GetComponent<OutpostCameraShake>();
+            if(!cameraFeedback)cameraFeedback=gameObject.AddComponent<OutpostCameraShake>();
+            cameraFeedback.game=this;
             progression=gameObject.AddComponent<NGJ.Progression.RunProgression>();progression.Initialize(this,progressionSettings);
             hud = gameObject.AddComponent<SlugHud>(); hud.game = this; hud.Build();
             ClientFlow.ClientSettings.Apply();
@@ -183,6 +187,7 @@ namespace SlugWhitebox
             var weaponView=weaponModels[weapon].GetComponent<SlugWeaponView>();
             recoil=weaponView && weaponView.feedbackSource ? 0 : weapon==1?1.5f:weapon==2?1.8f:1;
             if(weaponView)weaponView.Fire();
+            if(cameraFeedback)cameraFeedback.WeaponImpulse(weapon);
             if(weaponView && weaponView.feedbackSource)
             {
                 cameraShake=weaponView.feedbackSource.camShakeAmount;

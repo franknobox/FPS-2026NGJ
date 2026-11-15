@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.WeaponDefinition
   type: 4
   knockback: 8
-  muzzleEffect: {fileID: 7132799655778927471, guid: 05c9cfd8b6191ff4982297860f20da1b, type: 3}
-  impactEffect: {fileID: 5558662436349472212, guid: 120b8ea20c6ebee4d8b1e3459988d81d, type: 3}
-  bulletTrail: {fileID: 5262299277316338954, guid: b272961956f23a94eae80741ea698aa9, type: 3}
+  muzzleEffect: {fileID: 219157640113410196, guid: 113daf2b84c843948a6c3deeec913cc7, type: 3}
+  impactEffect: {fileID: 3981496599080429059, guid: 577c610670914c648b3a2b45e1bccffd, type: 3}
+  bulletTrail: {fileID: 1039276643199735768, guid: 60d5649125ad67545947ec365cb9fc21, type: 3}
   displayName: "\u7206\u9E23\u4F53"
   fireInterval: 1.2
   selfNoise: 30

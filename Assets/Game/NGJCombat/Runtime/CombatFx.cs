@@ -7,6 +7,7 @@ namespace NGJ.Combat
         {
             if (!prefab) return null;
             var effect = Object.Instantiate(prefab, point, rotation, parent);
+            foreach(var particles in effect.GetComponentsInChildren<ParticleSystem>()) particles.Play(false);
             Object.Destroy(effect, 5);
             return effect;
         }

@@ -21,6 +21,8 @@ namespace NGJ.Combat
         readonly Dictionary<SkillDefinition, float> cooldowns = new Dictionary<SkillDefinition, float>();
         SkillDefinition resonance;
         float resonanceEndsAt;
+        GameObject activeVisual;
+        float visualEndsAt;
         // 初始化组件引用和资源范围。
         void Awake() { if (!owner) owner = GetComponent<PlayerCombatStats>(); }
         // 返回此技能的剩余冷却秒数。
@@ -49,6 +51,14 @@ namespace NGJ.Combat
             }
             cooldowns[skill] = Time.time + Mathf.Max(0, skill.cooldown);
             HitInfo hit = MakeHit(skill);
+            CombatFx.Spawn(skill.castEffect, Origin.position + Origin.forward * .65f, Origin.rotation, Origin);
+            if (skill.activeEffect)
+            {
+                ClearVisual();
+                activeVisual = Instantiate(skill.activeEffect, Origin.position, Origin.rotation, Origin);
+                foreach(var particles in activeVisual.GetComponentsInChildren<ParticleSystem>()) particles.Play(false);
+                visualEndsAt = Time.time + Mathf.Max(.01f,skill.duration);
+            }
             Execute(skill,hit,Origin.position,Origin.rotation);
             if(skill.extraTriggers>0)StartCoroutine(Echo(skill,hit,Origin.position,Origin.rotation));
             CastStarted?.Invoke(skill);
@@ -99,6 +109,7 @@ namespace NGJ.Combat
         // 逐帧更新计时和状态。
         void Update()
         {
+            if (activeVisual && (Time.time >= visualEndsAt || !owner || !owner.IsAlive)) ClearVisual();
             if (!resonance) return;
             if (!owner || !owner.IsAlive || !owner.IsAbsorbing) { Cancel(); return; }
             if (Time.time < resonanceEndsAt) return;
@@ -115,6 +126,7 @@ namespace NGJ.Combat
         public void Cancel()
         {
             StopAllCoroutines();
+            ClearVisual();
             if (!resonance) return;
             var skill = resonance;
             resonance = null;
@@ -125,5 +137,6 @@ namespace NGJ.Combat
         public void ResetSkills() { Cancel(); cooldowns.Clear(); }
         // 组件禁用时结束技能状态，避免遗留吸收。
         void OnDisable() { Cancel(); }
+        void ClearVisual() { if (activeVisual) Destroy(activeVisual); activeVisual = null; }
     }
 }

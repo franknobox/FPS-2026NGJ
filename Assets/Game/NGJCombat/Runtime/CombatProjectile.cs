@@ -8,6 +8,7 @@ namespace NGJ.Combat
     // SphereCast 防止高速穿透薄碰撞体；爆炸伤害由独立 Hitbox 结算。
     public sealed class CombatProjectile : MonoBehaviour
     {
+        public static event Action<Vector3,float> ExplosionOccurred;
         // 判定半径（米）：球形命中区域或投射物碰撞半径。
         [Tooltip("球形命中区域或投射物碰撞半径。")]
         [Min(.01f)] public float radius = .15f;
@@ -40,6 +41,7 @@ namespace NGJ.Combat
         // 写入本次攻击数据并开始运行；同时处理出生时的重叠。
         public void Initialize(HitInfo info, Vector3 initialVelocity)
         {
+            foreach(var particles in GetComponentsInChildren<ParticleSystem>()) particles.Play(false);
             hit = info;
             velocity = initialVelocity;
             expiresAt = Time.time + Mathf.Max(.01f, lifetime);
@@ -107,6 +109,7 @@ namespace NGJ.Combat
         {
             if (detonated) return;
             detonated = true;
+            if(explosionPrefab) ExplosionOccurred?.Invoke(transform.position,explosionPrefab.radius);
             if (explosionPrefab)
                 Instantiate(explosionPrefab, transform.position, transform.rotation).Initialize(hit);
             Destroy(gameObject);
