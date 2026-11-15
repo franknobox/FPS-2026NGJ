@@ -36,13 +36,13 @@ namespace ArtTools
                 EditorSceneManager.CloseScene(legacy, true);
             }
             SceneManager.SetActiveScene(scene);
-            foreach (string category in new[] { "Enemies", "Weapons", "Environment" })
+            foreach (string category in new[] { "Enemies", "Weapons", "Environment", "Pickups" })
             {
                 string folder = "Assets/ART/Prefabs/" + category;
                 if (!AssetDatabase.IsValidFolder(folder)) continue;
                 var paths = AssetDatabase.FindAssets("t:Prefab", new[] { folder }).Select(AssetDatabase.GUIDToAssetPath)
                     .OrderBy(p => p, StringComparer.Ordinal).ToArray();
-                string label = category == "Enemies" ? "怪物" : category == "Weapons" ? "武器" : "场景素材";
+                string label = category == "Enemies" ? "怪物" : category == "Weapons" ? "武器" : category == "Pickups" ? "掉落物" : "场景素材";
                 var group = scene.GetRootGameObjects().FirstOrDefault(g => g.name == label) ?? new GameObject(label);
                 if (group.scene != scene) SceneManager.MoveGameObjectToScene(group, scene);
                 for (int i = 0; i < paths.Length; i++)
@@ -62,6 +62,7 @@ namespace ArtTools
                         instance.transform.position = new Vector3((i % 4 - 1.5f) * 16, 0, -1 - i / 4 * 18);
                     }
                     else if (category == "Enemies") instance.transform.position = new Vector3((i - (paths.Length - 1) * .5f) * 3.2f, 0, 5);
+                    else if (category == "Pickups") { instance.transform.position = new Vector3(11+i*2,1,8); instance.transform.localScale=Vector3.one*3; }
                     else
                     {
                         var existingWeapons = instances.Where(pair => pair.Key.StartsWith(folder + "/") && pair.Value != instance).Select(pair => pair.Value).ToArray();
