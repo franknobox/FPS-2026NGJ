@@ -19,6 +19,31 @@ namespace NGJ.Combat
         public bool IsAttacking { get; private set; }
         public bool IsWindingUp { get; private set; }
         public bool CanAct => IsAlive && !IsStunned;
+        public bool HasLineOfSight { get; private set; }
+        public Vector3 LastShotEnd { get; private set; }
+        public EnemyAttackCoordinator attackCoordinator;
+        public bool IsKnockedBack => Time.time<knockbackUntil;
+        Vector3 knockbackVelocity;
+        float knockbackUntil;
+        public void DelayFirstAttack(float delay){nextAttackAt=Time.time+delay;}
+        public Vector3 KnockbackStep(float dt)
+        {
+            if(!IsKnockedBack)return Vector3.zero;
+            var delta=knockbackVelocity*dt;knockbackVelocity=Vector3.MoveTowards(knockbackVelocity,Vector3.zero,28*dt);return delta;
+        }
+        public override bool ReceiveHit(HitInfo hit,bool weakPoint=false)
+        {
+            bool received=base.ReceiveHit(hit,weakPoint);
+            if(received&&IsAlive&&hit.noise>0&&hit.knockback>0&&(hit.pushedTargets==null||hit.pushedTargets.Add(this)))
+            {
+                var direction=Vector3.ProjectOnPlane(hit.direction,Vector3.up);
+                if(direction.sqrMagnitude<.001f&&hit.source)direction=Vector3.ProjectOnPlane(transform.position-hit.source.transform.position,Vector3.up);
+                float mass=definition&&definition.kind==EnemyKind.ZhenYin?.35f:1;
+                knockbackVelocity=direction.normalized*hit.knockback*mass;knockbackUntil=Time.time+.22f;
+            }
+            return received;
+        }
+        public Vector3 AimPosition => attackTarget && attackTarget.TryGetComponent<Collider>(out var col) ? col.bounds.center : attackTarget ? attackTarget.transform.position + Vector3.up : transform.position;
         [Tooltip("正式关卡的活动范围；白盒及通用预制体保持关闭。")] public bool hasMovementBounds;
         public Bounds movementBounds;
         // Player-facing names always come from the design definition, never mesh filenames.
@@ -30,6 +55,8 @@ namespace NGJ.Combat
         CharacterController motor;
         float nextAttackAt, windupEndsAt, beamEndsAt, nextTickAt, nextSearchAt, verticalSpeed;
         static readonly float[] AvoidanceAngles = { 60f, -60f, 100f, -100f };
+        float nextSightAt, avoidUntil, climbUntil;
+        Vector3 avoidDirection;
 
         protected override void Awake()
         {
@@ -71,10 +98,15 @@ namespace NGJ.Combat
             Vector3 delta = attackTarget.transform.position - transform.position;
             Vector3 horizontal = Vector3.ProjectOnPlane(delta, Vector3.up);
             if (horizontal.sqrMagnitude > .001f) transform.rotation = Quaternion.LookRotation(horizontal);
-            bool inRange = delta.magnitude <= definition.attackRange;
+            if(Time.time >= nextSightAt)
+            {
+                nextSightAt=Time.time+.12f;
+                HasLineOfSight=CombatUtility.Visible(attackOrigin ? attackOrigin.position : transform.position+Vector3.up,AimPosition,CombatLayers.WorldMask);
+            }
+            bool inRange = delta.magnitude <= definition.attackRange && HasLineOfSight;
             if ((IsAttacking || IsWindingUp) && !inRange) StopAttack();
             if (!IsAttacking && !IsWindingUp && inRange && Time.time >= nextAttackAt)
-            { BeginWindup(); }
+            { if(!attackCoordinator||attackCoordinator.TryAcquire(this))BeginWindup(); }
             if (IsWindingUp && Time.time >= windupEndsAt) BeginAttack();
             if (IsAttacking)
             {
@@ -85,6 +117,7 @@ namespace NGJ.Combat
             Vector3 movement = !inRange && !IsAttacking && !IsWindingUp ? horizontal.normalized * definition.moveSpeed : Vector3.zero;
             if (definition.flying)
             {
+                if(Time.time < avoidUntil && movement.sqrMagnitude > .01f)movement=avoidDirection*definition.moveSpeed;
                 if (hasMovementBounds && movement.sqrMagnitude > .01f && Physics.SphereCast(transform.position + Vector3.up * motor.height * .5f,
                     motor.radius * .8f, movement.normalized, out _, 2, CombatLayers.WorldMask, QueryTriggerInteraction.Ignore))
                 {
@@ -93,11 +126,12 @@ namespace NGJ.Combat
                     {
                         var direction = Quaternion.Euler(0, angle, 0) * horizontal.normalized;
                         if (!Physics.SphereCast(transform.position + Vector3.up * motor.height * .5f, motor.radius * .8f, direction,
-                            out _, 2, CombatLayers.WorldMask, QueryTriggerInteraction.Ignore)) { avoided = direction * definition.moveSpeed; break; }
+                            out _, 2, CombatLayers.WorldMask, QueryTriggerInteraction.Ignore)) { avoided = direction * definition.moveSpeed; avoidDirection=direction;avoidUntil=Time.time+.65f;break; }
                     }
                     movement = avoided;
+                    if(avoided.sqrMagnitude<.01f)climbUntil=Time.time+1.5f;
                 }
-                movement.y = Mathf.Clamp(attackTarget.transform.position.y + definition.flightHeight - transform.position.y,
+                movement.y = Mathf.Clamp(attackTarget.transform.position.y + definition.flightHeight + (Time.time<climbUntil?4:0) - transform.position.y,
                     -definition.moveSpeed, definition.moveSpeed);
             }
             Move(movement, false);
@@ -115,6 +149,7 @@ namespace NGJ.Combat
             }
             else verticalSpeed = 0;
             Vector3 next = transform.position + velocity * Time.deltaTime;
+            next+=KnockbackStep(Time.deltaTime);
             if (hasMovementBounds)
             {
                 next.x = Mathf.Clamp(next.x, movementBounds.min.x + motor.radius, movementBounds.max.x - motor.radius);
@@ -150,9 +185,14 @@ namespace NGJ.Combat
         {
             if (!attackTarget || !attackTarget.IsAlive || !CanAct) return;
             Vector3 start = attackOrigin ? attackOrigin.position : transform.position + Vector3.up;
-            var targetCollider = attackTarget.GetComponent<Collider>();
-            Vector3 aim = targetCollider ? targetCollider.bounds.center : attackTarget.transform.position + Vector3.up;
+            Vector3 aim = AimPosition;
             Vector3 direction = (aim - start).normalized;
+            if(definition.attackMode==EnemyAttackMode.Intermittent && definition.projectilePrefab)
+            {
+                var bolt=Instantiate(definition.projectilePrefab,start,Quaternion.LookRotation(direction));
+                bolt.Initialize(new HitInfo{source=this,noise=definition.attackNoise,penetration=definition.attackPenetration},direction*definition.projectileSpeed);
+                ShotFired?.Invoke(start,start+direction*.3f);return;
+            }
             Vector3 end = start + direction * definition.attackRange;
             var hits = Physics.RaycastAll(start, direction, definition.attackRange, attackMask, QueryTriggerInteraction.Ignore);
             Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
@@ -166,6 +206,7 @@ namespace NGJ.Combat
                         penetration = definition.attackPenetration, point = end, direction = direction }, weak);
                 break;
             }
+            LastShotEnd=end;
             ShotFired?.Invoke(start, end);
         }
 
@@ -177,7 +218,8 @@ namespace NGJ.Combat
             weakPointOpen = false;
             if (wasActive)
             {
-                nextAttackAt = Time.time + (definition ? Mathf.Max(.01f, definition.attackInterval) : 1);
+                nextAttackAt = Time.time + (definition ? Mathf.Max(.01f, definition.attackInterval) : 1)+UnityEngine.Random.Range(.2f,.9f);
+                if(attackCoordinator)attackCoordinator.Release(this);
                 AttackStopped?.Invoke();
             }
         }
@@ -189,6 +231,8 @@ namespace NGJ.Combat
             base.ResetCombat();
             verticalSpeed = 0;
             nextAttackAt = 0;
+            nextSightAt=avoidUntil=climbUntil=0;HasLineOfSight=false;
+            knockbackUntil=0;knockbackVelocity=Vector3.zero;
         }
     }
 }

@@ -32,6 +32,7 @@ namespace NGJ.Combat
         // 墙体遮挡层：仅包含墙和地形，排除角色层。
         [Tooltip("仅包含墙和地形，排除角色层。")]
         public LayerMask obstructionMask;
+        public GameObject visualEffect;
         // 最多命中目标数：每个 Hitbox 对同一目标只结算一次。
         [Tooltip("每个 Hitbox 对同一目标只结算一次。")]
         [Min(1)] public int maxTargets = 64;
@@ -47,6 +48,7 @@ namespace NGJ.Combat
             hitTargets.Clear();
             expiresAt = Time.time + Mathf.Max(.01f, lifetime);
             initialized = true;
+            CombatFx.Spawn(visualEffect, transform.position, transform.rotation);
             Scan(transform.position, 0, transform.position);
         }
 
@@ -95,7 +97,9 @@ namespace NGJ.Combat
                 HitInfo info = hit;
                 info.point = point;
                 info.direction = transform.forward;
+                if(info.knockback>0&&speed==0&&shape==HitboxShape.Sphere)info.direction=(target.transform.position-start).normalized;
                 if (!target.ReceiveHit(info, weakPoint)) continue;
+                info.hitConfirmed?.Invoke();
                 hitTargets.Add(target);
                 if (hitTargets.Count >= Mathf.Max(1, maxTargets)) { Destroy(gameObject); return; }
             }

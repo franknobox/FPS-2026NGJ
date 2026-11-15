@@ -301,8 +301,8 @@ Animator:
   m_GameObject: {fileID: 1868980920270325546}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 512cb6264d377cc42ba2327a4e174f71, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
+  m_Controller: {fileID: 9100000, guid: e6ad193737c97f14383e419441a74690, type: 2}
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -515,6 +515,7 @@ GameObject:
   - component: {fileID: 1507278841873522896}
   - component: {fileID: 784622926644285468}
   - component: {fileID: 1248077693713378153}
+  - component: {fileID: 6373118157941720275}
   m_Layer: 10
   m_Name: EnemyChanYin
   m_TagString: Untagged
@@ -596,6 +597,10 @@ MonoBehaviour:
     m_Bits: 3276033
   fallGravity: 20
   externalGroundMovement: 0
+  hasMovementBounds: 0
+  movementBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
 --- !u!114 &784622926644285468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -618,7 +623,7 @@ MonoBehaviour:
   weakPointRadius: 0.2
   collisionHeight: 1.8
   collisionRadius: 0.4
-  deathDespawnDelay: 0.8
+  deathDespawnDelay: 1.25
   preparedVisual: {fileID: 3517714842870566611}
 --- !u!114 &1248077693713378153
 MonoBehaviour:
@@ -639,6 +644,22 @@ MonoBehaviour:
   agent: {fileID: 0}
   body: {fileID: 3517714842870566611}
   shell: {fileID: 767751496270260431}
+--- !u!114 &6373118157941720275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2921676042213934944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13798e10f78a9304d9123bab85a5aa46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyPresentation
+  soundMaterial: {fileID: 2100000, guid: 656258e04e48f434283965f067b20afb, type: 2}
+  color: {r: 0.15, g: 0.9, b: 1, a: 1}
+  windupSound: {fileID: 8300000, guid: 2497c5ef734b6b9459eacffecae385b2, type: 3}
+  shotSound: {fileID: 8300000, guid: 92b83b6f6d04f4e4396ccdfb937c73bf, type: 3}
 --- !u!1 &3808398070629386409
 GameObject:
   m_ObjectHideFlags: 0

@@ -3060,7 +3060,7 @@ Transform:
   m_GameObject: {fileID: 281394582}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.62, z: 0}
+  m_LocalPosition: {x: 0, y: 1.48, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5261,6 +5261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 613796079}
   - component: {fileID: 613796078}
+  - component: {fileID: 613796080}
   m_Layer: 0
   m_Name: "\u767D\u76D2\u5165\u53E3 \xB7 \u542F\u52A8\u5373\u73A9"
   m_TagString: Untagged
@@ -5316,7 +5317,12 @@ MonoBehaviour:
   - {fileID: 873926257}
   - {fileID: 2079272266}
   - {fileID: 707935602}
-  fireSounds: []
+  fireSounds:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 8300000, guid: 6f4d5573a385d3948aa1f08a5621c9cb, type: 3}
+  - {fileID: 0}
+  - {fileID: 8300000, guid: 31fe3c9004e2e0343a96a4f962909f5e, type: 3}
   pickupSound: {fileID: 0}
   killSound: {fileID: 0}
   hitSound: {fileID: 0}
@@ -5364,6 +5370,7 @@ MonoBehaviour:
   - {fileID: 792903952}
   - {fileID: 1108007985}
   hud: {fileID: 0}
+  levelFlow: {fileID: 0}
   mode: 0
   glands: 0
   health: 0
@@ -5401,6 +5408,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &613796080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613796077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 432f769e2f48dd34d9a178c032eae731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyAttackCoordinator
+  maxConcurrent: 2
+  startSpacing: 0.85
 --- !u!1 &624678746
 GameObject:
   m_ObjectHideFlags: 0
@@ -6775,6 +6796,8 @@ MonoBehaviour:
   idleClip: {fileID: -9171516368259116194, guid: c8e76d17596f69442ba212c558bac20e, type: 3}
   fireClip: {fileID: 4020005775735506372, guid: c8e76d17596f69442ba212c558bac20e, type: 3}
   muzzle: {fileID: 1044144375}
+  feedbackSource: {fileID: 0}
+  feedbackWeapon: {fileID: 0}
 --- !u!4 &785771227
 Transform:
   m_ObjectHideFlags: 0
@@ -9632,6 +9655,7 @@ GameObject:
   - component: {fileID: 1114821220}
   - component: {fileID: 1114821218}
   - component: {fileID: 1114821219}
+  - component: {fileID: 1114821221}
   m_Layer: 20
   m_Name: "\u73A9\u5BB6 \xB7 \u9AD81.8m"
   m_TagString: Untagged
@@ -9673,13 +9697,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.8
+  m_Height: 1.6
   m_Radius: 0.4
   m_SlopeLimit: 45
   m_StepOffset: 0.25
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!114 &1114821218
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9742,6 +9766,26 @@ MonoBehaviour:
   glandRegenPerSecond: 0.1
   noiseDecayPerSecond: 8
   noiseDecayDelay: 2
+--- !u!114 &1114821221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114821215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fda374c14a1e2824cbf31d4365451f99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlugWhitebox.PlayerFootsteps
+  clips:
+  - {fileID: 8300000, guid: e1887935b19171e40b8705d21fd5163c, type: 3}
+  - {fileID: 8300000, guid: 966c7be01fb04c04e80122dbb406ba84, type: 3}
+  - {fileID: 8300000, guid: 37c64fcc214680e4ebe40110d4980094, type: 3}
+  - {fileID: 8300000, guid: 37e972364f0d0dd4b8700410be57e58f, type: 3}
+  stride: 1.9
+  volume: 0.5
+  game: {fileID: 613796078}
 --- !u!1 &1123686208
 GameObject:
   m_ObjectHideFlags: 0
@@ -9944,6 +9988,8 @@ MonoBehaviour:
   idleClip: {fileID: -9171516368259116194, guid: e42198d0b28f538459719962814f4862, type: 3}
   fireClip: {fileID: 7416400319665052205, guid: e42198d0b28f538459719962814f4862, type: 3}
   muzzle: {fileID: 1756050931}
+  feedbackSource: {fileID: 0}
+  feedbackWeapon: {fileID: 0}
 --- !u!4 &1146663978
 Transform:
   m_ObjectHideFlags: 0

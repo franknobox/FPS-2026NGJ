@@ -27,12 +27,14 @@ MonoBehaviour:
   exposeDuringAttack: 1
   exposeDuringStun: 1
   attackMode: 0
+  projectilePrefab: {fileID: 4003278888065522153, guid: 7fd2c6a2bbaa79b439ff787af42357ef, type: 3}
+  projectileSpeed: 16
   attackNoise: 10
   attackPenetration: 1
   attackRange: 12
   detectionRange: 30
-  windup: 0.4
-  attackInterval: 1.5
+  windup: 0.8
+  attackInterval: 3.2
   attackDuration: 0.3
   beamDuration: 2
   beamTickInterval: 0.3

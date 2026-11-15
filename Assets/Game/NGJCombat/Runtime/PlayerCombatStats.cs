@@ -50,7 +50,7 @@ namespace NGJ.Combat
             if (glandRegenPerSecond > 0) AddGland(glandRegenPerSecond * Time.deltaTime);
         }
 
-        // 记录开火时间，并累计本次开火的自身噪值。
+        // 记录攻击活动；空放传 0，首次有效命中再传本次普攻的自身噪值。
         public void RegisterShot(float selfNoise)
         {
             lastActivity = Time.time;

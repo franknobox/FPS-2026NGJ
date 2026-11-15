@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: RocketLauncher
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.WeaponDefinition
   type: 4
+  knockback: 8
+  muzzleEffect: {fileID: 7132799655778927471, guid: 05c9cfd8b6191ff4982297860f20da1b, type: 3}
+  impactEffect: {fileID: 5558662436349472212, guid: 120b8ea20c6ebee4d8b1e3459988d81d, type: 3}
+  bulletTrail: {fileID: 5262299277316338954, guid: b272961956f23a94eae80741ea698aa9, type: 3}
   displayName: "\u706B\u7BAD\u7B52"
   fireInterval: 1.2
   selfNoise: 20
@@ -23,5 +27,5 @@ MonoBehaviour:
   spreadAngle: 0
   maxTargetsPerPellet: 1
   projectilePrefab: {fileID: 6653163049750606983, guid: 4c7c1736d37e02d4a806116e1b95cb4a, type: 3}
-  projectileSpeed: 25
+  projectileSpeed: 40
   skill: {fileID: 0}

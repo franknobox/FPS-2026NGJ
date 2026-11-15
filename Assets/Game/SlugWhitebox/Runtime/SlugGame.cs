@@ -23,6 +23,7 @@ namespace SlugWhitebox
         public Mode mode;
         public bool Running => mode == Mode.Playing;
         public Vector3 PlayerPosition => player.position;
+        public float EyeHeight => Mathf.Max(.1f,(controller?controller:player.GetComponent<CharacterController>()).height-.12f);
         [HideInInspector] public float glands, health, maxHealth, maxGlands;
         public int weapon, skill, sector = -1, kills, runBiomass;
         [HideInInspector] public float[] heat = new float[4];
@@ -42,6 +43,7 @@ namespace SlugWhitebox
         bool settled, smoke;
         int runGeneration;
         float runTime;
+        float cameraShake;
         public int Remaining => enemies.FindAll(e => e && !e.dead).Count;
         public float RunTime => runTime;
         public bool IsSmoke => smoke;
@@ -74,6 +76,7 @@ namespace SlugWhitebox
         public void BeginRun()
         {
             runGeneration++;
+            var attacks=GetComponent<EnemyAttackCoordinator>();if(attacks)attacks.ResetSchedule();
             Time.timeScale=1;
             foreach(var enemy in enemies) if(enemy) Destroy(enemy.gameObject);
             enemies.Clear();
@@ -86,8 +89,9 @@ namespace SlugWhitebox
             for(int i=0;i<4;i++) { heat[i]=0; locked[i]=false; }
             kills=runBiomass=0; sector=-1; runTime=0; settled=false;
             weapon=skill=0; shotAt=0; yaw=pitch=0;
+            cameraShake=0; view.fieldOfView=80;
             Warp(levelFlow ? levelFlow.StartPosition : new Vector3(0,.15f,-2)); player.rotation=Quaternion.identity;
-            view.transform.localPosition=new Vector3(0,1.62f,0);view.transform.localRotation = Quaternion.identity;
+            view.transform.localPosition=new Vector3(0,EyeHeight,0);view.transform.localRotation = Quaternion.identity;
             mode=Mode.Playing; SetCursor(true);
             if(weaponLoadout==null || weaponLoadout.Length!=2 || !ConfigureLoadout(weaponLoadout[0],weaponLoadout[1])) ConfigureLoadout(2,weaponDefinitions.Length>4?4:0);
             if(levelFlow)levelFlow.ResetRun(this);
@@ -137,6 +141,9 @@ namespace SlugWhitebox
             recoil=Mathf.Lerp(recoil,0,Time.deltaTime*12);
             weaponPivot.localPosition=new Vector3(0,0,-recoil*.04f);
             weaponPivot.localRotation=Quaternion.Euler(-recoil*8,0,Mathf.Sin(Time.time*3)*.5f);
+            cameraShake=Mathf.Lerp(cameraShake,0,Time.deltaTime*16);
+            view.transform.localPosition=new Vector3(0,EyeHeight,0)+UnityEngine.Random.insideUnitSphere*cameraShake;
+            view.fieldOfView=Mathf.Lerp(view.fieldOfView,80,Time.deltaTime*10);
             UpdateDrops(Time.deltaTime);
             UpdateFlow();
         }
@@ -171,18 +178,23 @@ namespace SlugWhitebox
         public bool Fire(bool bypassInterval=false)
         {
             if(!Running || !weapons.TryFire()) return false;
-            recoil=weapon==1?1.5f:weapon==2?1.8f:1;
             var weaponView=weaponModels[weapon].GetComponent<SlugWeaponView>();
+            recoil=weaponView && weaponView.feedbackSource ? 0 : weapon==1?1.5f:weapon==2?1.8f:1;
             if(weaponView)weaponView.Fire();
-            Play(fireSounds[weapon],.3f);
+            if(weaponView && weaponView.feedbackSource)
+            {
+                cameraShake=weaponView.feedbackSource.camShakeAmount;
+                if(weaponView.feedbackSource.applyFOVEffectOnShooting)view.fieldOfView=80-weaponView.feedbackSource.FOVValueToSubtract;
+            }
+            else Play(fireSounds[weapon],.3f);
             Vector3 start=weaponView && weaponView.muzzle ? weaponView.muzzle.position : view.transform.TransformPoint(.17f,-.14f,.88f);
-            if(!weaponDefinitions[weapon].projectilePrefab)
+            if(!weaponDefinitions[weapon].projectilePrefab && !weaponDefinitions[weapon].bulletTrail)
             {
                 Vector3 end=view.transform.position+view.transform.forward*weaponDefinitions[weapon].range;
                 if(Physics.Raycast(view.transform.position,view.transform.forward,out var hit,weaponDefinitions[weapon].range,CombatLayers.PlayerAttackMask,QueryTriggerInteraction.Ignore)) end=hit.point;
                 Trail(start,end,Color.cyan,.08f);
             }
-            var flash=Visual(PrimitiveType.Sphere,null,start,Vector3.one*.12f,orangeMaterial);Destroy(flash,.05f);
+            if(!weaponDefinitions[weapon].muzzleEffect){var flash=Visual(PrimitiveType.Sphere,null,start,Vector3.one*.12f,orangeMaterial);Destroy(flash,.05f);}
             return true;
         }
 

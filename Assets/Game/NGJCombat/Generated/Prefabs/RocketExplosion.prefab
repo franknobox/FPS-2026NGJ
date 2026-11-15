@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2996455300408680587}
   - component: {fileID: 1582341462350447197}
-  - component: {fileID: 3257509020622500964}
   m_Layer: 0
   m_Name: RocketExplosion
   m_TagString: Untagged
@@ -57,16 +56,5 @@ MonoBehaviour:
   obstructionMask:
     serializedVersion: 2
     m_Bits: 2226433
+  visualEffect: {fileID: 8008346420409426329, guid: ae7d2b885436b7f47889d5c66ce60a0b, type: 3}
   maxTargets: 64
---- !u!114 &3257509020622500964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2553012432154727960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 531a76a026f9c1c4c8a61bb9b2ca6aab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SlugWhitebox.SlugCombatEffect

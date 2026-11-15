@@ -72,6 +72,8 @@ namespace NGJ.Combat
             HitInfo hit = skill.hit;
             hit.source = owner;
             hit.noise *= owner.DamageMultiplier;
+            hit.knockback=Mathf.Max(3,hit.knockback);
+            hit.pushedTargets=new HashSet<CombatTarget>();
             return hit;
         }
         // 在技能瞄准点创建并初始化命中区域。

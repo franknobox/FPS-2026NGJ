@@ -45,7 +45,7 @@ namespace NGJ.Combat
         }
         // 尝试释放当前武器关联的技能。
         public bool TryWeaponSkill() => equipped && skills && skills.TryCast(equipped.skill);
-        // 按射速检查后发出一次普攻，再增加自身噪值。
+        // 空放不增加噪值；一次普攻首次有效命中后结算一次自身噪值。
         public bool TryFire()
         {
             if (!isActiveAndEnabled || !equipped || !owner || !owner.CanAct ||
@@ -54,11 +54,20 @@ namespace NGJ.Combat
                 (!equipped.projectilePrefab || !equipped.projectilePrefab.explosionPrefab)) return false;
             Transform origin = fireOrigin ? fireOrigin : transform;
             HitInfo hit = new HitInfo { source = owner, noise = equipped.targetNoise * owner.DamageMultiplier,
-                penetration = equipped.penetration };
+                penetration = equipped.penetration, knockback=equipped.knockback, pushedTargets=new HashSet<CombatTarget>() };
             Vector3 spawnPosition = muzzle ? muzzle.position : origin.position;
             if (equipped.projectilePrefab && Physics.Linecast(origin.position, spawnPosition, CombatLayers.WorldMask, QueryTriggerInteraction.Ignore)) return false;
             nextShots[equipped] = Time.time + Mathf.Max(.01f, equipped.fireInterval);
-            // 本次已被接受的攻击会发出，即使开火产生的自身噪值随后导致死亡。
+            bool charged = false;
+            float selfNoise = equipped.selfNoise;
+            var shooter = owner;
+            hit.hitConfirmed = () =>
+            {
+                if (charged) return;
+                charged = true;
+                if (shooter) shooter.RegisterShot(selfNoise);
+            };
+            owner.RegisterShot(0);
             if (equipped.projectilePrefab)
             {
                 Vector3 aim = origin.position + origin.forward * equipped.range;
@@ -70,11 +79,10 @@ namespace NGJ.Combat
             else
                 for (int pellet = 0; pellet < Mathf.Max(1, equipped.pelletCount); pellet++)
                 {
-                    Vector2 spread = UnityEngine.Random.insideUnitCircle * Mathf.Tan(equipped.spreadAngle * Mathf.Deg2Rad);
+                    Vector2 spread = equipped.type==WeaponType.HanYinShotgun&&pellet==0?Vector2.zero:UnityEngine.Random.insideUnitCircle * Mathf.Tan(equipped.spreadAngle * Mathf.Deg2Rad);
                     Vector3 direction = (origin.forward + origin.right * spread.x + origin.up * spread.y).normalized;
                     FireRay(origin.position, direction, hit);
                 }
-            owner.RegisterShot(equipped.selfNoise);
             Fired?.Invoke(equipped);
             return true;
         }
@@ -85,16 +93,29 @@ namespace NGJ.Combat
             Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
             var visited = new HashSet<CombatTarget>();
             int count = 0;
+            Vector3 endpoint = origin + direction * equipped.range;
             foreach (var contact in hits)
             {
                 CombatTarget target = CombatUtility.Resolve(contact.collider, out bool weakPoint);
                 // 非受击目标的实体碰撞体视为墙体；普通触发器不挡子弹。
-                if (!target) { if (!contact.collider.isTrigger) break; else continue; }
+                if (!target)
+                {
+                    if (contact.collider.isTrigger) continue;
+                    endpoint = contact.point;
+                    CombatFx.Spawn(equipped.impactEffect, contact.point + contact.normal * .01f, Quaternion.LookRotation(contact.normal));
+                    break;
+                }
                 if (!CombatUtility.CanHit(owner, target) || !visited.Add(target)) continue;
                 hit.point = contact.point;
                 hit.direction = direction;
-                if (target.ReceiveHit(hit, weakPoint) && ++count >= Mathf.Max(1, equipped.maxTargetsPerPellet)) break;
+                if (target.ReceiveHit(hit, weakPoint))
+                {
+                    hit.hitConfirmed?.Invoke();
+                    CombatFx.Spawn(equipped.impactEffect, contact.point, Quaternion.LookRotation(contact.normal));
+                    if (++count >= Mathf.Max(1, equipped.maxTargetsPerPellet)) { endpoint = contact.point; break; }
+                }
             }
+            CombatFx.Trail(equipped.bulletTrail, muzzle ? muzzle.position : origin, endpoint);
         }
     }
 }

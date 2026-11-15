@@ -25,6 +25,9 @@ namespace NGJ.Combat
         [Tooltip("攻击期间继续暴露弱点，冷却期间关闭。")] public bool exposeDuringAttack = true;
         [Tooltip("眩晕期间暴露弱点。")] public bool exposeDuringStun = true;
         [Tooltip("间隙攻击一次结算；持续射线按间隔多次结算。")] public EnemyAttackMode attackMode;
+        [Tooltip("间隙攻击声波弹；为空时兼容旧射线攻击。")]
+        public CombatProjectile projectilePrefab;
+        [Min(1)] public float projectileSpeed = 16;
         [Min(0), Tooltip("每次射击或每个射线伤害跳数产生的噪值。")] public float attackNoise = 10;
         [Tooltip("敌人攻击的穿透等级。")] public ArmorGrade attackPenetration = ArmorGrade.Medium;
         [Min(.1f), Tooltip("最大攻击距离，米。")] public float attackRange = 12;

@@ -10,6 +10,9 @@ namespace SlugWhitebox
         public Animator rig;
         public AnimationClip idleClip, fireClip;
         public Transform muzzle;
+        public cowsins.Weapon_SO feedbackSource;
+        public NGJ.Combat.WeaponDefinition feedbackWeapon;
+        AudioSource shotAudio;
         PlayableGraph graph;
         AnimationMixerPlayable mixer;
         AnimationClipPlayable idle, fire;
@@ -37,6 +40,14 @@ namespace SlugWhitebox
 
         public void Fire()
         {
+            if (feedbackSource)
+            {
+                if (!shotAudio) { shotAudio = gameObject.AddComponent<AudioSource>(); shotAudio.spatialBlend = 0; }
+                var clips = feedbackSource.audioSFX.shooting;
+                shotAudio.pitch = 1 + Random.Range(-feedbackSource.pitchVariationFiringSFX, feedbackSource.pitchVariationFiringSFX);
+                if (clips != null && clips.Length > 0) shotAudio.PlayOneShot(clips[Random.Range(0, clips.Length)], .7f);
+                if (muzzle && feedbackWeapon) NGJ.Combat.CombatFx.Spawn(feedbackWeapon.muzzleEffect, muzzle.position, muzzle.rotation, transform);
+            }
             if (!graph.IsValid()) return;
             firedAt = Time.time;
             fire.SetTime(0); fire.SetDone(false);

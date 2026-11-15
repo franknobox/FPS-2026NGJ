@@ -22,6 +22,8 @@ namespace SlugWhitebox
         public Vector3 AimPoint => aimPoint ? aimPoint.position : combat && combat.attackOrigin ? combat.attackOrigin.position : transform.position+Vector3.up;
         Material skin,weakSkin;
         float pathAt;
+        Vector3 progressPosition;
+        float progressAt;
         Color baseColor;
         bool initialized;
         Transform aimPoint;
@@ -48,6 +50,8 @@ namespace SlugWhitebox
             aimPoint=weak?weak.transform:null;
             CombatLayers.SetActorLayer(gameObject,CombatLayers.Enemy);
             combat.attackTarget=game.stats;combat.findPlayerAutomatically=false;combat.attackMask=CombatLayers.AttackMask;
+            combat.attackCoordinator=game.GetComponent<EnemyAttackCoordinator>();
+            combat.DelayFirstAttack(UnityEngine.Random.Range(.8f,2.2f));
             if(!combat.definition.flying)
             {
                 combat.externalGroundMovement=true;
@@ -56,6 +60,9 @@ namespace SlugWhitebox
                 agent=gameObject.AddComponent<NavMeshAgent>();agent.radius=motor.radius;agent.height=motor.height;
                 agent.speed=combat.definition.moveSpeed;agent.acceleration=18;agent.angularSpeed=360;
                 agent.stoppingDistance=combat.definition.attackRange*.8f;agent.updateRotation=false;
+                agent.obstacleAvoidanceType=ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+                agent.avoidancePriority=30+Mathf.Abs(GetInstanceID()%30);
+                progressPosition=transform.position;progressAt=Time.time;
             }
             if(!body)
             {
@@ -68,7 +75,7 @@ namespace SlugWhitebox
             weakSkin=new Material(game.surfaceMaterial);weakSkin.color=Color.gray;
             game.Visual(PrimitiveType.Sphere,body,new Vector3(0,1.2f,.56f),Vector3.one*.4f,weakSkin);
             }
-            combat.ShotFired += (a,b) => game.Trail(a,b,kind==2?Color.magenta:Color.yellow,kind==2?.2f:.09f);
+            if(!GetComponent<EnemyPresentation>())combat.ShotFired += (a,b) => game.Trail(a,b,kind==2?Color.magenta:Color.yellow,kind==2?.2f:.09f);
             combat.HitReceived += hit => game.HitFeedback(combat.WeakPointExposed);
             combat.Died += () => {
                 dead=true;if(agent)agent.enabled=false;
@@ -83,6 +90,14 @@ namespace SlugWhitebox
             if(skin)skin.color=combat.IsStunned?Color.cyan:combat.IsVulnerable?Color.white:baseColor;
             if(weakSkin)weakSkin.color=combat.WeakPointExposed?Color.yellow:Color.gray;
             if(!agent || !agent.isOnNavMesh)return;
+            if(combat.IsKnockedBack&&game.Running)
+            {
+                agent.isStopped=true;var step=combat.KnockbackStep(Time.deltaTime);var next=transform.position+step;
+                if(combat.hasMovementBounds){next.x=Mathf.Clamp(next.x,combat.movementBounds.min.x+agent.radius,combat.movementBounds.max.x-agent.radius);next.z=Mathf.Clamp(next.z,combat.movementBounds.min.z+agent.radius,combat.movementBounds.max.z-agent.radius);}
+                if(NavMesh.Raycast(transform.position,next,out var wall,NavMesh.AllAreas))next=wall.position;
+                agent.Move(next-transform.position);return;
+            }
+            agent.stoppingDistance=combat.HasLineOfSight?combat.definition.attackRange*.7f:.35f;
             agent.isStopped=!game.Running || combat.IsStunned || combat.IsAttacking || combat.IsWindingUp;
             if(!agent.isStopped && Time.time>pathAt)
             {
@@ -94,6 +109,18 @@ namespace SlugWhitebox
                     destination.z=Mathf.Clamp(destination.z,combat.movementBounds.min.z+agent.radius,combat.movementBounds.max.z-agent.radius);
                 }
                 agent.SetDestination(destination);
+                if(Vector3.Distance(progressPosition,transform.position)>.3f){progressPosition=transform.position;progressAt=Time.time;}
+                else if(Time.time-progressAt>2 && agent.remainingDistance>agent.stoppingDistance+1)
+                {
+                    for(int side=-1;side<=1;side+=2)
+                    {
+                        var offset=Quaternion.Euler(0,side*65,0)*(destination-transform.position).normalized*4;
+                        if(NavMesh.SamplePosition(transform.position+offset,out var sample,2,NavMesh.AllAreas) &&
+                           (!combat.hasMovementBounds||combat.movementBounds.Contains(sample.position+Vector3.up)))
+                        {agent.SetDestination(sample.position);pathAt=Time.time+1;break;}
+                    }
+                    progressAt=Time.time;
+                }
             }
         }
         // 外部交互也走真实受击接口，不直接改血量。

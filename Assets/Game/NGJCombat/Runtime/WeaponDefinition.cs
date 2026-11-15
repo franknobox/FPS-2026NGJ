@@ -10,14 +10,17 @@ namespace NGJ.Combat
         // 武器类型：决定武器分类；榴弹需要投射物预制体。
         [Tooltip("决定武器分类；榴弹需要投射物预制体。")]
         public WeaponType type;
+        [Min(0),Tooltip("有效命中的击退速度；同一次普攻对同一敌人仅结算一次。")] public float knockback=5;
+        public GameObject muzzleEffect, impactEffect;
+        public TrailRenderer bulletTrail;
         // 显示名称：供界面显示的名称。
         [Tooltip("供界面显示的名称。")]
         public string displayName;
         // 开火间隔（秒）：两次普攻之间的最小间隔，越小射速越快。
         [Tooltip("两次普攻之间的最小间隔，越小射速越快。")]
         [Min(.01f)] public float fireInterval = .2f;
-        // 开火自身噪值：每次普攻增加给玩家的噪值。
-        [Tooltip("每次普攻增加给玩家的噪值。")]
+        // 命中自身噪值：一次普攻首次有效命中敌人时增加，空放为 0。
+        [Tooltip("一次普攻首次有效命中敌人时增加的自身噪值；多弹丸、穿透和群体爆炸不重复结算，空放不增加。")]
         [Min(0)] public float selfNoise = 2;
         // 单弹丸伤害／噪值：每颗弹丸给敌人增加的基础噪值，霰弹会按弹丸累加。
         [Tooltip("每颗弹丸给敌人增加的基础噪值，霰弹会按弹丸累加。")]

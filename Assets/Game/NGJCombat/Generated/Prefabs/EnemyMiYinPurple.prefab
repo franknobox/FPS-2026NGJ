@@ -494,8 +494,8 @@ Animator:
   m_GameObject: {fileID: 4800225114762787124}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: d097ecd207a47f34089c8f5b6ddaaadf, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
+  m_Controller: {fileID: 9100000, guid: 380597ebe80b51e489d9f011c9de8e7b, type: 2}
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -519,6 +519,7 @@ GameObject:
   - component: {fileID: 2645106154075593725}
   - component: {fileID: 8556472869398095568}
   - component: {fileID: 1798764745510858769}
+  - component: {fileID: 7570124257465577467}
   m_Layer: 10
   m_Name: EnemyMiYinPurple
   m_TagString: Untagged
@@ -586,7 +587,7 @@ MonoBehaviour:
   armor: 1
   weakPointArmor: 0
   airborne: 0
-  underPenetrationMultiplier: 0.25
+  underPenetrationMultiplier: 0.5
   armorBlocksEffects: 1
   deathAtNoiseLimit: 1
   exposeWeakPointWhenStunned: 1
@@ -600,6 +601,11 @@ MonoBehaviour:
     m_Bits: 3276033
   fallGravity: 20
   externalGroundMovement: 0
+  attackCoordinator: {fileID: 0}
+  hasMovementBounds: 0
+  movementBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
 --- !u!114 &8556472869398095568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -622,7 +628,7 @@ MonoBehaviour:
   weakPointRadius: 0.13
   collisionHeight: 0.75
   collisionRadius: 0.3
-  deathDespawnDelay: 0.8
+  deathDespawnDelay: 1.25
   preparedVisual: {fileID: 3636913867984602848}
 --- !u!114 &1798764745510858769
 MonoBehaviour:
@@ -643,6 +649,22 @@ MonoBehaviour:
   agent: {fileID: 0}
   body: {fileID: 3636913867984602848}
   shell: {fileID: 5093304765077537045}
+--- !u!114 &7570124257465577467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4919587967642801603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13798e10f78a9304d9123bab85a5aa46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyPresentation
+  soundMaterial: {fileID: 2100000, guid: 656258e04e48f434283965f067b20afb, type: 2}
+  color: {r: 1, g: 0.7, b: 0.1, a: 1}
+  windupSound: {fileID: 8300000, guid: 2497c5ef734b6b9459eacffecae385b2, type: 3}
+  shotSound: {fileID: 8300000, guid: ef2ecb2a67b021c48aa7e83feac0098d, type: 3}
 --- !u!1 &5017725990251729514
 GameObject:
   m_ObjectHideFlags: 0

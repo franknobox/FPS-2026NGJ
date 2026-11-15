@@ -178,6 +178,7 @@ GameObject:
   - component: {fileID: 2273158138422698421}
   - component: {fileID: 4948450633789609592}
   - component: {fileID: 4944492999747695975}
+  - component: {fileID: 5988644413925596857}
   m_Layer: 10
   m_Name: EnemyMiYin
   m_TagString: Untagged
@@ -245,7 +246,7 @@ MonoBehaviour:
   armor: 1
   weakPointArmor: 0
   airborne: 0
-  underPenetrationMultiplier: 0.25
+  underPenetrationMultiplier: 0.5
   armorBlocksEffects: 1
   deathAtNoiseLimit: 1
   exposeWeakPointWhenStunned: 1
@@ -259,6 +260,11 @@ MonoBehaviour:
     m_Bits: 3276033
   fallGravity: 20
   externalGroundMovement: 0
+  attackCoordinator: {fileID: 0}
+  hasMovementBounds: 0
+  movementBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
 --- !u!114 &4948450633789609592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,7 +287,7 @@ MonoBehaviour:
   weakPointRadius: 0.13
   collisionHeight: 0.75
   collisionRadius: 0.3
-  deathDespawnDelay: 0.8
+  deathDespawnDelay: 1.25
   preparedVisual: {fileID: 2339296236278113836}
 --- !u!114 &4944492999747695975
 MonoBehaviour:
@@ -302,6 +308,22 @@ MonoBehaviour:
   agent: {fileID: 0}
   body: {fileID: 2339296236278113836}
   shell: {fileID: 6920931243872100324}
+--- !u!114 &5988644413925596857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1265799837663875682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13798e10f78a9304d9123bab85a5aa46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.EnemyPresentation
+  soundMaterial: {fileID: 2100000, guid: 656258e04e48f434283965f067b20afb, type: 2}
+  color: {r: 1, g: 0.7, b: 0.1, a: 1}
+  windupSound: {fileID: 8300000, guid: 2497c5ef734b6b9459eacffecae385b2, type: 3}
+  shotSound: {fileID: 8300000, guid: ef2ecb2a67b021c48aa7e83feac0098d, type: 3}
 --- !u!1 &1562331680666413606
 GameObject:
   m_ObjectHideFlags: 0
@@ -1198,8 +1220,8 @@ Animator:
   m_GameObject: {fileID: 7693341174331078312}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 6e3e0353a5352444baaf5d22a6f256a4, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
+  m_Controller: {fileID: 9100000, guid: 135c01a0f7d017f46a2b479a83d03ba9, type: 2}
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0

@@ -28,6 +28,10 @@ namespace NGJ.Combat
     [Serializable]
     public struct HitInfo
     {
+        // 同一次普攻的弹丸和爆炸共享回调，由发射方保证只结算一次自身噪值。
+        [NonSerialized] public Action hitConfirmed;
+        [NonSerialized] public System.Collections.Generic.HashSet<CombatTarget> pushedTargets;
+        public float knockback;
         // 攻击来源：运行时自动设置，用于敌我过滤。
         [Tooltip("运行时自动设置，用于敌我过滤。")]
         public CombatTarget source;

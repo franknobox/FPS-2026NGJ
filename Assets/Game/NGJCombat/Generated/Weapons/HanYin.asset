@@ -13,14 +13,18 @@ MonoBehaviour:
   m_Name: HanYin
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.WeaponDefinition
   type: 2
+  knockback: 5.5
+  muzzleEffect: {fileID: 1037966187998001737, guid: fab10933d42678e46b9de9ee4c0fb672, type: 3}
+  impactEffect: {fileID: 4236007162872013553, guid: 73cf4a775db2f0548a950ec88cc0425b, type: 3}
+  bulletTrail: {fileID: 6202108911361089863, guid: 5d9af3cf17a0fa64ca98bbca57bd4db2, type: 3}
   displayName: "\u64BC\u97F3\u4F53"
   fireInterval: 0.7
   selfNoise: 15
-  targetNoise: 10
+  targetNoise: 14
   penetration: 0
   range: 12
-  pelletCount: 6
-  spreadAngle: 8
+  pelletCount: 8
+  spreadAngle: 3
   maxTargetsPerPellet: 1
   projectilePrefab: {fileID: 0}
   projectileSpeed: 15
