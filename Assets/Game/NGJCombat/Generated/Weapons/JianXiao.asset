@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: JianXiao
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.WeaponDefinition
   type: 0
+  knockback: 5
+  muzzleEffect: {fileID: 7742791084157367381, guid: 9fbe8c66160d1eb42a13d05513c3cb56, type: 3}
+  impactEffect: {fileID: 6073737203172441169, guid: 2a616b3ce63015c428b05d5757e683f7, type: 3}
+  bulletTrail: {fileID: 8317936576033579660, guid: af0fca7ee3abd894593b1f46bdab7199, type: 3}
   displayName: "\u5C16\u5578\u4F53"
   fireInterval: 0.9
   selfNoise: 20

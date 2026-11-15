@@ -72,7 +72,8 @@ namespace ArtTools
                     Matrix4x4 bodyMatrix = filter.transform.localToWorldMatrix;
                     Vector3 muzzlePosition = sourceMuzzle.position;
                     if (muzzlePosition.z <= 0) throw new Exception("Muzzle must face Unity +Z: " + name + " " + muzzlePosition);
-                    var root = new GameObject(name);
+                    string assetName = name == "霰弹枪" ? "步枪" : name;
+                    var root = new GameObject(assetName);
                     try
                     {
                         var body = new GameObject("Body");
@@ -92,7 +93,7 @@ namespace ArtTools
                         muzzle.transform.localPosition = muzzlePosition;
                         int layer = LayerMask.NameToLayer("Weapons");
                         foreach (var t in root.GetComponentsInChildren<Transform>()) t.gameObject.layer = layer < 0 ? 0 : layer;
-                        string prefabPath = Prefabs + "/" + name + ".prefab";
+                        string prefabPath = Prefabs + "/" + assetName + ".prefab";
                         var saved = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
                         if (!saved) throw new Exception("Could not save " + prefabPath);
                         if (saved.GetComponentsInChildren<MeshRenderer>(true).Length != 1) throw new Exception("Unexpected renderer count");

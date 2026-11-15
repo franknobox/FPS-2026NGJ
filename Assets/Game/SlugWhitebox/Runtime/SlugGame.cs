@@ -40,7 +40,7 @@ namespace SlugWhitebox
         CharacterController controller;
         AudioSource sound;
         AudioClip[] skillSounds;
-        float yaw, pitch, shotAt, recoil, footstepAt;
+        float yaw, pitch, recoil, footstepAt;
         bool settled, smoke;
         int runGeneration;
         float runTime;
@@ -91,12 +91,12 @@ namespace SlugWhitebox
             health = maxHealth; glands = maxGlands;
             for(int i=0;i<4;i++) { heat[i]=0; locked[i]=false; }
             kills=runBiomass=0; sector=-1; runTime=0; settled=false;
-            weapon=skill=0; shotAt=0; yaw=pitch=0;
+            weapon=skill=0; yaw=pitch=0;
             cameraShake=0; view.fieldOfView=80;
             Warp(levelFlow ? levelFlow.StartPosition : new Vector3(0,.15f,-2)); player.rotation=Quaternion.identity;
             view.transform.localPosition=new Vector3(0,EyeHeight,0);view.transform.localRotation = Quaternion.identity;
             mode=Mode.Playing; SetCursor(true);
-            if(weaponLoadout==null || weaponLoadout.Length!=2 || !ConfigureLoadout(weaponLoadout[0],weaponLoadout[1])) ConfigureLoadout(2,weaponDefinitions.Length>4?4:0);
+            if(!ConfigureLoadout(weaponLoadout)) ConfigureLoadout(2,4,0,1);
             if(levelFlow)levelFlow.ResetRun(this);
             hud.Refresh();
         }
@@ -138,11 +138,14 @@ namespace SlugWhitebox
                 if(mouse.leftButton.isPressed) Fire();
                 if(kb.digit1Key.wasPressedThisFrame) SelectWeaponSlot(0);
                 if(kb.digit2Key.wasPressedThisFrame) SelectWeaponSlot(1);
+                if(kb.digit3Key.wasPressedThisFrame) SelectWeaponSlot(2);
+                if(kb.digit4Key.wasPressedThisFrame) SelectWeaponSlot(3);
                 if(kb.zKey.wasPressedThisFrame) skill=0;
                 if(kb.xKey.wasPressedThisFrame) skill=1;
                 if(kb.cKey.wasPressedThisFrame) skill=2;
                 float scroll=mouse.scroll.ReadValue().y;
-                if(scroll!=0) SelectWeaponSlot(weapon==weaponLoadout[0]?1:0);
+                if(scroll!=0 && weaponLoadout!=null && weaponLoadout.Length>0)
+                    SelectWeaponSlot((Array.IndexOf(weaponLoadout,weapon)+(scroll<0?1:weaponLoadout.Length-1))%weaponLoadout.Length);
             }
             else controller.Move(Vector3.down*4*Time.deltaTime);
             recoil=Mathf.Lerp(recoil,0,Time.deltaTime*12);
@@ -172,7 +175,7 @@ namespace SlugWhitebox
 
         public bool SelectWeapon(int index)
         {
-            if(weaponLoadout==null || weaponLoadout.Length!=2 || Array.IndexOf(weaponLoadout,index)<0 ||
+            if(weaponLoadout==null || Array.IndexOf(weaponLoadout,index)<0 ||
                 weaponDefinitions==null || index<0 || index>=weaponDefinitions.Length || !weaponDefinitions[index])return false;
             weapon=index;
             weapons.Equip(weaponDefinitions[index]);
@@ -193,7 +196,7 @@ namespace SlugWhitebox
                 cameraShake=weaponView.feedbackSource.camShakeAmount;
                 if(weaponView.feedbackSource.applyFOVEffectOnShooting)view.fieldOfView=80-weaponView.feedbackSource.FOVValueToSubtract;
             }
-            else Play(fireSounds[weapon],.3f);
+            else Play(fireSounds[weapon],.15f);
             Vector3 start=weaponView && weaponView.muzzle ? weaponView.muzzle.position : view.transform.TransformPoint(.17f,-.14f,.88f);
             if(!weaponDefinitions[weapon].projectilePrefab && !weaponDefinitions[weapon].bulletTrail)
             {

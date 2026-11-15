@@ -7,22 +7,23 @@ namespace SlugWhitebox
     {
         [Header("战斗配置：步枪、狙击、霰弹、榴弹、火箭筒；界面名称读取配置")]
         public WeaponDefinition[] weaponDefinitions;
-        [Tooltip("出战索引：0步枪、1狙击、2霰弹、3榴弹、4火箭筒。默认霰弹和火箭筒。")]
-        public int[] weaponLoadout = { 2, 4 };
+        [Tooltip("出战索引：0步枪、1狙击、2霰弹、3榴弹、4火箭筒。默认霰弹、火箭筒、步枪、狙击。")]
+        public int[] weaponLoadout = { 2, 4, 0, 1 };
 
-        public bool ConfigureLoadout(int first, int second)
+        public bool ConfigureLoadout(params int[] indices)
         {
-            if (weaponDefinitions == null || first == second || first < 0 || second < 0 ||
-                first >= weaponDefinitions.Length || second >= weaponDefinitions.Length ||
-                !weaponDefinitions[first] || !weaponDefinitions[second]) return false;
-            weaponLoadout = new[] { first, second };
-            if (weapons) SelectWeapon(first);
+            if (weaponDefinitions == null || indices == null || indices.Length < 1 || indices.Length > 4) return false;
+            var used = new System.Collections.Generic.HashSet<int>();
+            foreach (int index in indices)
+                if (index < 0 || index >= weaponDefinitions.Length || !weaponDefinitions[index] || !used.Add(index)) return false;
+            weaponLoadout = (int[])indices.Clone();
+            if (weapons) SelectWeapon(indices[0]);
             return true;
         }
 
         public bool SelectWeaponSlot(int slot)
         {
-            return weaponLoadout != null && slot >= 0 && slot < weaponLoadout.Length && slot < 2 && SelectWeapon(weaponLoadout[slot]);
+            return weaponLoadout != null && slot >= 0 && slot < weaponLoadout.Length && SelectWeapon(weaponLoadout[slot]);
         }
         [Tooltip("嘶鸣、撼地、共鸣。")]
         public SkillDefinition[] glandSkills;

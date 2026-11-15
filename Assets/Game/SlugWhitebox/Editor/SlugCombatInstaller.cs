@@ -42,7 +42,7 @@ namespace SlugWhitebox.Editor
             g.weapons=g.player.GetComponent<CombatWeaponController>();if(!g.weapons)g.weapons=g.player.gameObject.AddComponent<CombatWeaponController>();
             g.runner.owner=g.stats;g.runner.castOrigin=g.view.transform;
             g.weapons.owner=g.stats;g.weapons.skills=g.runner;g.weapons.fireOrigin=g.view.transform;g.weapons.hitMask=CombatLayers.PlayerAttackMask;
-            if(g.weaponLoadout==null || g.weaponLoadout.Length!=2 || !g.ConfigureLoadout(g.weaponLoadout[0],g.weaponLoadout[1]))g.ConfigureLoadout(2,0);
+            if(!g.ConfigureLoadout(g.weaponLoadout))g.ConfigureLoadout(2,4,0,1);
             if(g.weaponModels[3] && g.weaponModels[3].name!="爆鸣体 · 榴弹白盒")
             {
                 UnityEngine.Object.DestroyImmediate(g.weaponModels[3]);

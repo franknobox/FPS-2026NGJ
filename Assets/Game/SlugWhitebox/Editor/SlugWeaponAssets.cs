@@ -70,6 +70,7 @@ namespace SlugWhitebox.Editor
             foreach (var r in model.GetComponentsInChildren<Renderer>(true))
             {
                 bool arms = r.name == "Arms_Mesh" || r.name == "Mesh";
+                r.enabled = !arms;
                 int count = r is SkinnedMeshRenderer skinned ? skinned.sharedMesh.subMeshCount : r.GetComponent<MeshFilter>().sharedMesh.subMeshCount;
                 var materials = new Material[count];
                 for (int j = 0; j < count; j++) materials[j] = MaterialFor(arms ? "手臂" : "枪体" + j % 3, arms ? .53f : .23f + (j % 3) * .12f);

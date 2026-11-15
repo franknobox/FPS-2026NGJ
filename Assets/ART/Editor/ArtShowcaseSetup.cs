@@ -64,7 +64,9 @@ namespace ArtTools
                     else if (category == "Enemies") instance.transform.position = new Vector3((i - (paths.Length - 1) * .5f) * 3.2f, 0, 5);
                     else
                     {
-                        instance.transform.position = new Vector3((i - (paths.Length - 1) * .5f) * 3, 1, 8);
+                        var existingWeapons = instances.Where(pair => pair.Key.StartsWith(folder + "/") && pair.Value != instance).Select(pair => pair.Value).ToArray();
+                        float right = existingWeapons.Length > 0 ? existingWeapons.Max(go => go.transform.position.x) + 3 : 0;
+                        instance.transform.position = new Vector3(right, 1, 8);
                         instance.transform.rotation = Quaternion.Euler(0, -90, 0);
                         instance.transform.localScale = Vector3.one * 2;
                     }
@@ -113,8 +115,9 @@ namespace ArtTools
             UpdateShowcase();
             var scene = SceneManager.GetActiveScene();
             var instances = Instances(scene);
-            if (instances.Length != 20 || instances.Select(SourcePath).Distinct().Count() != 20)
-                throw new Exception("Expected all 20 unique ART prefabs in the unified scene");
+            int expected = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/ART/Prefabs" }).Length;
+            if (instances.Length != expected || instances.Select(SourcePath).Distinct().Count() != expected)
+                throw new Exception("Expected all unique ART prefabs in the unified scene");
             var camera = scene.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<Camera>()).Single();
             foreach (var instance in instances)
             {
@@ -129,7 +132,7 @@ namespace ArtTools
                     }
             }
             if (File.Exists(LegacyScene)) throw new Exception("Duplicate showcase scene remains");
-            Debug.Log("ART_SHOWCASE_VERIFIED enemies=4 weapons=2 environment=14 PlayMode=" + EditorApplication.isPlaying);
+            Debug.Log("ART_SHOWCASE_VERIFIED prefabs=" + expected + " PlayMode=" + EditorApplication.isPlaying);
         }
 
         static string SourcePath(GameObject instance) => AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromSource(instance));

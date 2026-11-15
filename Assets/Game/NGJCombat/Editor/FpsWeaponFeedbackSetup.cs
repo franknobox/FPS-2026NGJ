@@ -51,7 +51,6 @@ namespace NGJ.EditorTools
                     }
                     view.rig.cullingMode=AnimatorCullingMode.AlwaysAnimate;
                     view.idleClip=idle;view.fireClip=shot;view.feedbackSource=source;view.feedbackWeapon=weapon;
-                    WeaponHandsSetup.Attach(root,id);
                     PrefabUtility.SaveAsPrefabAsset(root,path);
                 }
                 finally{PrefabUtility.UnloadPrefabContents(root);}
@@ -108,7 +107,7 @@ namespace NGJ.EditorTools
             if(!string.IsNullOrEmpty(original))EditorSceneManager.OpenScene(original);
             Debug.Log("FPS_WEAPON_FEEDBACK_READY original audio, muzzle, pellet trails, impacts, rocket mesh/smoke/explosion, baked fire motion, FOV/shake; damage remains NGJ");
         }
-        static GameObject CopyEffect(GameObject source,string name)
+        public static GameObject CopyEffect(GameObject source,string name)
         {
             if(!source)throw new Exception("Missing source effect "+name);
             string path=AssetDatabase.GetAssetPath(source);
@@ -132,7 +131,7 @@ namespace NGJ.EditorTools
             }
             finally{PrefabUtility.UnloadPrefabContents(root);}
         }
-        static Material ConvertMaterial(Material source)
+        public static Material ConvertMaterial(Material source)
         {
             if(!source||source.shader.name.StartsWith("Universal Render Pipeline")||source.shader.name.StartsWith("ART/"))return source;
             string path=Fx+"/"+source.name+"_"+AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(source)).Substring(0,8)+".mat";

@@ -45,7 +45,7 @@ namespace SlugWhitebox
                 if (!shotAudio) { shotAudio = gameObject.AddComponent<AudioSource>(); shotAudio.spatialBlend = 0; }
                 var clips = feedbackSource.audioSFX.shooting;
                 shotAudio.pitch = 1 + Random.Range(-feedbackSource.pitchVariationFiringSFX, feedbackSource.pitchVariationFiringSFX);
-                if (clips != null && clips.Length > 0) shotAudio.PlayOneShot(clips[Random.Range(0, clips.Length)], .7f);
+                if (clips != null && clips.Length > 0) shotAudio.PlayOneShot(clips[Random.Range(0, clips.Length)], .35f);
                 if (muzzle && feedbackWeapon) NGJ.Combat.CombatFx.Spawn(feedbackWeapon.muzzleEffect, muzzle.position, muzzle.rotation, transform);
             }
             if (!graph.IsValid()) return;

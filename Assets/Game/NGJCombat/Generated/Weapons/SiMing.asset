@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: SiMing
   m_EditorClassIdentifier: Assembly-CSharp::NGJ.Combat.WeaponDefinition
   type: 1
+  knockback: 5
+  muzzleEffect: {fileID: 2848984015329796927, guid: cb60ea65f57167f40881efb651cb5511, type: 3}
+  impactEffect: {fileID: 6382027635856733908, guid: 0817ff3bf6bd3b7408db0ccc0a4c4e42, type: 3}
+  bulletTrail: {fileID: 2995510598506590372, guid: 8eef71578b4a9534ebc9e4e407608d83, type: 3}
   displayName: "\u5636\u9E23\u4F53"
   fireInterval: 0.12
   selfNoise: 2
